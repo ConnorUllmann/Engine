@@ -14,7 +14,7 @@ namespace CellularAutomata
         
         public CustomCell(int _i, int _j, CustomCellGrid _grid) : base(_i, _j, _grid)
         {
-            value = (float)Utils.RandomDouble();
+            value = (float)Basics.Utils.RandomDouble();
             NextValue = Algorithm;
             rectangleArray = ColoredVertexArray.FromBuffer(rectangleBuffer);
         }
@@ -22,7 +22,7 @@ namespace CellularAutomata
         public override void Render()
         {
             var v = value;
-            v = Utils.Clamp(v, 0, 1);
+            v = Basics.Utils.Clamp(v, 0, 1);
             if (true)//v > 0.5f)
             {
                 var r = 1 - v + v * v;
@@ -37,7 +37,7 @@ namespace CellularAutomata
         {
             //return Utils.Clamp(Neighbors().Select(x => x.value < 0.25f ? x.value / 5f : -0.1f).Sum(), 0, 1);
             //return Utils.Clamp(Neighbors().Select(x => x.value < 0.1f ? x.value : x.value < 0.8f ? x.value / 10f : -0.1f).Sum(), 0, 1);
-            return Utils.Clamp(Neighbors().Select(x => x.value < 0.05f ? 0.15f : x.value > 0.95f ? -0.05f : (x.value > 0.6f ? -1 : 1) * (float)Math.Sin((grid as CustomCellGrid).MillisecondsSinceStart / 1000f) * 0.5f).Sum(), 0, 1);
+            return Basics.Utils.Clamp(Neighbors().Select(x => x.value < 0.05f ? 0.15f : x.value > 0.95f ? -0.05f : (x.value > 0.6f ? -1 : 1) * (float)Math.Sin((grid as CustomCellGrid).MillisecondsSinceStart / 1000f) * 0.5f).Sum(), 0, 1);
         }
         public IEnumerable<CustomCell> Neighbors() => grid.GetNeighborsSquare(i, j).Select(o => o as CustomCell).Where(o => o != null);
     }
@@ -64,7 +64,7 @@ namespace CellularAutomata
 
         public ConwayCell(int _i, int _j, ConwayCellGrid _grid) : base(_i, _j, _grid)
         {
-            value = Utils.RandomInt(0, 4) == 0 ? 1 : 0;
+            value = Basics.Utils.RandomInt(0, 4) == 0 ? 1 : 0;
             NextValue = ConwayAlgorithm;
             rectangleBuffer.SetColor(Color4.White);
             rectangleArray = ColoredVertexArray.FromBuffer(rectangleBuffer);

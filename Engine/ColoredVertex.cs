@@ -121,17 +121,10 @@ namespace Engine
                 vertices[i].position += _position;
         }
 
-        public void Rotate(float angle, Vector3 center)
+        public void Rotate(float _angleRad, Vector3 _center)
         {
             for (var i = 0; i < count; i++)
-            {
-                var diff = vertices[i].position - center;
-                diff = new Vector3(
-                    (float)(diff.X * Math.Cos(angle) - diff.Y * Math.Sin(angle)),
-                    (float)(diff.Y * Math.Cos(angle) + diff.X * Math.Sin(angle)),
-                    diff.Z);
-                vertices[i].position = diff + center;
-            }
+                vertices[i].position = Utils.Rotate(vertices[i].position, _angleRad, _center);
         }
 
         public void SetColor(Color4 _color)
@@ -165,51 +158,45 @@ namespace Engine
             this.handle = GL.GenBuffer();
         }
 
-        public void AddVertex(TVertex v)
+        public void AddVertex(TVertex _vertex)
         {
             //Double size of array once we fill our current array
             if (count == vertices.Length)
                 Array.Resize(ref vertices, count * 2);
 
-            vertices[count++] = v;
+            vertices[count++] = _vertex;
         }
 
-        public void ForEach(Action<TVertex> func)
+        public void AddVertices(IEnumerable<TVertex> _vertices)
+        {
+            foreach (var v in _vertices)
+                AddVertex(v);
+        }
+
+        public void ForEach(Action<TVertex> _func)
         {
             foreach (var vertex in vertices)
-                func(vertex);
+                _func(vertex);
         }
 
-        public void Bind()
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, this.handle);
-        }
-
-        public void BufferData()
-        {
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexSize * count), vertices, BufferUsageHint.StreamDraw);
-        }
-
-        public void Draw()
-        {
-            GL.DrawArrays(primitiveType, 0, count);
-        }
-
+        public void Bind() => GL.BindBuffer(BufferTarget.ArrayBuffer, this.handle);
+        public void BufferData() => GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexSize * count), vertices, BufferUsageHint.StreamDraw);
+        public void Draw() => GL.DrawArrays(primitiveType, 0, count);
     }
 
     public class ColoredVertexArray : VertexArray<ColoredVertex>
     {
-        public VertexBuffer<ColoredVertex> vertexBuffer;
+        public ColoredVertexBuffer vertexBuffer;
         public ShaderProgram shaderProgram;
 
-        public ColoredVertexArray(VertexBuffer<ColoredVertex> _vertexBuffer, ShaderProgram _shaderProgram) :
+        public ColoredVertexArray(ColoredVertexBuffer _vertexBuffer, ShaderProgram _shaderProgram) :
             base(_vertexBuffer, _shaderProgram, BasicVertexShader.Position, BasicVertexShader.Color)
         {
             vertexBuffer = _vertexBuffer;
             shaderProgram = _shaderProgram;
         }
 
-        public void SetColor(Color4 _color) => vertexBuffer.ForEach(o => o.color = _color);
+        public void SetColor(Color4 _color) => vertexBuffer.SetColor(_color);
 
         public void Render() => Render(Game.Camera);
         private void Render(Camera _camera) => Render(_camera.ProjectionMatrix);
@@ -229,10 +216,9 @@ namespace Engine
             //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             //GL.UseProgram(0);
         }
-        
 
         private static BasicShaderProgram basicShaderProgram;
-        public static ColoredVertexArray FromBuffer(VertexBuffer<ColoredVertex> buffer, ShaderProgram _shaderProgram = null)
+        public static ColoredVertexArray FromBuffer(ColoredVertexBuffer buffer, ShaderProgram _shaderProgram = null)
         {
             if (_shaderProgram == null && basicShaderProgram == null)
                 basicShaderProgram = new BasicShaderProgram();

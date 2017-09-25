@@ -27,20 +27,20 @@ namespace CellularAutomata
             //};
 
             var game = new Game(1280, 720);
-            //AddRegularPolygon(5, 150, Color4.Red);
-            //AddRegularPolygon(6, 85, Color4.Yellow);
-            //AddRegularPolygon(7, 40, Color4.Aqua);
-            //AddRegularPolygon(8, 20, Color4.White);
-            //var grid1 = new HexGrid(-600, -500, 10, 10, 40, true);
-            //grid1.ShowNeighbors(2, 2);
-            //grid1.ShowNeighbors(8, 7);
-            //grid1.ShowNeighbors(3, 6);
-            //grid1.ShowNeighbors(7, 3);
-            //var grid2 = new HexGrid(200, -500, 10, 10, 40, false);
-            //grid2.ShowNeighbors(2, 2);
-            //grid2.ShowNeighbors(8, 7);
-            //grid2.ShowNeighbors(3, 8);
-            //grid2.ShowNeighbors(7, 1);
+            AddRegularPolygon(5, 150, Color4.Red);
+            AddRegularPolygon(6, 85, Color4.Yellow);
+            AddRegularPolygon(7, 40, Color4.Aqua);
+            AddRegularPolygon(8, 20, Color4.White);
+            var grid1 = new HexGrid(-600, -500, 10, 10, 40, true);
+            grid1.ShowNeighbors(2, 2);
+            grid1.ShowNeighbors(8, 7);
+            grid1.ShowNeighbors(3, 6);
+            grid1.ShowNeighbors(7, 3);
+            var grid2 = new HexGrid(200, -500, 10, 10, 40, false);
+            grid2.ShowNeighbors(2, 2);
+            grid2.ShowNeighbors(8, 7);
+            grid2.ShowNeighbors(3, 8);
+            grid2.ShowNeighbors(7, 1);
             //var grid3 = new HexGrid(-500, -300, 1, 1, 20, true);
             //var grid4 = new HexGrid(-400, -300, 1, 1, 30, false);
             //var grid5 = new HexGrid(-300, -300, 1, 3, 40, true);
@@ -54,7 +54,8 @@ namespace CellularAutomata
         private static Actor AddRegularPolygon(int _sides, float _radius, Color4 _color)
         {
             var actor = new ShellActor();
-            var polygon = ConvexPolygon.Regular(_sides, _radius, _color);
+            var polygon = new ConvexPolygonRenderer(ConvexPolygon.Regular(_sides, _radius), _color, _color);
+            actor.UpdateHandler += () => polygon.Rotate(0.05f);
             actor.RenderHandler += polygon.Render;
             actor.AddToWorld();
             return actor;

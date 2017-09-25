@@ -12,7 +12,7 @@ namespace Engine
     public class HexTile : Actor
     {
         private HexGrid grid;
-        private ConvexPolygon polygon;
+        private ConvexPolygonRenderer polygonRenderer;
         public readonly int i;
         public readonly int j;
         private readonly float Radius;
@@ -20,25 +20,25 @@ namespace Engine
 
         public HexTile(HexGrid _grid, int _i, int _j, float _radius)
             : this(_grid, _i, _j, _radius, Color4.White) { }
-        public HexTile(HexGrid _grid, int _i, int _j, float _radius, Color4 _color)
+        public HexTile(HexGrid _grid, int _i, int _j, float _radius, Color4 _color) : base()
         {
             grid = _grid;
             i = _i;
             j = _j;
             Radius = _radius;
+
             Altitude = GetAltitude();
             X = GetX();
             Y = GetY();
 
             var rotationRad = grid.Horizontal ? (float)(0.5f * Math.PI) : 0;
-            polygon = ConvexPolygon.Regular(6, Radius, _color, rotationRad);
-
-            polygon.Move(new Vector3(X, Y, -1.5f));
+            polygonRenderer = new ConvexPolygonRenderer(ConvexPolygon.Regular(6, Radius, rotationRad));
+            polygonRenderer.Move(new Vector3(X, Y, 0));
         }
 
-        public void SetColor(Color4 _color) => polygon.SetColor(_color);
+        public void SetColor(Color4 _color) => polygonRenderer.SetOutlineColor(_color);
 
-        private float GetAltitude() => Utils.EquilateralAltitude(Radius);
+        private float GetAltitude() => Basics.Utils.EquilateralAltitude(Radius);
 
         private float GetX()
         {
@@ -53,7 +53,7 @@ namespace Engine
             return grid.Y + 1.5f * j * Radius + Altitude;
         }
 
-        public override void Render() => polygon.Render();
+        public override void Render() => polygonRenderer.Render(); 
     }
 
     public class HexGrid
@@ -104,7 +104,7 @@ namespace Engine
             if (grid.Width <= 0 || grid.Height <= 0)
                 return new Vector4();
 
-            var altitude = Utils.EquilateralAltitude(Radius);
+            var altitude = Basics.Utils.EquilateralAltitude(Radius);
             var first = grid.Get(0, 0);
             var txH = first.X - Radius;
             var txV = first.X - altitude;

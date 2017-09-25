@@ -77,7 +77,11 @@ namespace Engine
         public virtual bool Visible { get; set; }
         public virtual bool Active { get; set; }
 
-        public Actor() { }
+        public Actor()
+        {
+            Visible = true;
+            Active = true;
+        }
         public Actor(float _x, float _y) : this()
         {
             X = _x;
