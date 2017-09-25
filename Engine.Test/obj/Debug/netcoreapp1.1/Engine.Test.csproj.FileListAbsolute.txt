@@ -1,0 +1,16 @@
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Engine.Test.deps.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Engine.Test.runtimeconfig.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Engine.Test.runtimeconfig.dev.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Engine.Test.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\obj\Debug\netcoreapp1.1\Engine.Test.AssemblyInfo.cs
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\obj\Debug\netcoreapp1.1\Engine.Test.csprojResolveAssemblyReference.cache
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\xunit.runner.utility.netstandard15.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\xunit.runner.reporters.netstandard15.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Engine.Test.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Engine.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Engine.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\obj\Debug\netcoreapp1.1\Engine.Test.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\obj\Debug\netcoreapp1.1\Engine.Test.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Basics.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine.Test\bin\Debug\netcoreapp1.1\Basics.pdb

@@ -1,0 +1,11 @@
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\bin\Debug\netcoreapp1.1\Engine.deps.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\bin\Debug\netcoreapp1.1\Engine.runtimeconfig.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\bin\Debug\netcoreapp1.1\Engine.runtimeconfig.dev.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\bin\Debug\netcoreapp1.1\Engine.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\obj\Debug\netcoreapp1.1\Engine.csprojResolveAssemblyReference.cache
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\obj\Debug\netcoreapp1.1\Engine.AssemblyInfo.cs
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\bin\Debug\netcoreapp1.1\Engine.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\obj\Debug\netcoreapp1.1\Engine.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\obj\Debug\netcoreapp1.1\Engine.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\bin\Debug\netcoreapp1.1\Basics.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Engine\bin\Debug\netcoreapp1.1\Basics.pdb

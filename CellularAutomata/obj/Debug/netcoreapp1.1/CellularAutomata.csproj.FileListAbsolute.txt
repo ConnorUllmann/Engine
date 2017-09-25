@@ -1,0 +1,13 @@
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\CellularAutomata.deps.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\CellularAutomata.runtimeconfig.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\CellularAutomata.runtimeconfig.dev.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\obj\Debug\netcoreapp1.1\CellularAutomata.csprojResolveAssemblyReference.cache
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\obj\Debug\netcoreapp1.1\CellularAutomata.AssemblyInfo.cs
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\CellularAutomata.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\CellularAutomata.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\Basics.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\Engine.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\Engine.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\bin\Debug\netcoreapp1.1\Basics.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\obj\Debug\netcoreapp1.1\CellularAutomata.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\CellularAutomata\obj\Debug\netcoreapp1.1\CellularAutomata.pdb
