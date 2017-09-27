@@ -133,11 +133,67 @@ namespace Engine
                 vertices[i].color = _color;
         }
 
+        public void RandomizeColor()
+        {
+            for (var i = 0; i < count; i++)
+                vertices[i].color = ColorExtensions.RandomColor();
+        }
+
         public void Render()
         {
             if(array == null)
                 array = ColoredVertexArray.FromBuffer(this);
             array.Render();
+        }
+    }
+
+    public class ColoredVertexArray : VertexArray<ColoredVertex>
+    {
+        public ColoredVertexBuffer vertexBuffer;
+        public ShaderProgram shaderProgram;
+
+        public ColoredVertexArray(ColoredVertexBuffer _vertexBuffer, ShaderProgram _shaderProgram) :
+            base(_vertexBuffer, _shaderProgram, BasicVertexShader.Position, BasicVertexShader.Color)
+        {
+            vertexBuffer = _vertexBuffer;
+            shaderProgram = _shaderProgram;
+        }
+
+        public void SetColor(Color4 _color) => vertexBuffer.SetColor(_color);
+
+        public void Render() => Render(Game.Camera);
+        private void Render(Camera _camera) => Render(_camera.ProjectionMatrix);
+        private void Render(Matrix4Uniform _projectionMatrix)
+        {
+            // bind vertex buffer and array objects
+            vertexBuffer.Bind();
+            Bind();
+
+            // upload vertices to GPU and draw them
+            vertexBuffer.BufferData();
+            vertexBuffer.Draw();
+
+            // reset state for potential further draw calls (optional, but good practice)
+            //GL.BindVertexArray(0);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            //GL.UseProgram(0);
+        }
+
+        private static BasicShaderProgram basicShaderProgram;
+        public static ColoredVertexArray FromBuffer(ColoredVertexBuffer buffer, ShaderProgram _shaderProgram = null)
+        {
+            if (_shaderProgram == null && basicShaderProgram == null)
+                basicShaderProgram = new BasicShaderProgram();
+            return new ColoredVertexArray(buffer, _shaderProgram ?? basicShaderProgram);
+        }
+
+        public static void Start()
+        {
+            if (basicShaderProgram == null)
+                basicShaderProgram = new BasicShaderProgram();
+            // activate shader program and set uniforms
+            basicShaderProgram.Use();
+            Game.Camera.ProjectionMatrix.Set(basicShaderProgram);
         }
     }
 
@@ -182,57 +238,6 @@ namespace Engine
         public void Bind() => GL.BindBuffer(BufferTarget.ArrayBuffer, this.handle);
         public void BufferData() => GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexSize * count), vertices, BufferUsageHint.StreamDraw);
         public void Draw() => GL.DrawArrays(primitiveType, 0, count);
-    }
-
-    public class ColoredVertexArray : VertexArray<ColoredVertex>
-    {
-        public ColoredVertexBuffer vertexBuffer;
-        public ShaderProgram shaderProgram;
-
-        public ColoredVertexArray(ColoredVertexBuffer _vertexBuffer, ShaderProgram _shaderProgram) :
-            base(_vertexBuffer, _shaderProgram, BasicVertexShader.Position, BasicVertexShader.Color)
-        {
-            vertexBuffer = _vertexBuffer;
-            shaderProgram = _shaderProgram;
-        }
-
-        public void SetColor(Color4 _color) => vertexBuffer.SetColor(_color);
-
-        public void Render() => Render(Game.Camera);
-        private void Render(Camera _camera) => Render(_camera.ProjectionMatrix);
-        private void Render(Matrix4Uniform _projectionMatrix)
-        {
-
-            // bind vertex buffer and array objects
-            vertexBuffer.Bind();
-            Bind();
-
-            // upload vertices to GPU and draw them
-            vertexBuffer.BufferData();
-            vertexBuffer.Draw();
-
-            // reset state for potential further draw calls (optional, but good practice)
-            //GL.BindVertexArray(0);
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            //GL.UseProgram(0);
-        }
-
-        private static BasicShaderProgram basicShaderProgram;
-        public static ColoredVertexArray FromBuffer(ColoredVertexBuffer buffer, ShaderProgram _shaderProgram = null)
-        {
-            if (_shaderProgram == null && basicShaderProgram == null)
-                basicShaderProgram = new BasicShaderProgram();
-            return new ColoredVertexArray(buffer, _shaderProgram ?? basicShaderProgram);
-        }
-
-        public static void Start()
-        {
-            if (basicShaderProgram == null)
-                basicShaderProgram = new BasicShaderProgram();
-            // activate shader program and set uniforms
-            basicShaderProgram.Use();
-            Game.Camera.ProjectionMatrix.Set(basicShaderProgram);
-        }
     }
 
     public class VertexArray<TVertex> where TVertex : struct
