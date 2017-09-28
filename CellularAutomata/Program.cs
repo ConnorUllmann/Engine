@@ -50,7 +50,7 @@ namespace CellularAutomata
 
         public override void Update()
         {
-            if (KeyReleased(Key.Space))
+            if (Input.KeyReleased(Key.Space))
                 NewPolygon();
         }
 
