@@ -5,6 +5,7 @@ using System.Linq;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
 namespace Engine
 {
@@ -44,6 +45,9 @@ namespace Engine
         }
 
         public void Run() => window.Run();
+        public static bool KeyDown(Key key) => game.window.Key_Down(key);
+        public static bool KeyPressed(Key key) => game.window.Key_Pressed(key);
+        public static bool KeyReleased(Key key) => game.window.Key_Released(key);
 
         public virtual void Start() { }
         public virtual void Update() { }
@@ -75,6 +79,7 @@ namespace Engine
 
         protected override void OnLoad(EventArgs e)
         {
+            InitKeyboard();
             fpsHandler = new FPSHandler(this);
             camera = new Camera(Width, Height);
             ColoredVertexArray.Start();
@@ -83,11 +88,53 @@ namespace Engine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            UpdateKeyboard();
+
             Update();
             ActorGroup.World.Update();
+
             fpsHandler.Update();
             Title = $"{titlePrefix} FPS: {fpsHandler.fps.ToString("0.0")}";
         }
+
+        private void InitKeyboard()
+        {
+            KeyUp += OnKeyUp;
+            KeyDown += OnKeyDown;
+        }
+        
+        private void UpdateKeyboard()
+        {
+            KeysPressed = KeysPressedAsync;
+            KeysReleased = KeysReleasedAsync;
+            KeysPressedAsync = new List<Key>();
+            KeysReleasedAsync = new List<Key>();
+        }
+
+        private List<Key> KeysPressed = new List<Key>();
+        private List<Key> KeysReleased = new List<Key>();
+
+        private List<Key> KeysPressedAsync = new List<Key>();
+        private List<Key> KeysReleasedAsync = new List<Key>();
+        private List<Key> KeysDown = new List<Key>();
+
+        private void OnKeyUp(object sender, KeyboardKeyEventArgs args)
+        {
+            KeysDown.Remove(args.Key);
+            if (!KeysReleasedAsync.Contains(args.Key))
+                KeysReleasedAsync.Add(args.Key);
+        }
+        private void OnKeyDown(object sender, KeyboardKeyEventArgs args)
+        {
+            if (!KeysPressedAsync.Contains(args.Key) && !KeysDown.Contains(args.Key))
+                KeysPressedAsync.Add(args.Key);
+            if (!KeysDown.Contains(args.Key))
+                KeysDown.Add(args.Key);
+        }
+
+        public bool Key_Pressed(Key key) => KeysPressed.Contains(key);
+        public bool Key_Released(Key key) => KeysReleased.Contains(key);
+        public bool Key_Down(Key key) => KeysDown.Contains(key);
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {

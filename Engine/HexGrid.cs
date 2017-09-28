@@ -34,9 +34,10 @@ namespace Engine
             var rotationRad = grid.Horizontal ? (float)(0.5f * Math.PI) : 0;
             polygonRenderer = new ConvexPolygonRenderer(ConvexPolygon.Regular(6, Radius, rotationRad));
             polygonRenderer.Move(new Vector3(X, Y, 0));
+            polygonRenderer.OutlineVisible = false;
         }
 
-        public void SetColor(Color4 _color) => polygonRenderer.SetOutlineColor(_color);
+        public void SetColor(Color4 _color) => polygonRenderer.SetFillColor(_color);
 
         private float GetAltitude() => Basics.Utils.EquilateralAltitude(Radius);
 

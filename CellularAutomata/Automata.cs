@@ -9,7 +9,7 @@ namespace CellularAutomata
     {
         private CustomCellGrid cellGrid;
 
-        public Automata(int width, int height) : base(width, height, "Cellular Automata") { }
+        public Automata() : base(1280, 720, "Cellular Automata") { }
 
         public override void Start()
         {

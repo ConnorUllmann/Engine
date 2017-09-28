@@ -4,66 +4,105 @@ using System.Linq;
 using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics;
-using Engine;
+using OpenTK.Input;
 
 namespace CellularAutomata
 {
-    class Program
+    class ConcavePolygonTest : Game
     {
-        static void Main(string[] args)
+        private Actor outlinePolygonActor;
+        private Actor fillPolygonActor;
+
+        public ConcavePolygonTest() : base(900, 900, "Concave Polygon Test")
+        { }
+
+        private void NewPolygon()
         {
-            //var automata = new Automata(1280, 720);
-            //automata.Run();
-
-            var game = new Game(1280, 720);
-            //var grid1 = new HexGrid(-600, -500, 10, 10, 40, true);
-            //grid1.ShowNeighbors(2, 2);
-            //grid1.ShowNeighbors(8, 7);
-            //grid1.ShowNeighbors(3, 6);
-            //grid1.ShowNeighbors(7, 3);
-            //var grid2 = new HexGrid(200, -500, 10, 10, 40, false);
-            //grid2.ShowNeighbors(2, 2);
-            //grid2.ShowNeighbors(8, 7);
-            //grid2.ShowNeighbors(3, 8);
-            //grid2.ShowNeighbors(7, 1);
-            //var grid3 = new HexGrid(-500, -300, 1, 1, 20, true);
-            //var grid4 = new HexGrid(-400, -300, 1, 1, 30, false);
-            //var grid5 = new HexGrid(-300, -300, 1, 3, 40, true);
-            //var grid6 = new HexGrid(-200, -300, 1, 3, 40, false);
-            //var grid7 = new HexGrid(-50, -300, 3, 1, 10, true);
-            //var grid8 = new HexGrid(200, -300, 3, 1, 100, false);
-
-
-            var points = new List<Vector2>()
+            var points = new List<Vector3>();
+            for (float angle = 0; angle < 2 * Math.PI; angle += 0.2f)
             {
-                new Vector2(0, 0),
-                new Vector2(300, -100),
-                new Vector2(300, 0),
-                new Vector2(100, 100),
-                new Vector2(300, 200),
-                new Vector2(-300, 200),
-                new Vector2(0, -200)
-            };
-            var polygon = new ConcavePolygon(points);
-            AddPolygon(polygon);
-            var outlinePolygon = new Polygon(points);
-            AddPolygon(outlinePolygon);
+                var d = Basics.Utils.RandomDouble() * 500 + 100;
+                var p = new Vector3((float)(Math.Cos(angle) * d), (float)(Math.Sin(angle) * d), 0);
+                points.Add(p);
+            }
+            
+            if(fillPolygonActor != null)
+            {
+                fillPolygonActor.Destroy();
+                fillPolygonActor = null;
+            }
+            var fillPolygon = new ConcavePolygon(points);
+            fillPolygonActor = AddPolygon(fillPolygon);
 
-            game.Run();
+            if (outlinePolygonActor != null)
+            {
+                outlinePolygonActor.Destroy();
+                outlinePolygonActor = null;
+            }
+            var outlinePolygon = new Polygon(points);
+            outlinePolygonActor = AddPolygon(outlinePolygon);
+        }
+
+        public override void Start()
+        {
+            NewPolygon();
+        }
+
+        public override void Update()
+        {
+            if (KeyReleased(Key.Space))
+                NewPolygon();
         }
 
         private static Actor AddRegularPolygon(int _sides, float _radius) => AddPolygon(ConvexPolygon.Regular(_sides, _radius));
         private static Actor AddPolygon(Polygon _polygon)
         {
             var actor = new ShellActor();
-            var polygonRenderer = _polygon is ConvexPolygon 
+            var polygonRenderer = _polygon is ConvexPolygon
                 ? new ConvexPolygonRenderer(_polygon as ConvexPolygon, Color4.Blue, Color4.Red)
                 : _polygon is ConcavePolygon
                     ? new ConcavePolygonRenderer(_polygon as ConcavePolygon, Color4.Green, Color4.Red)
                     : new PolygonRenderer(_polygon, Color4.Red);
+            if (polygonRenderer is ConcavePolygonRenderer)
+                (polygonRenderer as ConcavePolygonRenderer).RandomizeFillColor();
             actor.RenderHandler += polygonRenderer.Render;
             actor.AddToWorld();
             return actor;
+        }
+    }
+
+    class HexGridTest : Game
+    {
+        public HexGridTest() : base(1280, 720, "Hex Grid Test")
+        { }
+
+        public override void Start()
+        {
+            var grid1 = new HexGrid(-650, -350, 10, 10, 40, true);
+            grid1.ShowNeighbors(2, 2);
+            grid1.ShowNeighbors(8, 7);
+            grid1.ShowNeighbors(3, 6);
+            grid1.ShowNeighbors(7, 3);
+            var grid2 = new HexGrid(150, -350, 10, 10, 40, false);
+            grid2.ShowNeighbors(2, 2);
+            grid2.ShowNeighbors(8, 7);
+            grid2.ShowNeighbors(3, 8);
+            grid2.ShowNeighbors(7, 1);
+        }
+
+        public override void Update()
+        {
+
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //new Automata().Run();
+            new ConcavePolygonTest().Run();
+            //new HexGridTest().Run();
         }
     }
 }
