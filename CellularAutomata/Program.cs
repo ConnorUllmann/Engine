@@ -21,6 +21,11 @@ namespace CellularAutomata
 
         public override void Update()
         {
+            //Console.WriteLine((Input.LeftMousePressed   ? "*" : "0") + " " 
+            //                + (Input.LeftMouseReleased  ? "*" : "0") + " " 
+            //                + (Input.RightMousePressed  ? "*" : "0") + " " 
+            //                + (Input.RightMouseReleased ? "*" : "0"));
+
             if (Input.KeyReleased(Key.Space))
             {
                 ClearPolygonActors();

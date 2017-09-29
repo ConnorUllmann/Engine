@@ -22,6 +22,7 @@ namespace Engine
         internal static void Update()
         {
             Singleton.UpdateKeyboard();
+            Singleton.UpdateMouse();
         }
 
         private void AttachToWindow(Window window)
@@ -40,17 +41,54 @@ namespace Engine
         private Func<Vector2> MouseHandler;
         public static Vector2 Mouse { get => Singleton.MouseHandler(); }
 
-        public bool LeftMouseDown { get; private set; }
-        public bool RightMouseDown { get; private set; }
+        private bool leftMousePressedAsync;
+        private bool leftMousePressed;
+        private bool leftMouseReleasedAsync;
+        private bool leftMouseReleased;
+        private bool leftMouseDownAsync;
+        private bool leftMouseDown;
+
+        private bool rightMousePressedAsync;
+        private bool rightMousePressed;
+        private bool rightMouseReleasedAsync;
+        private bool rightMouseReleased;
+        private bool rightMouseDownAsync;
+        private bool rightMouseDown;
+
+        public static bool LeftMouseDown { get => Singleton.leftMouseDown; }
+        public static bool LeftMousePressed { get => Singleton.leftMousePressed; }
+        public static bool LeftMouseReleased { get => Singleton.leftMouseReleased; }
+
+        public static bool RightMouseDown { get => Singleton.rightMouseDown; }
+        public static bool RightMousePressed { get => Singleton.rightMousePressed; }
+        public static bool RightMouseReleased { get => Singleton.rightMouseReleased; }
+
+        private void UpdateMouse()
+        {
+            leftMouseDown = leftMouseDownAsync;
+            leftMousePressed = leftMousePressedAsync;
+            leftMouseReleased = leftMouseReleasedAsync;
+            leftMousePressedAsync = false;
+            leftMouseReleasedAsync = false;
+
+            rightMouseDown = rightMouseDownAsync;
+            rightMousePressed = rightMousePressedAsync;
+            rightMouseReleased = rightMouseReleasedAsync;
+            rightMousePressedAsync = false;
+            rightMouseReleasedAsync = false;
+        }
+
         private void OnMouseDown(object sender, MouseButtonEventArgs args)
         {
             switch (args.Button)
             {
                 case MouseButton.Left:
-                    LeftMouseDown = true;
+                    leftMouseDownAsync = true;
+                    leftMousePressedAsync = true;
                     break;
                 case MouseButton.Right:
-                    RightMouseDown = true;
+                    rightMouseDownAsync = true;
+                    rightMousePressedAsync = true;
                     break;
                 default: break;
             }
@@ -60,21 +98,35 @@ namespace Engine
             switch (args.Button)
             {
                 case MouseButton.Left:
-                    LeftMouseDown = false;
+                    leftMouseDownAsync = false;
+                    leftMouseReleasedAsync = true;
                     break;
                 case MouseButton.Right:
-                    RightMouseDown = false;
+                    rightMouseDownAsync = false;
+                    rightMouseReleasedAsync = true;
                     break;
                 default: break;
             }
         }
 
-        public bool Focused { get; private set; }
-        private void OnMouseEnter(object sender, EventArgs args) => Focused = true;
-        private void OnMouseLeave(object sender, EventArgs args) => Focused = false;
+        public bool Focused => Singleton.focused;
+        private bool focused;
+        private void OnMouseEnter(object sender, EventArgs args) => focused = true;
+        private void OnMouseLeave(object sender, EventArgs args) => focused = false;
         #endregion
 
         #region Keyboard
+        private List<Key> KeysPressed = new List<Key>();
+        private List<Key> KeysReleased = new List<Key>();
+
+        private List<Key> KeysPressedAsync = new List<Key>();
+        private List<Key> KeysReleasedAsync = new List<Key>();
+        private List<Key> KeysDown = new List<Key>();
+
+        public static bool KeyPressed(Key key) => Singleton.KeysPressed.Contains(key);
+        public static bool KeyReleased(Key key) => Singleton.KeysReleased.Contains(key);
+        public static bool KeyDown(Key key) => Singleton.KeysDown.Contains(key);
+
         private void UpdateKeyboard()
         {
             KeysPressed = KeysPressedAsync;
@@ -82,13 +134,6 @@ namespace Engine
             KeysPressedAsync = new List<Key>();
             KeysReleasedAsync = new List<Key>();
         }
-
-        private List<Key> KeysPressed = new List<Key>();
-        private List<Key> KeysReleased = new List<Key>();
-
-        private List<Key> KeysPressedAsync = new List<Key>();
-        private List<Key> KeysReleasedAsync = new List<Key>();
-        private List<Key> KeysDown = new List<Key>();
 
         private void OnKeyUp(object sender, KeyboardKeyEventArgs args)
         {
@@ -103,10 +148,6 @@ namespace Engine
             if (!KeysDown.Contains(args.Key))
                 KeysDown.Add(args.Key);
         }
-
-        public static bool KeyPressed(Key key) => Singleton.KeysPressed.Contains(key);
-        public static bool KeyReleased(Key key) => Singleton.KeysReleased.Contains(key);
-        public static bool KeyDown(Key key) => Singleton.KeysDown.Contains(key);
         #endregion
     }
 }
