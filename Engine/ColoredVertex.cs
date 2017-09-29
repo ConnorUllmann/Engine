@@ -105,8 +105,6 @@ namespace Engine
 
     public class ColoredVertexBuffer : VertexBuffer<ColoredVertex>
     {
-        private ColoredVertexArray array;
-
         public ColoredVertexBuffer(PrimitiveType _primitiveType = PrimitiveType.Triangles) : base(ColoredVertex.Size, _primitiveType) { }
 
         public void Move(int _index, Vector3 _position)
@@ -138,13 +136,6 @@ namespace Engine
             for (var i = 0; i < count; i++)
                 vertices[i].color = ColorExtensions.RandomColor();
         }
-
-        public void Render()
-        {
-            if(array == null)
-                array = ColoredVertexArray.FromBuffer(this);
-            array.Render();
-        }
     }
 
     public class ColoredVertexArray : VertexArray<ColoredVertex>
@@ -161,10 +152,29 @@ namespace Engine
 
         public void SetColor(Color4 _color) => vertexBuffer.SetColor(_color);
 
-        public void Render() => Render(Game.Camera);
-        private void Render(Camera _camera) => Render(_camera.ProjectionMatrix);
-        private void Render(Matrix4Uniform _projectionMatrix)
+        public void Move(Vector3 _position)
         {
+            positionPrev += _position;
+            vertexBuffer.Move(_position);
+        }
+
+        public void Rotate(float _angleRad, Vector3 _center)
+        {
+            vertexBuffer.Move(-positionPrev);
+            vertexBuffer.Rotate(_angleRad, _center);
+            vertexBuffer.Move(positionPrev);
+        }
+
+        private Vector3 positionPrev = Vector3.Zero;
+        public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
+        public void Render(Vector3 positionCurr)
+        {
+            if (positionPrev != positionCurr)
+            {
+                vertexBuffer.Move(positionCurr - positionPrev);
+                positionPrev = positionCurr;
+            }
+
             // bind vertex buffer and array objects
             vertexBuffer.Bind();
             Bind();

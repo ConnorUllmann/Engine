@@ -28,8 +28,10 @@ namespace Engine
         private Window window;
 
         public static Camera Camera => game.window.camera;
-        public static int Width => game.window.Width;
-        public static int Height => game.window.Height;
+        public static int Width { get; private set; }
+        public static int Height { get; private set; }
+        public static int PixelWidth => game.window.Width;
+        public static int PixelHeight => game.window.Height;
 
         public static float MillisecondsSinceStart => FPSHandler.MillisecondsSinceStart;
         public static float FPS => FPSHandler.FPS;
@@ -38,17 +40,16 @@ namespace Engine
         public Game(int width, int height, string title="")
         {
             game = this;
-            window = new Window(width, height, title);
+            Width = width;
+            Height = height;
+            //Not sure why, but the dimensions always seem to inflate by 1.5x... these divisions are done to offset that
+            window = new Window((int)(width / 1.5f), (int)(height / 1.5f), title);
             window.Start += Start;
             window.Update += Update;
             window.Render += Render;
         }
 
         public void Run() => window.Run();
-
-        //public static bool KeyPressed(Key key) => Input.KeyPressed(key);
-        //public static bool KeyReleased(Key key) => Input.KeyReleased(key);
-        //public static bool KeyDown(Key key) => Input.KeyDown(key);
 
         public virtual void Start() { }
         public virtual void Update() { }
@@ -90,12 +91,12 @@ namespace Engine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Input.Update();
-
+                
             Update();
             ActorGroup.World.Update();
 
             fpsHandler.Update();
-            Title = $"{titlePrefix} FPS: {fpsHandler.fps.ToString("0.0")}";
+            Title = $"{titlePrefix} {Input.Mouse} FPS: {fpsHandler.fps.ToString("0.0")}";
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

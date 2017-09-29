@@ -29,7 +29,7 @@ namespace CellularAutomata
                 var g = 1 - v;
                 var b = v * v;
                 rectangleBuffer.SetColor(new Color4(r * 0.25f + 0.75f, g * 0.25f + 0.5f, b * 0.25f + 0.25f, 1));
-                rectangleArray.Render();
+                rectangleArray.Render(X, Y);
             }
         }
 
@@ -73,7 +73,7 @@ namespace CellularAutomata
         public override void Render()
         {
             if (Alive)
-                rectangleArray.Render();
+                rectangleArray.Render(X, Y);
         }
 
         private bool Alive => value >= 0.5f;
@@ -108,7 +108,7 @@ namespace CellularAutomata
         public int j;
         public float value;
         private float nextValue;
-        public ColoredRectangleBuffer rectangleBuffer;
+        public ColoredVertexBuffer rectangleBuffer;
         public CellGrid grid;
         public Func<float> NextValue;
 
@@ -121,7 +121,7 @@ namespace CellularAutomata
             j = _j;
             grid = _grid;
             value = 0;
-            rectangleBuffer = new ColoredRectangleBuffer(X, Y, _grid.CellSize, _grid.CellSize, -1.5f);
+            rectangleBuffer = ConvexPolygon.Square(_grid.CellSize).GetFillBuffer();//new ColoredRectangleBuffer(X, Y, _grid.CellSize, _grid.CellSize, -1.5f);
         }
 
         public override void PreUpdate() => nextValue = NextValue();

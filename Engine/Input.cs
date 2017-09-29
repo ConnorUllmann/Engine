@@ -28,8 +28,53 @@ namespace Engine
         {
             window.KeyUp += OnKeyUp;
             window.KeyDown += OnKeyDown;
+            window.MouseEnter += OnMouseEnter;
+            window.MouseLeave += OnMouseLeave;
+            window.MouseDown += OnMouseDown;
+            window.MouseUp += OnMouseUp;
+            
+            MouseHandler += () => new Vector2(window.Mouse.X * 1f / Game.PixelWidth * Game.Width, window.Mouse.Y * 1f / Game.PixelHeight * Game.Height);
         }
 
+        #region Mouse
+        private Func<Vector2> MouseHandler;
+        public static Vector2 Mouse { get => Singleton.MouseHandler(); }
+
+        public bool LeftMouseDown { get; private set; }
+        public bool RightMouseDown { get; private set; }
+        private void OnMouseDown(object sender, MouseButtonEventArgs args)
+        {
+            switch (args.Button)
+            {
+                case MouseButton.Left:
+                    LeftMouseDown = true;
+                    break;
+                case MouseButton.Right:
+                    RightMouseDown = true;
+                    break;
+                default: break;
+            }
+        }
+        private void OnMouseUp(object sender, MouseButtonEventArgs args)
+        {
+            switch (args.Button)
+            {
+                case MouseButton.Left:
+                    LeftMouseDown = false;
+                    break;
+                case MouseButton.Right:
+                    RightMouseDown = false;
+                    break;
+                default: break;
+            }
+        }
+
+        public bool Focused { get; private set; }
+        private void OnMouseEnter(object sender, EventArgs args) => Focused = true;
+        private void OnMouseLeave(object sender, EventArgs args) => Focused = false;
+        #endregion
+
+        #region Keyboard
         private void UpdateKeyboard()
         {
             KeysPressed = KeysPressedAsync;
@@ -62,5 +107,6 @@ namespace Engine
         public static bool KeyPressed(Key key) => Singleton.KeysPressed.Contains(key);
         public static bool KeyReleased(Key key) => Singleton.KeysReleased.Contains(key);
         public static bool KeyDown(Key key) => Singleton.KeysDown.Contains(key);
+        #endregion
     }
 }

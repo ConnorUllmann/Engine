@@ -35,11 +35,12 @@ namespace Engine
         }
         public void Render() => actors.ForEach(o => { if (o.Visible) o.Render(); });
 
-        public void Add(Actor _actor)
+        public Actor Add(Actor _actor)
         {
             _actor.DestroyHandler += () => Remove(_actor);
             actorsToRemove.Remove(_actor);
             actorsToAdd.Add(_actor);
+            return _actor;
         }
         public void Remove(Actor _actor)
         {
@@ -69,7 +70,7 @@ namespace Engine
 
     public class Actor
     {
-        public void AddToWorld() => ActorGroup.World.Add(this);
+        public Actor AddToWorld() => ActorGroup.World.Add(this);
 
         public virtual float X { get; set; }
         public virtual float Y { get; set; }

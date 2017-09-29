@@ -10,65 +10,66 @@ namespace CellularAutomata
 {
     class ConcavePolygonTest : Game
     {
-        private Actor outlinePolygonActor;
-        private Actor fillPolygonActor;
+        private List<PolygonActor> polygonActors = new List<PolygonActor>();
 
-        public ConcavePolygonTest() : base(900, 900, "Concave Polygon Test")
+        public ConcavePolygonTest() : base(800, 800, "Concave Polygon Test")
         { }
-
-        private void NewPolygon()
-        {
-            var points = new List<Vector3>();
-            for (float angle = 0; angle < 2 * Math.PI; angle += 0.2f)
-            {
-                var d = Basics.Utils.RandomDouble() * 500 + 100;
-                var p = new Vector3((float)(Math.Cos(angle) * d), (float)(Math.Sin(angle) * d), 0);
-                points.Add(p);
-            }
-            
-            if(fillPolygonActor != null)
-            {
-                fillPolygonActor.Destroy();
-                fillPolygonActor = null;
-            }
-            var fillPolygon = new ConcavePolygon(points);
-            fillPolygonActor = AddPolygon(fillPolygon);
-
-            if (outlinePolygonActor != null)
-            {
-                outlinePolygonActor.Destroy();
-                outlinePolygonActor = null;
-            }
-            var outlinePolygon = new Polygon(points);
-            outlinePolygonActor = AddPolygon(outlinePolygon);
-        }
 
         public override void Start()
         {
-            NewPolygon();
         }
 
         public override void Update()
         {
             if (Input.KeyReleased(Key.Space))
-                NewPolygon();
+            {
+                ClearPolygonActors();
+                polygonActors = new List<PolygonActor>() { RandomPolygon() };
+            }
+
+            if(Input.KeyReleased(Key.C))
+            {
+                ClearPolygonActors();
+                polygonActors = SplitPolygonsAlongRandomLine(polygonActors).ToList();
+            }
         }
 
-        private static Actor AddRegularPolygon(int _sides, float _radius) => AddPolygon(ConvexPolygon.Regular(_sides, _radius));
-        private static Actor AddPolygon(Polygon _polygon)
+        private PolygonActor RandomPolygon()
         {
-            var actor = new ShellActor();
-            var polygonRenderer = _polygon is ConvexPolygon
-                ? new ConvexPolygonRenderer(_polygon as ConvexPolygon, Color4.Blue, Color4.Red)
-                : _polygon is ConcavePolygon
-                    ? new ConcavePolygonRenderer(_polygon as ConcavePolygon, Color4.Green, Color4.Red)
-                    : new PolygonRenderer(_polygon, Color4.Red);
-            if (polygonRenderer is ConcavePolygonRenderer)
-                (polygonRenderer as ConcavePolygonRenderer).RandomizeFillColor();
-            actor.RenderHandler += polygonRenderer.Render;
-            actor.AddToWorld();
-            return actor;
+            var points = new List<Vector3>();
+            for (float angle = 0; angle < 2 * Math.PI; angle += 0.2f)
+            {
+                var d = Basics.Utils.RandomDouble() * 300 + 100;
+                var p = new Vector3((float)(Math.Cos(angle) * d), (float)(Math.Sin(angle) * d), 0);
+                points.Add(p);
+            }
+            return AddPolygon(new ConcavePolygon(points));
         }
+
+        private void ClearPolygonActors()
+        {
+            for (var i = 0; i < polygonActors.Count; i++)
+                polygonActors[i].Destroy();
+        }
+
+        private IEnumerable<PolygonActor> SplitPolygonsAlongRandomLine(IEnumerable<PolygonActor> polygonActors)
+        {
+            var length = 1000;
+            var angle = Basics.Utils.RandomDouble() * Math.PI * 2;
+            var a = new Vector3((float)(Width / 2f * Basics.Utils.RandomDouble()) - Width/4f, (float)(Height / 2f * Basics.Utils.RandomDouble()) - Height/4f, 0);
+            var b = a + new Vector3((float)(Math.Cos(angle) * length), (float)(Math.Sin(angle) * length), 0);
+            return SplitPolygonsAlongLine(a, b, polygonActors);
+        }
+
+        private IEnumerable<PolygonActor> SplitPolygonsAlongLine(Vector3 _pointA, Vector3 _pointB, IEnumerable<PolygonActor> _polygonActors)
+        {
+            var ret = new List<Polygon>();
+            foreach(var polygonActor in _polygonActors)
+                ret.AddRange(polygonActor.SplitAlongLine(_pointA, _pointB));
+            return ret.Select(p => AddPolygon(p));
+        }
+        
+        private static PolygonActor AddPolygon(Polygon _polygon) => new PolygonActor(_polygon).AddToWorld() as PolygonActor;
     }
 
     class HexGridTest : Game
@@ -96,6 +97,36 @@ namespace CellularAutomata
         }
     }
 
+    class TemplateGame : Game
+    {
+        private ShellActor actor;
+
+        public TemplateGame() : base(1280, 720, "Untitled")
+        { }
+
+        public override void Start()
+        {
+            var polygon = ConvexPolygon.Regular(5, 100);
+            var renderer = new PolygonFillRenderer(polygon, Color4.Blue);
+            actor = new ShellActor();
+            actor.UpdateHandler += () =>
+            {
+                var t = MillisecondsSinceStart / 1000;
+                var length = 100;
+                var angle = (Math.Sin(t) + 1.5f) * Math.PI;
+                actor.X = (float)(Math.Cos(angle) * length);
+                actor.Y = (float)(Math.Sin(angle) * length);
+                renderer.Rotate((float)t * 0.01f);
+            };
+            actor.RenderHandler += () => renderer.Render(actor.X, actor.Y);
+            actor.AddToWorld();
+        }
+
+        public override void Update()
+        {
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -103,6 +134,7 @@ namespace CellularAutomata
             //new Automata().Run();
             new ConcavePolygonTest().Run();
             //new HexGridTest().Run();
+            //new TemplateGame().Run();
         }
     }
 }

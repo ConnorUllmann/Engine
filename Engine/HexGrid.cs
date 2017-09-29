@@ -12,7 +12,7 @@ namespace Engine
     public class HexTile : Actor
     {
         private HexGrid grid;
-        private ConvexPolygonRenderer polygonRenderer;
+        private PolygonFillRenderer polygonRenderer;
         public readonly int i;
         public readonly int j;
         private readonly float Radius;
@@ -32,9 +32,8 @@ namespace Engine
             Y = GetY();
 
             var rotationRad = grid.Horizontal ? (float)(0.5f * Math.PI) : 0;
-            polygonRenderer = new ConvexPolygonRenderer(ConvexPolygon.Regular(6, Radius, rotationRad));
+            polygonRenderer = new PolygonFillRenderer(ConvexPolygon.Regular(6, Radius, rotationRad), Color4.Red);
             polygonRenderer.Move(new Vector3(X, Y, 0));
-            polygonRenderer.OutlineVisible = false;
         }
 
         public void SetColor(Color4 _color) => polygonRenderer.SetFillColor(_color);
@@ -54,7 +53,7 @@ namespace Engine
             return grid.Y + 1.5f * j * Radius + Altitude;
         }
 
-        public override void Render() => polygonRenderer.Render(); 
+        public override void Render() => polygonRenderer.Render(X, Y); 
     }
 
     public class HexGrid
