@@ -107,6 +107,8 @@ namespace Engine
     {
         public ColoredVertexBuffer(PrimitiveType _primitiveType = PrimitiveType.Triangles) : base(ColoredVertex.Size, _primitiveType) { }
 
+        public Vector3 CenterOfMass => vertices.Select(o => o.position).Sum() / vertices.Count();
+
         public void Move(int _index, Vector3 _position)
         {
             if (_index >= 0 && _index < vertices.Length)

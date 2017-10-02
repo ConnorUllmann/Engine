@@ -12,20 +12,12 @@ namespace CellularAutomata
     {
         private List<PolygonActor> polygonActors = new List<PolygonActor>();
 
-        public ConcavePolygonTest() : base(800, 800, "Concave Polygon Test")
-        { }
+        public ConcavePolygonTest() : base(800, 800, "Concave Polygon Test") { }
 
-        public override void Start()
-        {
-        }
+        public override void Start() { }
 
         public override void Update()
         {
-            //Console.WriteLine((Input.LeftMousePressed   ? "*" : "0") + " " 
-            //                + (Input.LeftMouseReleased  ? "*" : "0") + " " 
-            //                + (Input.RightMousePressed  ? "*" : "0") + " " 
-            //                + (Input.RightMouseReleased ? "*" : "0"));
-
             if (Input.KeyReleased(Key.Space))
             {
                 ClearPolygonActors();

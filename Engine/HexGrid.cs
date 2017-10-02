@@ -36,7 +36,7 @@ namespace Engine
             polygonRenderer.Move(new Vector3(X, Y, 0));
         }
 
-        public void SetColor(Color4 _color) => polygonRenderer.SetFillColor(_color);
+        public void SetColor(Color4 _color) => polygonRenderer.SetColor(_color);
 
         private float GetAltitude() => Basics.Utils.EquilateralAltitude(Radius);
 
