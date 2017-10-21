@@ -22,13 +22,22 @@ namespace Engine
             Sides = vertices.Count;
         }
 
-        public void Center() => Move(-CenterOfMass);
-        public void Move(Vector3 _position)
+        public Polygon Center()
+        {
+            Move(-CenterOfMass);
+            return this;
+        }
+        public Polygon Move(Vector3 _position)
         {
             for (var i = 0; i < vertices.Count; i++)
                 vertices[i] += _position;
+            return this;
         }
-        public void Rotate(float _angleRad, Vector3? _center = null) => vertices.Rotate(_angleRad, _center ?? CenterOfMass);
+        public Polygon Rotate(float _angleRad, Vector3? _center = null)
+        {
+            vertices.Rotate(_angleRad, _center ?? CenterOfMass);
+            return this;
+        }
 
         public float MinX() => vertices.Select(o => o.X).Min();
         public float MaxX() => vertices.Select(o => o.X).Max();
@@ -317,15 +326,20 @@ namespace Engine
     
     public class PolygonActor : Actor
     {
-        private Polygon polygon;
-        private List<PolygonRenderer> renderers = new List<PolygonRenderer>();
+        protected Polygon polygon;
+
+        protected PolygonFillRenderer fillRenderer;
+        protected PolygonOutlineRenderer outlineRenderer;
+
+        public bool FillVisible = true;
+        public bool OutlineVisible = true;
 
         public PolygonActor(Polygon _polygon)
         {
             polygon = _polygon;
             Center();
-            renderers.Add(new PolygonFillRenderer(polygon, ColorExtensions.RandomColor()));
-            renderers.Add(new PolygonOutlineRenderer(polygon, ColorExtensions.RandomColor()));
+            fillRenderer = new PolygonFillRenderer(polygon, ColorExtensions.RandomColor());
+            outlineRenderer = new PolygonOutlineRenderer(polygon, ColorExtensions.RandomColor());
         }
 
         private void Center()
@@ -336,6 +350,12 @@ namespace Engine
             polygon.Center();
         }
 
+        public void Rotate(float _angle, Vector3? _center=null)
+        {
+            fillRenderer.Rotate(_angle, _center);
+            outlineRenderer.Rotate(_angle, _center);
+        }
+
         public IEnumerable<Polygon> SplitAlongLine(Vector3 pointA, Vector3 pointB)
         {
             var v = new Vector3(X, Y, 0);
@@ -344,6 +364,12 @@ namespace Engine
             return ret;
         }
 
-        public override void Render() => renderers.ForEach(o => o.Render(X, Y));
+        public override void Render()
+        {
+            if(FillVisible)
+                fillRenderer.Render(X, Y);
+            if (OutlineVisible)
+                outlineRenderer.Render(X, Y);
+        }
     }
 }

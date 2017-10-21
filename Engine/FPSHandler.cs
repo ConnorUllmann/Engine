@@ -18,6 +18,7 @@ namespace Engine
         public float fps => FPSSamples.Average();
         public float delta { get; private set; }
 
+        public static int FramesSinceStart;
         public static float MillisecondsSinceStart => Singleton.stopwatch.ElapsedMilliseconds;
         public static float FPS => Singleton.FPSSamples.Average();
         public static float Delta => Singleton.delta;
@@ -41,6 +42,8 @@ namespace Engine
             FPSSamples.Add(1000f / delta);
             while (FPSSamples.Count > 10)
                 FPSSamples.RemoveAt(0);
+
+            FramesSinceStart++;
         }
     }
 }

@@ -6,6 +6,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using System.Diagnostics;
 
 namespace Engine
 {
@@ -25,17 +26,21 @@ namespace Engine
     public class Game
     {
         private static Game game;
-        private Window window;
 
         public static Camera Camera => game.window.camera;
         public static int Width { get; private set; }
         public static int Height { get; private set; }
         public static int PixelWidth => game.window.Width;
         public static int PixelHeight => game.window.Height;
+        public static float LastUpdateDurationMilliseconds => game.window.LastUpdateDurationMilliseconds;
+        public static float LastRenderDurationMilliseconds => game.window.LastRenderDurationMilliseconds;
 
+        public static float FramesSinceStart => FPSHandler.FramesSinceStart;
         public static float MillisecondsSinceStart => FPSHandler.MillisecondsSinceStart;
         public static float FPS => FPSHandler.FPS;
         public static float Delta => FPSHandler.Delta;
+
+        private Window window;
 
         public Game(int width, int height, string title="")
         {
@@ -45,6 +50,7 @@ namespace Engine
             //Not sure why, but the dimensions always seem to inflate by 1.5x... these divisions are done to offset that
             window = new Window((int)(width / 1.5f), (int)(height / 1.5f), title);
             window.Start += Start;
+            window.Update += PreUpdate;
             window.Update += Update;
             window.Render += Render;
         }
@@ -52,6 +58,7 @@ namespace Engine
         public void Run() => window.Run();
 
         public virtual void Start() { }
+        public virtual void PreUpdate() { }
         public virtual void Update() { }
         public virtual void Render() { }
     }
@@ -68,6 +75,11 @@ namespace Engine
         public Action Start;
         public Action Update;
         public Action Render;
+        
+        private Stopwatch updateStopwatch;
+        private Stopwatch renderStopwatch;
+        public long LastUpdateDurationMilliseconds { get; private set; }
+        public long LastRenderDurationMilliseconds { get; private set; }
 
         private string titlePrefix;
 
@@ -75,6 +87,8 @@ namespace Engine
             base(_width, _height, GraphicsMode.Default, _title, GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             titlePrefix = _title;
+            updateStopwatch = new Stopwatch();
+            renderStopwatch = new Stopwatch();
         }
 
         protected override void OnResize(EventArgs e) => GL.Viewport(0, 0, Width, Height);
@@ -91,19 +105,29 @@ namespace Engine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Input.Update();
-                
+
+            updateStopwatch.Reset();
+            updateStopwatch.Start();
             Update();
             ActorGroup.World.Update();
+            updateStopwatch.Stop();
+            LastUpdateDurationMilliseconds = updateStopwatch.ElapsedMilliseconds;
 
             fpsHandler.Update();
-            Title = $"{titlePrefix} {Input.Mouse} FPS: {fpsHandler.fps.ToString("0.0")}";
+            Title = $"{titlePrefix} {Input.Mouse} FPS: {fpsHandler.fps.ToString("0.0")} Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             ClearBuffer();
+
+            renderStopwatch.Reset();
+            renderStopwatch.Start();
             Render();
             ActorGroup.World.Render();
+            renderStopwatch.Stop();
+            LastRenderDurationMilliseconds = renderStopwatch.ElapsedMilliseconds;
+
             SwapBuffers();
         }
 

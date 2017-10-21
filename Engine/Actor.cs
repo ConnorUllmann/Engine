@@ -75,6 +75,12 @@ namespace Engine
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
 
+        public virtual OpenTK.Vector2 Position
+        {
+            get => new OpenTK.Vector2(X, Y);
+            set { X = value.X; Y = value.Y; }
+        }
+
         public virtual bool Visible { get; set; }
         public virtual bool Active { get; set; }
 
