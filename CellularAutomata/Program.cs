@@ -236,117 +236,81 @@ namespace CellularAutomata
         }
     }
 
-
     class GravitySim : Game
     {
-        class Particle : PolygonActor
-        {
-            public float Radius;
-            public float Mass;
-            private Vector2 Acceleration;
-            private Vector2 Velocity;
-            
-            private float AngularVelocity = (float)(Basics.Utils.RandomDouble() * 2 - 1) * 0.01f;
 
-            private static float GetRadius(float _mass) => 4 * (float)Math.Sqrt(_mass);
-
-            public Particle(float _mass, int _x, int _y) : base(ConvexPolygon.Regular(4, GetRadius(_mass)).Move(new Vector3(_x - Width/2, _y - Height/2, 0)))
-            {
-                Mass = _mass;
-                Radius = GetRadius(Mass);
-                FillVisible = false;
-            }
-
-            public override void Update()
-            {
-                Velocity += Acceleration * Delta;
-                Position += Velocity * Delta;
-                X = Basics.Utils.Clamp(X, -Width/2, Width/2);
-                Y = Basics.Utils.Clamp(Y, -Height/2, Height/2);
-
-                Rotate(AngularVelocity * Delta);
-            }
-
-            public Vector2 GravityForce(Particle other)
-            {
-                if (X == other.X && Y == other.Y)
-                    return Vector2.Zero;
-                var diff = other.Position - Position;
-                var radii = Radius + other.Radius;
-                return Mass * other.Mass / Basics.Utils.Max(diff.LengthSquared, radii * radii) * diff.Normalized();
-            }
-
-            public void ResetAcceleration() => Acceleration = Vector2.Zero;
-            public void ApplyForce(Vector2 force) => Acceleration += force / Mass;
-        }
-
-        class ParticleSet
-        {
-            private HashSet<Particle> particles;
-
-            public ParticleSet(int count)
-            {
-                particles = new HashSet<Particle>();
-                for (var i = 0; i < count; i++)
-                {
-                    var x = (int)(Basics.Utils.RandomDouble() * Width / 2) + Width / 4;
-                    var y = (int)(Basics.Utils.RandomDouble() * Height / 2) + Height / 4;
-                    var particle = new Particle((float)Basics.Utils.RandomDouble() * 98 + 2, x, y);
-                    particles.Add(particle);
-                    particle.AddToWorld();
-                }
-            }
-
-            public void ApplyGravitySynchronously() => particles.ForEach(ApplyGravity);
-            public void ApplyGravityAsynchronously()
-            {
-                var tasks = new List<Task>();
-                foreach (var currentParticle in particles)
-                    tasks.Add(Task.Factory.StartNew(() => ApplyGravity(currentParticle)));
-                Task.WaitAll(tasks.ToArray());
-            }
-
-            private void ApplyGravity(Particle _particle) => ApplyGravity(_particle, 0.01f);
-            private void ApplyGravity(Particle _particle, float _gravity)
-            {
-                _particle.ResetAcceleration();
-                foreach (var otherParticle in particles)
-                    _particle.ApplyForce(_gravity * _particle.GravityForce(otherParticle));
-            }
-        }
-
+        private VectorGrid grid;
         private ParticleSet particleSet;
 
-        public GravitySim() : base(1400, 1400, "Gravity Simulation")
-        { }
+        public GravitySim() : base(1400, 1400, "Gravity Simulation") { }
 
         public override void Start()
         {
-            particleSet = new ParticleSet(250);
+            particleSet = new ParticleSet(100);
+            grid = new VectorGrid(-Width/2f, -Height/2f, Width, Height, 20);
+        }
+
+        private Vector2 LastMousePosition;
+
+        public override void PreUpdate()
+        {
+            particleSet.ApplyGravityAsynchronously();
+            particleSet.ApplyVectorGridSynchronously(grid);
+            particleSet.ApplyAirResistanceSynchronously();
+            ApplyMouseVelocityToVectorGrid();
+        }
+
+        private void ApplyMouseVelocityToVectorGrid()
+        {
+            if (Input.LeftMousePressed)
+                LastMousePosition = Input.Mouse;
+            else if (Input.LeftMouseDown)
+            {
+                var diff = Input.Mouse - LastMousePosition;
+                if (diff.LengthSquared >= 1)
+                {
+                    var diffNormal = (diff).Normalized();
+                    const int MouseDistanceSq = 100 * 100;
+                    for (var x = 0; x < grid.Width; x++)
+                    {
+                        for (var y = 0; y < grid.Height; y++)
+                        {
+                            if ((Input.Mouse - grid.GridPositionToWorldPosition(new Vector2(x, y))).LengthSquared <= MouseDistanceSq)
+                            {
+                                var tile = grid.Get(x, y);
+                                if(tile != null)
+                                    tile.Vector = diffNormal;
+                            }
+                        }
+                    }
+                }
+                LastMousePosition = Input.Mouse;
+            }
         }
 
         private List<long> SynchronousResults = new List<long>();
         private List<long> AsynchronousResults = new List<long>();
-
-        public override void PreUpdate()
+        private void PreUpdateGravityBenchmarking()
         {
-            //var s = new System.Diagnostics.Stopwatch();
 
-            //s.Start();
-            //particleSet.ApplyGravitySynchronously();
-            //s.Stop();
-            //SynchronousResults.Add(s.ElapsedMilliseconds);
-            //Basics.Utils.Log($"{SynchronousResults.Average()}");
+            var s = new System.Diagnostics.Stopwatch();
 
-            //s.Reset();
+            s.Start();
+            particleSet.ApplyGravitySynchronously();
+            s.Stop();
+            SynchronousResults.Add(s.ElapsedMilliseconds);
+            Basics.Utils.Log($"{SynchronousResults.Average()}");
 
-            //s.Start();
+            s.Reset();
+
+            s.Start();
             particleSet.ApplyGravityAsynchronously();
-            //s.Stop();
-            //AsynchronousResults.Add(s.ElapsedMilliseconds);
-            //Basics.Utils.Log($"{AsynchronousResults.Average()}");
+            s.Stop();
+            AsynchronousResults.Add(s.ElapsedMilliseconds);
+            Basics.Utils.Log($"{AsynchronousResults.Average()}");
 
-            //Basics.Utils.Log(" --- ");
+            Basics.Utils.Log(" --- ");
+
         }
     }
 
@@ -355,6 +319,7 @@ namespace CellularAutomata
         static void Main(string[] args)
         {
             new GravitySim().Run();
+
             //new Automata().Run();
             //new ConcavePolygonTest().Run();
             //new HexGridTest().Run();

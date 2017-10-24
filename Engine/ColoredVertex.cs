@@ -144,6 +144,7 @@ namespace Engine
     {
         public ColoredVertexBuffer vertexBuffer;
         public ShaderProgram shaderProgram;
+        private Vector3 positionPrev = Vector3.Zero;
 
         public ColoredVertexArray(ColoredVertexBuffer _vertexBuffer, ShaderProgram _shaderProgram) :
             base(_vertexBuffer, _shaderProgram, BasicVertexShader.Position, BasicVertexShader.Color)
@@ -167,7 +168,6 @@ namespace Engine
             vertexBuffer.Move(positionPrev);
         }
 
-        private Vector3 positionPrev = Vector3.Zero;
         public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
         public void Render(Vector3 positionCurr)
         {

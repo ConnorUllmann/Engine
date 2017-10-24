@@ -95,6 +95,9 @@ namespace Engine
             Y = _y;
         }
 
+        public void ScreenWrap(float _margin=0) => Position = Game.ScreenWrap(Position, _margin);
+        public void ScreenClamp(float _margin=0) => Position = Game.ScreenClamp(Position, _margin);
+
         internal Action DestroyHandler;
         public void Destroy() => DestroyHandler();
 

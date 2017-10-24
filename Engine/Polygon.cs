@@ -194,6 +194,18 @@ namespace Engine
             return ret;
         }
 
+        public static ConvexPolygon Square(float size) => Rectangle(size, size);
+        public static ConvexPolygon Rectangle(float width, float height)
+        {
+            var counterClockwiseVertices = new List<Vector3>()
+            {
+                new Vector3(0, 0, 0),
+                new Vector3(width, 0, 0),
+                new Vector3(width, height, 0),
+                new Vector3(0, height, 0),
+            };
+            return new ConvexPolygon(counterClockwiseVertices);
+        }
         public static ConvexPolygon Regular(int sides, float radius, float rotationRad = 0)
         {
             var counterClockwiseVertices = new List<Vector3>();
@@ -204,7 +216,6 @@ namespace Engine
             }
             return new ConvexPolygon(counterClockwiseVertices);
         }
-        public static ConvexPolygon Square(float _size) => Regular(4, (float)(_size * Math.Sqrt(2) / 2), (float)(Math.PI / 4));
     }
 
     public class ConcavePolygon : Polygon
@@ -328,8 +339,8 @@ namespace Engine
     {
         protected Polygon polygon;
 
-        protected PolygonFillRenderer fillRenderer;
-        protected PolygonOutlineRenderer outlineRenderer;
+        public PolygonFillRenderer FillRenderer;
+        public PolygonOutlineRenderer OutlineRenderer;
 
         public bool FillVisible = true;
         public bool OutlineVisible = true;
@@ -338,8 +349,8 @@ namespace Engine
         {
             polygon = _polygon;
             Center();
-            fillRenderer = new PolygonFillRenderer(polygon, ColorExtensions.RandomColor());
-            outlineRenderer = new PolygonOutlineRenderer(polygon, ColorExtensions.RandomColor());
+            FillRenderer = new PolygonFillRenderer(polygon, ColorExtensions.RandomColor());
+            OutlineRenderer = new PolygonOutlineRenderer(polygon, ColorExtensions.RandomColor());
         }
 
         private void Center()
@@ -352,8 +363,8 @@ namespace Engine
 
         public void Rotate(float _angle, Vector3? _center=null)
         {
-            fillRenderer.Rotate(_angle, _center);
-            outlineRenderer.Rotate(_angle, _center);
+            FillRenderer.Rotate(_angle, _center);
+            OutlineRenderer.Rotate(_angle, _center);
         }
 
         public IEnumerable<Polygon> SplitAlongLine(Vector3 pointA, Vector3 pointB)
@@ -367,9 +378,9 @@ namespace Engine
         public override void Render()
         {
             if(FillVisible)
-                fillRenderer.Render(X, Y);
+                FillRenderer.Render(X, Y);
             if (OutlineVisible)
-                outlineRenderer.Render(X, Y);
+                OutlineRenderer.Render(X, Y);
         }
     }
 }

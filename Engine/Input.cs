@@ -29,13 +29,21 @@ namespace Engine
         {
             window.KeyUp += OnKeyUp;
             window.KeyDown += OnKeyDown;
-            window.MouseEnter += OnMouseEnter;
-            window.MouseLeave += OnMouseLeave;
+
+            window.FocusedChanged += (object sender, EventArgs e) => focused = window.Focused;
+            focused = window.Focused;
+
+            //window.MouseEnter += OnMouseEnter;
+            //window.MouseLeave += OnMouseLeave;
+
             window.MouseDown += OnMouseDown;
             window.MouseUp += OnMouseUp;
             
-            MouseHandler += () => new Vector2(window.Mouse.X * 1f / Game.PixelWidth * Game.Width, window.Mouse.Y * 1f / Game.PixelHeight * Game.Height);
+            MouseHandler += () => new Vector2(window.Mouse.X * 1f / Game.PixelWidth * Game.Width - Game.Width/2f, Game.Height - (window.Mouse.Y * 1f / Game.PixelHeight * Game.Height) - Game.Height / 2f);
         }
+
+        public static bool Focused => Singleton.focused;
+        private bool focused;
 
         #region Mouse
         private Func<Vector2> MouseHandler;
@@ -108,11 +116,7 @@ namespace Engine
                 default: break;
             }
         }
-
-        public bool Focused => Singleton.focused;
-        private bool focused;
-        private void OnMouseEnter(object sender, EventArgs args) => focused = true;
-        private void OnMouseLeave(object sender, EventArgs args) => focused = false;
+        
         #endregion
 
         #region Keyboard

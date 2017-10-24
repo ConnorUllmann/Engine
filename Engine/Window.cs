@@ -32,6 +32,7 @@ namespace Engine
         public static int Height { get; private set; }
         public static int PixelWidth => game.window.Width;
         public static int PixelHeight => game.window.Height;
+        public static bool PauseIfUnfocused { get => game.window.PauseIfUnfocused; set => game.window.PauseIfUnfocused = value; }
         public static float LastUpdateDurationMilliseconds => game.window.LastUpdateDurationMilliseconds;
         public static float LastRenderDurationMilliseconds => game.window.LastRenderDurationMilliseconds;
 
@@ -61,6 +62,29 @@ namespace Engine
         public virtual void PreUpdate() { }
         public virtual void Update() { }
         public virtual void Render() { }
+
+
+        /// <summary>
+        /// Returns the position to place _position after it has been wrapped around the screen. _margin specifies how much space outside the screen to include (negative values work)
+        /// </summary>
+        /// <param name="_position">position to wrap</param>
+        /// <param name="_margin">pixels of extra space to include outside the screen</param>
+        /// <returns></returns>
+        public static Vector2 ScreenWrap(Vector2 _position, float _margin = 0) => ScreenWrap(_position, _margin, _margin);
+        public static Vector2 ScreenWrap(Vector2 _position, float _marginX, float _marginY)
+            => new Vector2((_position.X + Width  / 2 + _marginX) % (Width  + 2 * _marginX) - Width  / 2 - _marginX,
+                           (_position.Y + Height / 2 + _marginY) % (Height + 2 * _marginY) - Height / 2 - _marginY);
+
+        /// <summary>
+        /// Returns the position to place _position after it has been clamped to the screen. _margin specifies how much space outside the screen to include (negative values work)
+        /// </summary>
+        /// <param name="_position">position to wrap</param>
+        /// <param name="_margin">pixels of extra space to include outside the screen</param>
+        /// <returns></returns>
+        public static Vector2 ScreenClamp(Vector2 _position, float _margin = 0) => ScreenClamp(_position, _margin, _margin);
+        public static Vector2 ScreenClamp(Vector2 _position, float _marginX, float _marginY)
+            => new Vector2(Basics.Utils.Clamp(_position.X, -Width  / 2 - _marginX, Width  / 2 + _marginX),
+                           Basics.Utils.Clamp(_position.Y, -Height / 2 - _marginY, Height / 2 + _marginY));
     }
 
     internal class Window : GameWindow
@@ -80,6 +104,8 @@ namespace Engine
         private Stopwatch renderStopwatch;
         public long LastUpdateDurationMilliseconds { get; private set; }
         public long LastRenderDurationMilliseconds { get; private set; }
+
+        public bool PauseIfUnfocused = true;
 
         private string titlePrefix;
 
@@ -106,15 +132,18 @@ namespace Engine
         {
             Input.Update();
 
-            updateStopwatch.Reset();
-            updateStopwatch.Start();
-            Update();
-            ActorGroup.World.Update();
-            updateStopwatch.Stop();
-            LastUpdateDurationMilliseconds = updateStopwatch.ElapsedMilliseconds;
+            if (!PauseIfUnfocused || Input.Focused)
+            {
+                updateStopwatch.Reset();
+                updateStopwatch.Start();
+                Update();
+                ActorGroup.World.Update();
+                updateStopwatch.Stop();
+                LastUpdateDurationMilliseconds = updateStopwatch.ElapsedMilliseconds;
+            }
 
             fpsHandler.Update();
-            Title = $"{titlePrefix} {Input.Mouse} FPS: {fpsHandler.fps.ToString("0.0")} Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
+            Title = $"{Input.Focused}";//$"{titlePrefix} {Input.Mouse} FPS: {fpsHandler.fps.ToString("0.0")} Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
