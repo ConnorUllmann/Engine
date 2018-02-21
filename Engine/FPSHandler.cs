@@ -16,12 +16,12 @@ namespace Engine
         private List<float> FPSSamples = new List<float>();
         public float timeSinceStart => stopwatch.ElapsedMilliseconds;
         public float fps => FPSSamples.Average();
-        public float delta { get; private set; }
+        public float deltaMillis { get; private set; }
 
         public static int FramesSinceStart;
         public static float MillisecondsSinceStart => Singleton.stopwatch.ElapsedMilliseconds;
         public static float FPS => Singleton.FPSSamples.Average();
-        public static float Delta => Singleton.delta;
+        public static float Delta => Singleton.deltaMillis / 1000f;
 
         private Window window;
 
@@ -37,9 +37,9 @@ namespace Engine
         public void Update()
         {
             var time = stopwatch.ElapsedMilliseconds;
-            delta = time - millisecondsSinceStartPrevious;
+            deltaMillis = time - millisecondsSinceStartPrevious;
             millisecondsSinceStartPrevious = time;
-            FPSSamples.Add(1000f / delta);
+            FPSSamples.Add(1000f / deltaMillis);
             while (FPSSamples.Count > 10)
                 FPSSamples.RemoveAt(0);
 

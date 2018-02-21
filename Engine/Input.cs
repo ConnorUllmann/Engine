@@ -38,8 +38,8 @@ namespace Engine
 
             window.MouseDown += OnMouseDown;
             window.MouseUp += OnMouseUp;
-            
-            MouseHandler += () => new Vector2(window.Mouse.X * 1f / Game.PixelWidth * Game.Width - Game.Width/2f, Game.Height - (window.Mouse.Y * 1f / Game.PixelHeight * Game.Height) - Game.Height / 2f);
+
+            MouseHandler += () => new Vector2(window.Mouse.X * 1f / Game.PixelWidth * Game.Width - Game.Width / 2f, Game.Height - (window.Mouse.Y * 1f / Game.PixelHeight * Game.Height) - Game.Height / 2f);
         }
 
         public static bool Focused => Singleton.focused;
@@ -48,6 +48,11 @@ namespace Engine
         #region Mouse
         private Func<Vector2> MouseHandler;
         public static Vector2 Mouse { get => Singleton.MouseHandler(); }
+        public static float AngleToMouse(float _x, float _y)
+        {
+            var mouse = Mouse;
+            return (float) Math.Atan2(mouse.Y - _y, mouse.X - _x);
+        }
 
         private bool leftMousePressedAsync;
         private bool leftMousePressed;

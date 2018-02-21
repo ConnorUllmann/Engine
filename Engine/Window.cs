@@ -143,7 +143,7 @@ namespace Engine
             }
 
             fpsHandler.Update();
-            Title = $"{Input.Focused}";//$"{titlePrefix} {Input.Mouse} FPS: {fpsHandler.fps.ToString("0.0")} Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
+            Title = $"{titlePrefix} {Input.Mouse} {Game.Delta} FPS: {fpsHandler.fps.ToString("0.0")} Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

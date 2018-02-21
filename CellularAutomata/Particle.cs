@@ -23,7 +23,7 @@ namespace CellularAutomata
 
         private static float GetRadius(float _mass) => 4 * (float)Math.Sqrt(_mass);
 
-        public Particle(float _mass, int _x, int _y, int _sides=4) : base(ConvexPolygon.Regular(_sides, GetRadius(_mass)).Move(new Vector3(_x - Game.Width / 2, _y - Game.Height / 2, 0)))
+        public Particle(float _mass, int _x, int _y, int _sides = 4) : base(ConvexPolygon.Regular(_sides, GetRadius(_mass)).Move(new Vector3(_x - Game.Width / 2, _y - Game.Height / 2, 0)))
         {
             Mass = _mass;
             Radius = GetRadius(Mass);
@@ -60,7 +60,7 @@ namespace CellularAutomata
             var radii = Radius + other.Radius;
             return Mass * other.Mass / Basics.Utils.Max(diff.LengthSquared, radii * radii) * diff.Normalized();
         }
-        
+
         public void ApplyForce(Vector2 force) => Acceleration += force / Mass;
     }
 

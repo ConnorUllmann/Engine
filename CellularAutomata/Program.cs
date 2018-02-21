@@ -318,10 +318,10 @@ namespace CellularAutomata
     {
         static void Main(string[] args)
         {
-            new GravitySim().Run();
+            //new GravitySim().Run();
 
             //new Automata().Run();
-            //new ConcavePolygonTest().Run();
+            new ConcavePolygonTest().Run();
             //new HexGridTest().Run();
             //new TemplateGame().Run();
             //new ImageTest().Run();
