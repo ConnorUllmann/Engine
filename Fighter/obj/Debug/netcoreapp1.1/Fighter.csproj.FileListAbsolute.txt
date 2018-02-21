@@ -1,0 +1,13 @@
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Fighter.deps.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Fighter.runtimeconfig.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Fighter.runtimeconfig.dev.json
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Fighter.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Fighter.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Basics.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Engine.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Basics.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\bin\Debug\netcoreapp1.1\Engine.pdb
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\obj\Debug\netcoreapp1.1\Fighter.csprojResolveAssemblyReference.cache
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\obj\Debug\netcoreapp1.1\Fighter.AssemblyInfo.cs
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\obj\Debug\netcoreapp1.1\Fighter.dll
+C:\Users\Connor\Desktop\Development\Unity\Engine\Fighter\obj\Debug\netcoreapp1.1\Fighter.pdb
