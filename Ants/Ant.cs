@@ -9,9 +9,34 @@ using Ants.AntControllers;
 
 namespace Ants
 {
+    public enum AntType
+    {
+        Digger,
+        Forager,
+        Breeder,
+        Queen
+    }
+
     public class Ant : PolygonActor
     {
+        //The types of resources that each ant type can gather
+        public static readonly Dictionary<AntType, List<ResourceType>> Gatherables = new Dictionary<AntType, List<ResourceType>>
+        {
+            [AntType.Digger] = new List<ResourceType>
+            {
+                ResourceType.Dirt
+            },
+            [AntType.Forager] = new List<ResourceType>
+            {
+                ResourceType.Food
+            },
+            [AntType.Breeder] = new List<ResourceType>(),
+            [AntType.Queen] = new List<ResourceType>()
+        };
+
         private IAntController controller = null;
+        private ResourceAccount account = null;
+        public ResourceType? CarryResource => account?.Type;
 
         private float anglePrevious;
         private float angle;
@@ -49,11 +74,27 @@ namespace Ants
         public float? SpeedMin = null;
         public float? SpeedMax = null;
 
-        public AntGrid Grid;
+        private AntType type;
+        public AntType Type => type;
+        public WorldType Location = WorldType.Underworld;
+        public AntWorld World;
+        public AntGrid Grid => World.WorldFromType(Location);
+        
+        private static AntType RandomAntType() => (AntType)Basics.Utils.RandomInt(Enum.GetNames(typeof(AntType)).Length);
 
-        public Ant(AntGrid grid, float _radius) : base(new ConvexPolygon(new List<Vector2> { new Vector2(-_radius, _radius), new Vector2(-_radius, -_radius), new Vector2(2 * _radius, 0) }))
+        public Ant(AntWorld _world, WorldType _location)
+            : this(_world, _location, Game.RandomPosition())
+        { }
+        public Ant(AntWorld _world, WorldType _location, Vector2 _position)
+            : this(RandomAntType(), _world, _location, _position.X, _position.Y, 4)
+        { }
+        public Ant(AntType _type, AntWorld _world, WorldType _location, float _x, float _y, float _radius) 
+            : base(new ConvexPolygon(new List<Vector2> { new Vector2(-_radius, _radius), new Vector2(-_radius, -_radius), new Vector2(2 * _radius, 0) }), _x, _y)
         {
-            Grid = grid;
+            type = _type;
+            World = _world;
+            World.AddAnt(this);
+            Location = _location;
             anglePrevious = 0;
             angle = 0;
             Speed = 0;
@@ -61,17 +102,53 @@ namespace Ants
             SpeedMax = 60;
         }
 
+        public override void OnRemove() => World.RemoveAnt(this);
+
         public void AttachController(IAntController _controller)
         {
             controller = _controller;
             controller.Start(this);
         }
 
+        public bool TakeResource(Resource _resource)
+        {
+            if (account == null)
+                account = new ResourceAccount(_resource.Account.Type);
+            else if (_resource.Account.Type != account.Type)
+                return false;
+
+            _resource.Account.TransferAll(account);
+            return true;
+        }
+
+        public float DepositResource() => account?.Withdraw() ?? 0;
+
         public override void Update()
         {
+            UpdateAccount();
+            UpdateTile();
             controller?.Update();
             UpdatePhysics();
             Position = Game.ScreenClamp(Position);
+        }
+
+        private void UpdateAccount()
+        {
+            if (account?.Amount <= 0)
+                account = null;
+        }
+
+        private Tile tile;
+        public Tile Tile => Grid.Get(X, Y);
+
+        private void UpdateTile()
+        {
+            tile = Grid.Get(X, Y);
+            if (tile == null)
+                return;
+
+            if (account == null)
+                tile.AddSignal(SignalType.Home, 10, (float)(Angle + Math.PI));
         }
 
         private void UpdatePhysics()
@@ -88,7 +165,7 @@ namespace Ants
         private void UpdateAngle()
         {
             var directionToTargetAnglePre = DirectionToTargetAngle();
-            var angularAcceleration = 6 * directionToTargetAnglePre;
+            var angularAcceleration = 5 * directionToTargetAnglePre;
             var angleDelta = angularAcceleration * Game.Delta;
             var directionToTargetAnglePost = DirectionToTargetAngle(Angle + angleDelta);
             var movedBeyondTargetAngle = directionToTargetAnglePre != directionToTargetAnglePost;

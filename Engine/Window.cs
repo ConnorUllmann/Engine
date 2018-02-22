@@ -63,7 +63,16 @@ namespace Engine
         public virtual void Update() { }
         public virtual void Render() { }
 
-
+        /// <summary>
+        /// Returns a random position on the screen
+        /// </summary>
+        /// <param name="_horizontalMargin">Distance from the sides of the screen that the point must be</param>
+        /// <param name="_verticalMargin">Distance from the top & bottom edges of the screen that the point must be</param>
+        /// <returns></returns>
+        public static Vector2 RandomPosition(float _horizontalMargin=0, float _verticalMargin=0)
+            => new Vector2((float)((Basics.Utils.RandomDouble() - 0.5) * (Width  - 2 * _horizontalMargin)), 
+                           (float)((Basics.Utils.RandomDouble() - 0.5) * (Height - 2 * _verticalMargin)));
+        
         /// <summary>
         /// Returns the position to place _position after it has been wrapped around the screen. _margin specifies how much space outside the screen to include (negative values work)
         /// </summary>

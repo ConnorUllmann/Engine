@@ -20,7 +20,7 @@ namespace Engine
 
         public HexTile(HexGrid _grid, int _i, int _j, float _radius)
             : this(_grid, _i, _j, _radius, Color4.White) { }
-        public HexTile(HexGrid _grid, int _i, int _j, float _radius, Color4 _color) : base()
+        public HexTile(HexGrid _grid, int _i, int _j, float _radius, Color4 _color)
         {
             grid = _grid;
             i = _i;

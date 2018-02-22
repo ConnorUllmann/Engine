@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v1.1",
-    "signature": "9d7d8746e862102caa837f4f49566d33fef10186"
+    "signature": "ef5e87891ffcd4abab603786fa716430ce512a81"
   },
   "compilationOptions": {},
   "targets": {
@@ -9,7 +9,8 @@
       "ants/1.0.0": {
         "dependencies": {
           "Basics": "1.0.0",
-          "Engine": "1.0.0"
+          "Engine": "1.0.0",
+          "System.ValueTuple": "4.4.0"
         },
         "runtime": {
           "Ants.dll": {}
@@ -40,6 +41,11 @@
       "system.componentmodel.primitives/4.1.0": {
         "runtime": {
           "lib/netstandard1.0/System.ComponentModel.Primitives.dll": {}
+        }
+      },
+      "system.valuetuple/4.4.0": {
+        "runtime": {
+          "lib/netstandard1.0/System.ValueTuple.dll": {}
         }
       },
       "basics/1.0.0": {
@@ -91,6 +97,13 @@
       "sha512": "sha512-sc/7eVCdxPrp3ljpgTKVaQGUXiW05phNWvtv/m2kocXqrUQvTVWKou1Edas2aDjTThLPZOxPYIGNb/HN0QjURg==",
       "path": "system.componentmodel.primitives/4.1.0",
       "hashPath": "system.componentmodel.primitives.4.1.0.nupkg.sha512"
+    },
+    "system.valuetuple/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BahUww/+mdP4ARCAh2RQhQTg13wYLVrBb9SYVgW8ZlrwjraGCXHGjo0oIiUfZ34LUZkMMR+RAzR7dEY4S1HeQQ==",
+      "path": "system.valuetuple/4.4.0",
+      "hashPath": "system.valuetuple.4.4.0.nupkg.sha512"
     },
     "basics/1.0.0": {
       "type": "project",

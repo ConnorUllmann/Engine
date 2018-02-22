@@ -10,33 +10,69 @@ namespace Ants
 {
     public class AntSim : Game
     {
-        private AntGrid antGrid;
+        private AntWorld world;
+        private Ant player;
 
         public AntSim() : base(1280, 720, "Ants") { }
 
         public override void Start()
         {
-            var tileSize = 10;
-            antGrid = new VisualAntGrid(-Width/2, -Height/2, Width, Height, tileSize);
+            GenerateGrids();
+            GenerateAnts(1);
+            GenerateAntPlayer();
+            GenerateResources(25);
+        }
 
-            for (var i = 0; i < 100; i++)
-            {
-                var ant = new Ant(antGrid, 4);
-                ant.AttachController(new AIAntController());
-                ant.X = Basics.Utils.RandomInt(-Width/4, Width/4);
-                ant.Y = Basics.Utils.RandomInt(-Height/4, Height/4);
-                ant.Angle = (float)(Basics.Utils.RandomDouble() * Math.PI * 2);
-                ant.AddToWorld();
-            }
+        private void GenerateGrids()
+        {
+            world = new AntWorld(Width, Height, 10);
+        }
+        
+        private void GenerateAnt()
+        {
+            var ant = new Ant(world, WorldType.Underworld);
+            ant.AttachController(new AIAntController());
+            ant.Angle = (float)(Basics.Utils.RandomDouble() * Math.PI * 2);
+            ant.AddToWorld();
+        }
 
-            var playerAnt = new Ant(antGrid, 8);
-            playerAnt.AttachController(new KeyboardAntController());
-            playerAnt.AddToWorld();
+        private void GenerateAnts(int _count)
+        {
+            for (var i = 0; i < _count; i++)
+                GenerateAnt();
+        }
+
+        private void GenerateAntPlayer()
+        {
+            player = new Ant(AntType.Digger, world, WorldType.Underworld, 0, 0, 8);
+            player.AttachController(new KeyboardAntController());
+            player.AddToWorld();
+        }
+
+        private void GenerateResource()
+        {
+            var randomX = Basics.Utils.RandomInt(-Width / 2, Width / 2);
+            var randomY = Basics.Utils.RandomInt(-Height / 2, Height / 2);
+            var resource = new Resource(randomX, randomY, Resource.RandomType(), 1);
+            resource.AddToWorld();
+        }
+
+        private void GenerateResources(int _count)
+        {
+            for (var i = 0; i < _count; i++)
+                GenerateResource();
+        }
+
+        public override void Update()
+        {
+            world.Update();
         }
 
         public override void Render()
         {
-            antGrid.Render();
+            world.OverworldVisible = player.Location == WorldType.Overworld;
+            world.UnderworldVisible = player.Location == WorldType.Underworld;
+            world.Render();
         }
     }
 

@@ -7,9 +7,13 @@ namespace Engine
 {
     public class ActorGroup
     {
+        private int nextID = 0;
+        public int GetNextID() => nextID++;
+
         public static ActorGroup World = new ActorGroup();
 
-        private HashSet<Actor> actors;
+        private Dictionary<int, Actor> actors;
+        public Dictionary<int, Actor> Actors => actors;
         private HashSet<Actor> actorsToAdd;
         private HashSet<Actor> actorsToRemove;
 
@@ -20,7 +24,7 @@ namespace Engine
 
         public void Reset()
         {
-            actors = new HashSet<Actor>();
+            actors = new Dictionary<int, Actor>();
             actorsToAdd = new HashSet<Actor>();
             actorsToRemove = new HashSet<Actor>();
         }
@@ -29,11 +33,22 @@ namespace Engine
         {
             UpdateRemoveActors();
             UpdateAddActors();
-            actors.ForEach(o => { if (o.Active) o.PreUpdate(); });
-            actors.ForEach(o => { if (o.Active) o.Update(); });
-            actors.ForEach(o => { if (o.Active) o.PostUpdate(); });
+            foreach(var actor in actors.Values)
+            {
+                if (actor.Active)
+                    actor.PreUpdate();
+                if (actor.Active)
+                    actor.Update();
+                if (actor.Active)
+                    actor.PostUpdate();
+            }
         }
-        public void Render() => actors.ForEach(o => { if (o.Visible) o.Render(); });
+        public void Render()
+        {
+            foreach(var actor in actors.Values)
+                if (actor.Visible)
+                    actor.Render();
+        }
 
         public Actor Add(Actor _actor)
         {
@@ -53,7 +68,7 @@ namespace Engine
             foreach (var actorToAdd in actorsToAdd)
             {
                 actorToAdd.Start();
-                actors.Add(actorToAdd);
+                actors[actorToAdd.ID] = actorToAdd;
             }
             actorsToAdd.Clear();
         }
@@ -62,7 +77,7 @@ namespace Engine
             foreach (var actorToRemove in actorsToRemove)
             {
                 actorToRemove.OnRemove();
-                actors.Remove(actorToRemove);
+                actors.Remove(actorToRemove.ID);
             }
             actorsToRemove.Clear();
         }
@@ -75,21 +90,20 @@ namespace Engine
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
 
+        private bool destroyed;
+        public bool Destroyed => destroyed;
+
         public virtual OpenTK.Vector2 Position
         {
             get => new OpenTK.Vector2(X, Y);
             set { X = value.X; Y = value.Y; }
         }
 
-        public virtual bool Visible { get; set; }
-        public virtual bool Active { get; set; }
-
-        public Actor()
-        {
-            Visible = true;
-            Active = true;
-        }
-        public Actor(float _x, float _y) : this()
+        public virtual bool Visible { get; set; } = true;
+        public virtual bool Active { get; set; } = true;
+        public readonly int ID = ActorGroup.World.GetNextID();
+        
+        public Actor(float _x=0, float _y=0)
         {
             X = _x;
             Y = _y;
@@ -99,7 +113,13 @@ namespace Engine
         public void ScreenClamp(float _margin=0) => Position = Game.ScreenClamp(Position, _margin);
 
         internal Action DestroyHandler;
-        public void Destroy() => DestroyHandler();
+        public void Destroy()
+        {
+            if (Destroyed)
+                return;
+            DestroyHandler();
+            destroyed = true;
+        }
 
         public virtual void OnRemove() { }
         public virtual void Start() { }
@@ -117,8 +137,7 @@ namespace Engine
         public Action UpdateHandler;
         public Action PostUpdateHandler;
         public Action RenderHandler;
-
-        public ShellActor() : base() { }
+        
         public ShellActor(float _x, float _y) : base(_x, _y) { }
 
         public override void OnRemove() => OnRemoveHandler?.Invoke();
