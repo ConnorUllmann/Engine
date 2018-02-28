@@ -12,6 +12,7 @@ namespace Ants
     {
         private AntWorld world;
         private Ant player;
+        private Ant ai;
 
         public AntSim() : base(1280, 720, "Ants") { }
 
@@ -19,8 +20,15 @@ namespace Ants
         {
             GenerateGrids();
             //GenerateAnts(1);
+
             GenerateAntPlayer();
-            GenerateResources(25);
+            var ant = new Ant(world, WorldType.Underworld, -250, -250);
+            ant.AttachController(new AIAntController());
+            ant.Angle = 0;
+            ant.AddToWorld();
+            ai = ant;
+
+            //GenerateResources(25);
         }
 
         private void GenerateGrids()
@@ -34,6 +42,7 @@ namespace Ants
             ant.AttachController(new AIAntController());
             ant.Angle = (float)(Basics.Utils.RandomDouble() * Math.PI * 2);
             ant.AddToWorld();
+            ai = ant;
         }
 
         private void GenerateAnts(int _count)
@@ -44,7 +53,7 @@ namespace Ants
 
         private void GenerateAntPlayer()
         {
-            player = new Ant(AntType.Digger, world, WorldType.Underworld, 0, 0, 25);
+            player = new Ant(AntType.Digger, world, WorldType.Underworld, 250, 250, 25);
             player.AttachController(new KeyboardAntController());
             player.AddToWorld();
         }

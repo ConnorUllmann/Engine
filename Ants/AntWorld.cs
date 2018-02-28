@@ -20,8 +20,8 @@ namespace Ants
 
         public AntWorld(int _width, int _height, int _tileSize)
         {
-            Underworld = new VisualAntGrid(-_width / 2, -_height / 2, _width, _height, _tileSize);
-            Overworld = new VisualAntGrid(-_width / 2, -_height / 2, _width, _height, _tileSize);
+            Underworld = new AntGrid(-_width / 2, -_height / 2, _width, _height, _tileSize);
+            Overworld = new AntGrid(-_width / 2, -_height / 2, _width, _height, _tileSize);
         }
 
         public bool AddAnt(Ant _ant) => WorldFromType(_ant.Location).AddAnt(_ant);

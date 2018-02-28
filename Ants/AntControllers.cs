@@ -51,7 +51,7 @@ namespace Ants.AntControllers
             public AIAntController Controller;
             public GrowState(AIAntController _controller) => Controller = _controller;
 
-            private const float GrowthTime = 10;
+            private const float GrowthTime = 60;
             private float growthTimeRemaining = GrowthTime;
 
             public void Start()

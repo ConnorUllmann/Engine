@@ -33,7 +33,7 @@ namespace Ants
             WidthCells = (int)Math.Ceiling(_width * 1f / TileSize);
             HeightCells = (int)Math.Ceiling(_height * 1f / TileSize);
             grid = new Grid<Tile>(WidthCells, HeightCells, NewTile);
-            Quadtree = new QuadTree<Actor>(_width, _height);
+            Quadtree = new QuadTree<Actor>(-_width/2, -_height/2, _width, _height, 1, TileSize * 2);
         }
         public bool AddAnt(Ant _ant) => Ants.Add(_ant);
         public bool RemoveAnt(Ant _ant) => Ants.Remove(_ant);
@@ -50,7 +50,7 @@ namespace Ants
         {
             Quadtree.Reset();
             foreach (var ant in Ants)
-                Quadtree.Insert(ant, new Rectangle(X + ant.BoundingBox.X, Y + ant.BoundingBox.Y, ant.BoundingBox.W, ant.BoundingBox.H));
+                Quadtree.Insert(ant, new Rectangle(ant.X + ant.BoundingBox.X, ant.Y + ant.BoundingBox.Y, ant.BoundingBox.W, ant.BoundingBox.H));
         }
 
         public virtual void Update()
