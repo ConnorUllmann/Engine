@@ -6,6 +6,7 @@ using OpenTK.Input;
 using Basics;
 using Engine;
 using Ants.AntControllers;
+using Rectangle = Basics.Rectangle;
 
 namespace Ants
 {
@@ -89,7 +90,8 @@ namespace Ants
             : this(RandomAntType(), _world, _location, _position.X, _position.Y, 4)
         { }
         public Ant(AntType _type, AntWorld _world, WorldType _location, float _x, float _y, float _radius) 
-            : base(new ConvexPolygon(new List<Vector2> { new Vector2(-_radius, _radius), new Vector2(-_radius, -_radius), new Vector2(2 * _radius, 0) }), _x, _y)
+            : base(new ConvexPolygon(new List<Vector2> { new Vector2(-_radius, _radius), new Vector2(-_radius, -_radius), new Vector2(10*_radius, 0) }), 
+                  _x, _y)
         {
             type = _type;
             World = _world;
@@ -125,6 +127,10 @@ namespace Ants
 
         public override void Update()
         {
+            var collidedAnts = Grid.GetAntsThatCollide(BoundingBox);
+            foreach (var ant in collidedAnts)
+                ant.Destroy();
+
             UpdateAccount();
             UpdateTile();
             controller?.Update();
@@ -183,6 +189,15 @@ namespace Ants
         private void UpdatePosition()
         {
             Position += Speed * Engine.Utils.UnitVector2(Angle) * Game.Delta;
+        }
+
+        public override void Render()
+        {
+            Console.WriteLine(FillRenderer.CenterOfMass);
+            base.Render();
+            Engine.Debug.Draw.Rectangle(BoundingBox, X, Y, false);
+            Engine.Debug.Draw.Rectangle(X - 4, Y - 4, 8, 8, true);
+            Engine.Debug.Draw.Rectangle(X + polygon.CenterOfMass.X - 4, Y + polygon.CenterOfMass.Y - 4, 8, 8, true);
         }
     }
 }

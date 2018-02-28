@@ -5,90 +5,14 @@ using Basics;
 
 namespace Engine
 {
-    public class ActorGroup
-    {
-        private int nextID = 0;
-        public int GetNextID() => nextID++;
-
-        public static ActorGroup World = new ActorGroup();
-
-        private Dictionary<int, Actor> actors;
-        public Dictionary<int, Actor> Actors => actors;
-        private HashSet<Actor> actorsToAdd;
-        private HashSet<Actor> actorsToRemove;
-
-        public ActorGroup()
-        {
-            Reset();
-        }
-
-        public void Reset()
-        {
-            actors = new Dictionary<int, Actor>();
-            actorsToAdd = new HashSet<Actor>();
-            actorsToRemove = new HashSet<Actor>();
-        }
-
-        public void Update()
-        {
-            UpdateRemoveActors();
-            UpdateAddActors();
-            foreach(var actor in actors.Values)
-            {
-                if (actor.Active)
-                    actor.PreUpdate();
-                if (actor.Active)
-                    actor.Update();
-                if (actor.Active)
-                    actor.PostUpdate();
-            }
-        }
-        public void Render()
-        {
-            foreach(var actor in actors.Values)
-                if (actor.Visible)
-                    actor.Render();
-        }
-
-        public Actor Add(Actor _actor)
-        {
-            _actor.DestroyHandler += () => Remove(_actor);
-            actorsToRemove.Remove(_actor);
-            actorsToAdd.Add(_actor);
-            return _actor;
-        }
-        public void Remove(Actor _actor)
-        {
-            actorsToAdd.Remove(_actor);
-            actorsToRemove.Add(_actor);
-        }
-
-        private void UpdateAddActors()
-        {
-            foreach (var actorToAdd in actorsToAdd)
-            {
-                actorToAdd.Start();
-                actors[actorToAdd.ID] = actorToAdd;
-            }
-            actorsToAdd.Clear();
-        }
-        private void UpdateRemoveActors()
-        {
-            foreach (var actorToRemove in actorsToRemove)
-            {
-                actorToRemove.OnRemove();
-                actors.Remove(actorToRemove.ID);
-            }
-            actorsToRemove.Clear();
-        }
-    }
-
     public class Actor
     {
-        public Actor AddToWorld() => ActorGroup.World.Add(this);
-
+        public Actor AddToWorld() => ActorGroup.World.AddToWorld(this);
+        
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
+
+        public BoundingBox BoundingBox;
 
         private bool destroyed;
         public bool Destroyed => destroyed;
@@ -101,12 +25,21 @@ namespace Engine
 
         public virtual bool Visible { get; set; } = true;
         public virtual bool Active { get; set; } = true;
-        public readonly int ID = ActorGroup.World.GetNextID();
+
+        public readonly int ID;
+        public readonly int TypeID;
         
-        public Actor(float _x=0, float _y=0)
+        public Actor(float _x=0, float _y=0, float _w=0, float _h=0, 
+            Align.Horizontal _halign = Align.Horizontal.Center, 
+            Align.Vertical _valign = Align.Vertical.Middle)
         {
+            ID = ActorGroup.World.GetNextID();
+            TypeID = ActorGroup.World.GetTypeID(this);
+
             X = _x;
             Y = _y;
+
+            BoundingBox = new BoundingBox(_w, _h, _halign, _valign);
         }
 
         public void ScreenWrap(float _margin=0) => Position = Game.ScreenWrap(Position, _margin);

@@ -107,7 +107,17 @@ namespace Engine
     {
         public ColoredVertexBuffer(PrimitiveType _primitiveType = PrimitiveType.Triangles) : base(ColoredVertex.Size, _primitiveType) { }
 
-        public Vector3 CenterOfMass => vertices.Select(o => o.position).Sum() / vertices.Count();
+        public Vector3 CenterOfMass
+        {
+            get
+            {
+                var sum = new Vector3();
+                for (var i = 0; i < count; i++)
+                    sum += vertices[i].position;
+                var result = sum / count;
+                return result;
+            }
+        }
 
         public void Move(int _index, Vector3 _position)
         {
@@ -137,6 +147,32 @@ namespace Engine
         {
             for (var i = 0; i < count; i++)
                 vertices[i].color = ColorExtensions.RandomColor();
+        }
+
+        public Basics.Rectangle BoundingBox()
+        {
+            if (count <= 0)
+                return new Basics.Rectangle(0, 0, 0, 0);
+
+            float minX, minY, maxX, maxY;
+            var v0 = vertices[0];
+            minX = maxX = v0.position.X;
+            minY = maxY = v0.position.Y;
+            for (var i = 1; i < count; i++)
+            {
+                var v = vertices[i];
+                var x = v.position.X;
+                var y = v.position.Y;
+                if (x < minX)
+                    minX = x;
+                if (x > maxX)
+                    maxX = x;
+                if (y < minY)
+                    minY = y;
+                if (y > maxY)
+                    maxY = y;
+            }
+            return new Basics.Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
     }
 

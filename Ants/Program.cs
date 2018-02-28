@@ -18,7 +18,7 @@ namespace Ants
         public override void Start()
         {
             GenerateGrids();
-            GenerateAnts(1);
+            //GenerateAnts(1);
             GenerateAntPlayer();
             GenerateResources(25);
         }
@@ -44,7 +44,7 @@ namespace Ants
 
         private void GenerateAntPlayer()
         {
-            player = new Ant(AntType.Digger, world, WorldType.Underworld, 0, 0, 8);
+            player = new Ant(AntType.Digger, world, WorldType.Underworld, 0, 0, 25);
             player.AttachController(new KeyboardAntController());
             player.AddToWorld();
         }

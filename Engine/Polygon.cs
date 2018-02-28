@@ -43,11 +43,11 @@ namespace Engine
         public float MaxX() => vertices.Select(o => o.X).Max();
         public float MinY() => vertices.Select(o => o.Y).Min();
         public float MaxY() => vertices.Select(o => o.Y).Max();
-        public Vector4 BoundingBox()
+        public Basics.Rectangle BoundingBox()
         {
             var x = MinX();
             var y = MinY();
-            return new Vector4(x, y, MaxX() - x, MaxY() - y);
+            return new Basics.Rectangle(x, y, MaxX() - x, MaxY() - y);
         }
         
         public ColoredVertexBuffer GetOutlineBuffer() => GetOutlineBuffer(Color4.White);
@@ -299,18 +299,19 @@ namespace Engine
         private ColoredVertexBuffer buffer;
         private ColoredVertexArray array;
 
-        public Vector3 CenterOfMass { get; set; }
+        public Vector3 CenterOfMass => buffer.CenterOfMass;
         public bool Visible { get; set; } = true;
         
         public PolygonRenderer(ColoredVertexBuffer _buffer)
         {
             buffer = _buffer;
-            CenterOfMass = buffer.CenterOfMass;
             array = ColoredVertexArray.FromBuffer(buffer);
         }
 
         public void SetColor(Color4 _color) => buffer.SetColor(_color);
         public void RandomizeColor() => buffer.RandomizeColor();
+
+        public Basics.Rectangle BoundingBox() => buffer.BoundingBox();
 
         public void Rotate(float _angle, Vector3? _center = null) => array?.Rotate(_angle, _center ?? CenterOfMass);
         public void Move(Vector3 _position) => array?.Move(_position);
@@ -348,9 +349,20 @@ namespace Engine
         public PolygonActor(Polygon _polygon, float _x=0, float _y=0) : base(_x, _y)
         {
             polygon = _polygon;
-            Center();
+            //Center();
             FillRenderer = new PolygonFillRenderer(polygon, ColorExtensions.RandomColor());
             OutlineRenderer = new PolygonOutlineRenderer(polygon, ColorExtensions.RandomColor());
+            UpdateBounds();
+        }
+
+        private void UpdateBounds()
+        {
+            var box = OutlineVisible && OutlineRenderer != null
+                ? OutlineRenderer.BoundingBox()
+                : FillVisible && FillRenderer != null
+                    ? FillRenderer.BoundingBox()
+                    : null;
+            BoundingBox.UpdateSize(box?.W ?? 0, box?.H ?? 0, Align.Horizontal.Center, Align.Vertical.Middle);
         }
 
         private void Center()
@@ -363,8 +375,9 @@ namespace Engine
 
         public void Rotate(float _angle, Vector3? _center=null)
         {
-            FillRenderer.Rotate(_angle, _center);
-            OutlineRenderer.Rotate(_angle, _center);
+            FillRenderer.Rotate(_angle, new Vector3(0, 0, 0));
+            OutlineRenderer.Rotate(_angle, new Vector3(0, 0, 0));
+            UpdateBounds();
         }
 
         public IEnumerable<Polygon> SplitAlongLine(Vector3 pointA, Vector3 pointB)

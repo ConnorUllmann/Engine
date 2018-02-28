@@ -38,7 +38,7 @@ namespace Ants.AntControllers
             public void Update()
             {
                 var tile = Controller.ant.Grid.Get(Controller.ant.X, Controller.ant.Y);
-                var signalAngle = tile.GetSignalAngleForResourceType(SignalType.Home);
+                var signalAngle = tile?.GetSignalAngleForResourceType(SignalType.Home);
                 if (signalAngle.HasValue)
                     Controller.TargetAngle = signalAngle.Value;
             }
