@@ -157,7 +157,7 @@ namespace CellularAutomata
                 {
                     var cell = AddCell(i, j);
                     Set(cell, i, j);
-                    ActorGroup.World.AddOnNextFrame(cell);
+                    ActorGroup.World.AddToWorld(cell);
                 }
             }
         }
