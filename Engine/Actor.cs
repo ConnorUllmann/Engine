@@ -12,6 +12,8 @@ namespace Engine
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
 
+        //Coordinates relative to the Actor's position
+        //(e.g. 40x60 box centered around the player = new BoundingBox(-20, -30, 40, 60))
         public BoundingBox BoundingBox;
 
         private bool destroyed;
@@ -42,6 +44,9 @@ namespace Engine
             BoundingBox = new BoundingBox(_w, _h, _halign, _valign);
         }
 
+        public bool Collides(Actor _actor)
+            => BoundingBox.Collides(_actor.X + _actor.BoundingBox.X, _actor.Y + _actor.BoundingBox.Y, _actor.BoundingBox.W, _actor.BoundingBox.H, X, Y);
+
         public void ScreenWrap(float _margin=0) => Position = Game.ScreenWrap(Position, _margin);
         public void ScreenClamp(float _margin=0) => Position = Game.ScreenClamp(Position, _margin);
 
@@ -71,7 +76,7 @@ namespace Engine
         public Action PostUpdateHandler;
         public Action RenderHandler;
         
-        public ShellActor(float _x, float _y) : base(_x, _y) { }
+        public ShellActor(float _x=0, float _y=0) : base(_x, _y) { }
 
         public override void OnRemove() => OnRemoveHandler?.Invoke();
         public override void Start() => StartHandler?.Invoke();

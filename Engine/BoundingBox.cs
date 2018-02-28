@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 using Basics;
+using OpenTK;
+using Rectangle = Basics.Rectangle;
 
 namespace Engine
 {
     public class BoundingBox : Rectangle
     {
+        public BoundingBox(float _x, float _y, float _w, float _h)
+            : base(_x, _y, _w, _h)
+        { }
         public BoundingBox(float _w, float _h, Align.Horizontal _halign, Align.Vertical _valign)
             : base(_w * GetHAlignNormalizedOffset(_halign), _h * GetVAlignNormalizedOffset(_valign), _w, _h)
-        {
-        }
+        { }
 
         public void UpdateSize(float _w, float _h, Align.Horizontal _halign, Align.Vertical _valign)
         {
@@ -53,6 +57,28 @@ namespace Engine
                 default: throw new Exception($"Unexpected VerticalAlign type {_align}");
             }
         }
+
+        //Collide against _r if we were offset by (_xoff, _yoff)
+        public bool Collides(Rectangle _r, float _xoff, float _yoff) 
+            => Collides(_r.X, _r.Y, _r.W, _r.H, _xoff, _yoff);
+        public bool Collides(float _x, float _y, float _w, float _h, float _xoff, float _yoff)
+            => Collide(_x, _y, _w, _h, _xoff + X, _yoff + Y, W, H);
         
+        public static Rectangle RectangleFromPoints(IEnumerable<Vector3> _points)
+        {
+            float? minX = null, minY = null, maxX = null, maxY = null;
+            foreach (var v in _points)
+            {
+                if (!minX.HasValue || v.X < minX.Value)
+                    minX = v.X;
+                if (!maxX.HasValue || v.X > maxX)
+                    maxX = v.X;
+                if (!minY.HasValue || v.Y < minY)
+                    minY = v.Y;
+                if (!maxY.HasValue || v.Y > maxY)
+                    maxY = v.Y;
+            }
+            return new Rectangle(minX ?? 0, minY ?? 0, (maxX - minX) ?? 0, (maxY - minY) ?? 0);
+        }
     }
 }

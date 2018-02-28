@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenTK;
 using OpenTK.Input;
+using OpenTK.Graphics;
 using Basics;
 using Engine;
 using Ants.AntControllers;
@@ -50,7 +51,7 @@ namespace Ants
                     return;
                 anglePrevious = angle;
                 angle = value;
-                Rotate(angle - anglePrevious);
+                Rotate(angle - anglePrevious, polygon.CenterOfMass + new Vector3(X, Y, 0));
             }
         }
         private float speed;
@@ -87,7 +88,10 @@ namespace Ants
             : this(_world, _location, Game.RandomPosition())
         { }
         public Ant(AntWorld _world, WorldType _location, Vector2 _position)
-            : this(RandomAntType(), _world, _location, _position.X, _position.Y, 4)
+            : this(_world, _location, _position.X, _position.Y)
+        { }
+        public Ant(AntWorld _world, WorldType _location, float _x, float _y)
+            : this(RandomAntType(), _world, _location, _x, _y, 4)
         { }
         public Ant(AntType _type, AntWorld _world, WorldType _location, float _x, float _y, float _radius) 
             : base(new ConvexPolygon(new List<Vector2> { new Vector2(-_radius, _radius), new Vector2(-_radius, -_radius), new Vector2(10*_radius, 0) }), 
@@ -127,9 +131,13 @@ namespace Ants
 
         public override void Update()
         {
-            var collidedAnts = Grid.GetAntsThatCollide(BoundingBox);
-            foreach (var ant in collidedAnts)
-                ant.Destroy();
+            var collidedAnts = Grid.GetAntsThatCollide(X + BoundingBox.X, Y + BoundingBox.Y, BoundingBox.W, BoundingBox.H);
+            collidedAnts.Remove(this);
+
+            if(collidedAnts.Count > 0)
+                FillRenderer.RandomizeColor();
+            //foreach (var ant in collidedAnts)
+            //    ant.Destroy();
 
             UpdateAccount();
             UpdateTile();
@@ -193,11 +201,10 @@ namespace Ants
 
         public override void Render()
         {
-            Console.WriteLine(FillRenderer.CenterOfMass);
             base.Render();
-            Engine.Debug.Draw.Rectangle(BoundingBox, X, Y, false);
-            Engine.Debug.Draw.Rectangle(X - 4, Y - 4, 8, 8, true);
-            Engine.Debug.Draw.Rectangle(X + polygon.CenterOfMass.X - 4, Y + polygon.CenterOfMass.Y - 4, 8, 8, true);
+            Engine.Debug.Draw.Rectangle(BoundingBox, X, Y, Color4.Aqua, false);
+            Engine.Debug.Draw.Rectangle(X - 4, Y - 4, 8, 8, Color4.Red, true);
+            Engine.Debug.Draw.Rectangle(X + polygon.CenterOfMass.X - 4, Y + polygon.CenterOfMass.Y - 4, 8, 8, Color4.Blue, true);
         }
     }
 }

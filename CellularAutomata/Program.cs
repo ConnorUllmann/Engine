@@ -117,7 +117,7 @@ namespace CellularAutomata
                 var angle = (Math.Sin(t) + 1.5f) * Math.PI;
                 actor.X = (float)(Math.Cos(angle) * length);
                 actor.Y = (float)(Math.Sin(angle) * length);
-                renderer.Rotate((float)t * 0.01f);
+                renderer.Rotate(t * 0.01f, polygon.CenterOfMass);
             };
             actor.RenderHandler += () => renderer.Render(actor.X, actor.Y);
             actor.AddToWorld();

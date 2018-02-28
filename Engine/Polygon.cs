@@ -10,6 +10,7 @@ namespace Engine
 {
     public abstract class Polygon
     {
+        //Relative coordinates, rather than world coordinates
         public Vector3 CenterOfMass => vertices.Avg();
         public readonly int Sides;
 
@@ -43,12 +44,7 @@ namespace Engine
         public float MaxX() => vertices.Select(o => o.X).Max();
         public float MinY() => vertices.Select(o => o.Y).Min();
         public float MaxY() => vertices.Select(o => o.Y).Max();
-        public Basics.Rectangle BoundingBox()
-        {
-            var x = MinX();
-            var y = MinY();
-            return new Basics.Rectangle(x, y, MaxX() - x, MaxY() - y);
-        }
+        public Basics.Rectangle BoundingRectangle() => BoundingBox.RectangleFromPoints(vertices);
         
         public ColoredVertexBuffer GetOutlineBuffer() => GetOutlineBuffer(Color4.White);
         public ColoredVertexBuffer GetOutlineBuffer(Color4 _color)
@@ -298,8 +294,7 @@ namespace Engine
     {
         private ColoredVertexBuffer buffer;
         private ColoredVertexArray array;
-
-        public Vector3 CenterOfMass => buffer.CenterOfMass;
+        
         public bool Visible { get; set; } = true;
         
         public PolygonRenderer(ColoredVertexBuffer _buffer)
@@ -311,9 +306,7 @@ namespace Engine
         public void SetColor(Color4 _color) => buffer.SetColor(_color);
         public void RandomizeColor() => buffer.RandomizeColor();
 
-        public Basics.Rectangle BoundingBox() => buffer.BoundingBox();
-
-        public void Rotate(float _angle, Vector3? _center = null) => array?.Rotate(_angle, _center ?? CenterOfMass);
+        public void Rotate(float _angleRad, Vector3? _center = null) => array?.Rotate(_angleRad, _center);
         public void Move(Vector3 _position) => array?.Move(_position);
 
         public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
@@ -346,37 +339,30 @@ namespace Engine
         public bool FillVisible = true;
         public bool OutlineVisible = true;
 
-        public PolygonActor(Polygon _polygon, float _x=0, float _y=0) : base(_x, _y)
+        public PolygonActor(Polygon _polygon, float _x=0, float _y=0, bool _center=true) : base(_x, _y)
         {
             polygon = _polygon;
-            //Center();
+            if (_center) Center();
             FillRenderer = new PolygonFillRenderer(polygon, ColorExtensions.RandomColor());
             OutlineRenderer = new PolygonOutlineRenderer(polygon, ColorExtensions.RandomColor());
-            UpdateBounds();
         }
 
-        private void UpdateBounds()
-        {
-            var box = OutlineVisible && OutlineRenderer != null
-                ? OutlineRenderer.BoundingBox()
-                : FillVisible && FillRenderer != null
-                    ? FillRenderer.BoundingBox()
-                    : null;
-            BoundingBox.UpdateSize(box?.W ?? 0, box?.H ?? 0, Align.Horizontal.Center, Align.Vertical.Middle);
-        }
+        private void UpdateBounds() => BoundingBox.SetDimensions(polygon.BoundingRectangle());
 
         private void Center()
         {
             var com = polygon.CenterOfMass;
             X += com.X;
             Y += com.Y;
-            polygon.Center();
+            polygon.Move(-com);
+            UpdateBounds();
         }
 
-        public void Rotate(float _angle, Vector3? _center=null)
+        public void Rotate(float _angleRad, Vector3? _center=null)
         {
-            FillRenderer.Rotate(_angle, new Vector3(0, 0, 0));
-            OutlineRenderer.Rotate(_angle, new Vector3(0, 0, 0));
+            polygon.Rotate(_angleRad, _center.HasValue ? _center.Value - new Vector3(X, Y, 0) : new Vector3(0, 0, 0));
+            FillRenderer.Rotate(_angleRad, _center);
+            OutlineRenderer.Rotate(_angleRad, _center);
             UpdateBounds();
         }
 

@@ -12,16 +12,16 @@ namespace Ants
 {
     public class AntGrid
     {
-        public QuadTree<Actor> Quadtree;
-        protected Grid<Tile> grid;
-        public float X;
-        public float Y;
+        public readonly QuadTree<Actor> Quadtree;
+        protected readonly Grid<Tile> grid;
+        public readonly float X;
+        public readonly float Y;
         public readonly int TileSize;
         public readonly int Width;
         public readonly int Height;
         public readonly int WidthCells;
         public readonly int HeightCells;
-        public HashSet<Ant> Ants = new HashSet<Ant>();
+        public readonly HashSet<Ant> Ants = new HashSet<Ant>();
 
         public AntGrid(float _x, float _y, int _width, int _height, int _tileSize)
         {
@@ -50,7 +50,7 @@ namespace Ants
         {
             Quadtree.Reset();
             foreach (var ant in Ants)
-                Quadtree.AddObject(ant, ant?.BoundingBox);
+                Quadtree.Insert(ant, new Rectangle(X + ant.BoundingBox.X, Y + ant.BoundingBox.Y, ant.BoundingBox.W, ant.BoundingBox.H));
         }
 
         public virtual void Update()
@@ -60,9 +60,12 @@ namespace Ants
 
         public virtual void Render()
         {
+            foreach (var rectangle in Quadtree.GetRectangles())
+                Engine.Debug.Draw.Rectangle(rectangle, 0, 0, Color4.Red, false);
         }
-
-        public List<Actor> GetAntsThatCollide(Rectangle _r) => Quadtree.QueryRect(_r.X, _r.Y, _r.W, _r.H);
+        
+        public HashSet<Actor> GetAntsThatCollide(Rectangle _r) => Quadtree.QueryRect(_r);
+        public HashSet<Actor> GetAntsThatCollide(float _x, float _y, float _w, float _h) => Quadtree.QueryRect(_x, _y, _w, _h);
     }
     
     public class VisualAntGrid : AntGrid
