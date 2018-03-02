@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using OpenTK;
+using Rectangle = Basics.Rectangle;
 
 namespace Engine
 {
     public static class Utils
     {
-
         public static Vector2 UnitVector2(float angleRad) => new Vector2((float)Math.Cos(angleRad), (float)Math.Sin(angleRad));
         public static Vector2 RandomUnitVector2() => UnitVector2((float)(Basics.Utils.RandomDouble() * Math.PI * 2));
         public static Vector3 To3D(this Vector2 _vector, float _z=0) => new Vector3(_vector.X, _vector.Y, _z);
@@ -48,15 +48,10 @@ namespace Engine
             var diffY = b.Y - a.Y;
             return diffY == 0 ? (a + b) / 2 : new Vector3((y - a.Y) / diffY * (b.X - a.X) + a.X, y, 0);
         }
-
-        public static bool PointInRectangle(Vector2 p, Vector4 r) => PointInRectangle(p.X, p.Y, r.X, r.Y, r.Z, r.W);
-        public static bool PointInRectangle(float _px, float _py, float _rx, float _ry, float _rw, float _rh) => _px >= _rx && _py >= _ry && _px < _rx + _rw && _py < _ry + _rh;
-        public static bool RectanglesCollide(Vector4 a, Vector4 b) => RectanglesCollide(a.X, a.Y, a.Z, a.W, b.X, b.Y, b.Z, b.W);
-        public static bool RectanglesCollide(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) => ax + aw >= bx && bx + bw >= ax && ay + ah >= by && by + bh >= ay;
-
+        
         public static Vector3? LinesIntersectionPoint(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, bool asSeg = true)
         {
-            if (asSeg && !RectanglesCollide(
+            if (asSeg && !Rectangle.Collide(
                 Basics.Utils.Min(a1.X, a2.X), Basics.Utils.Min(a1.Y, a2.Y), Math.Abs(a1.X - a2.X), Math.Abs(a1.Y - a2.Y),
                 Basics.Utils.Min(b1.X, b2.X), Basics.Utils.Min(b1.Y, b2.Y), Math.Abs(b1.X - b2.X), Math.Abs(b1.Y - b2.Y)))
                 return null;

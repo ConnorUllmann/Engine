@@ -84,7 +84,7 @@ namespace Engine
 
         public void ResetColor() => ForEachXY(x => x.SetColor(Color4.White));
 
-        public bool Inside(Vector2 _position) => Utils.PointInRectangle(_position.X, _position.Y, X, Y, Width * CellSize, Height * CellSize);
+        public bool Inside(Vector2 _position) => Basics.Rectangle.Collide(_position.X, _position.Y, X, Y, Width * CellSize, Height * CellSize);
         public VectorTile Get(Vector2 _indices) => Get(_indices.X, _indices.Y);
         public VectorTile GetFromWorldPosition(Vector2 _worldPoint) => Get(WorldPositionToGridPosition(_worldPoint));
         public Vector2 WorldPositionToGridPosition(Vector2 _worldPoint) => new Vector2((_worldPoint.X - X) / CellSize, (_worldPoint.Y - Y) / CellSize);

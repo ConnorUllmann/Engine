@@ -24,7 +24,7 @@ namespace Engine
             OutlineRenderer = new PolygonOutlineRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
         }
 
-        private void UpdateBounds() => BoundingBox.SetDimensions(Polygon.BoundingRectangle());
+        private void UpdateBounds() => BoundingBox.MatchPositionAndDimensions(Polygon.BoundingRectangle());
 
         private void Center()
         {

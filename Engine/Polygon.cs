@@ -174,6 +174,11 @@ namespace Engine
             ToTriangles().ForEach(v => buffer.AddVertex(new ColoredVertex(v, _color)));
             return buffer;
         }
+
+        /// <summary>
+        /// By definition, a line can be drawn between all vertices, so just make triangles sprouting from one vertex.
+        /// </summary>
+        /// <returns>list of vertex triplets which define a triangulation of this polygon</returns>
         public override List<Vector3> ToTriangles()
         {
             //Takes a list of n vertices and adds more vertices to form triangles consisting of each consecutive group of 3 vertices
@@ -228,6 +233,11 @@ namespace Engine
             ToTriangles().ForEach(v => buffer.AddVertex(new ColoredVertex(v, _color)));
             return buffer;
         }
+
+        /// <summary>
+        /// Ear-clipping algorithm
+        /// </summary>
+        /// <returns>list of vertex triplets which define a triangulation of this polygon</returns>
         public override List<Vector3> ToTriangles()
         {
             //Takes a list of n vertices and adds more vertices to form triangles consisting of each consecutive group of 3 vertices
