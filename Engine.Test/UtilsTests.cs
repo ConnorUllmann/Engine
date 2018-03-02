@@ -48,6 +48,43 @@ namespace Engine.Test
             Assert.Equal(expected, Utils.TrianglesCollide(a, b));
         }
 
+        [Fact]
+        public void TrianglesCollide_ReturnFails_FirstArgumentTooMany()
+        {
+            var tooMany = new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero };
+            var justRight = new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero };
+            Assert.Throws<ArgumentException>(() => Utils.TrianglesCollide(tooMany, justRight));
+        }
+        [Fact]
+        public void TrianglesCollide_ReturnFails_SecondArgumentTooMany()
+        {
+            var tooMany = new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero };
+            var justRight = new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero };
+            Assert.Throws<ArgumentException>(() => Utils.TrianglesCollide(justRight, tooMany));
+        }
+
+        [Fact]
+        public void TrianglesCollide_ReturnFails_FirstArgumentTooFew()
+        {
+            var tooFew = new List<Vector3> { Vector3.Zero, Vector3.Zero };
+            var justRight = new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero };
+            Assert.Throws<ArgumentException>(() => Utils.TrianglesCollide(tooFew, justRight));
+        }
+        [Fact]
+        public void TrianglesCollide_ReturnFails_SecondArgumentTooFew()
+        {
+            var tooFew = new List<Vector3> { Vector3.Zero, Vector3.Zero };
+            var justRight = new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero };
+            Assert.Throws<ArgumentException>(() => Utils.TrianglesCollide(justRight, tooFew));
+        }
+
+        [Fact]
+        public void TrianglesCollide_ReturnFails_FirstArgumentNull()
+            => Assert.False(Utils.TrianglesCollide(null, new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero }));
+        [Fact]
+        public void TrianglesCollide_ReturnFails_SecondArgumentNull()
+            => Assert.False(Utils.TrianglesCollide(new List<Vector3> { Vector3.Zero, Vector3.Zero, Vector3.Zero }, null));
+
         [Theory]
         [InlineData(2,0,0, Math.PI, 0,0,0, -2,0,0)]
         [InlineData(-2,0,0, Math.PI, 0,0,0, 2,0,0)]

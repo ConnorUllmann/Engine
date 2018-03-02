@@ -8,9 +8,13 @@ namespace Engine
 {
     public static class Utils
     {
-        public static Vector2 UnitVector2(float angleRad) => new Vector2((float)Math.Cos(angleRad), (float)Math.Sin(angleRad));
+        #region Vectors
+
+        public static Vector2 UnitVector2(float _radians) => new Vector2((float)Math.Cos(_radians), (float)Math.Sin(_radians));
         public static Vector2 RandomUnitVector2() => UnitVector2((float)(Basics.Utils.RandomDouble() * Math.PI * 2));
-        public static Vector3 To3D(this Vector2 _vector, float _z=0) => new Vector3(_vector.X, _vector.Y, _z);
+
+        public static Vector3 To3D(this Vector2 _vector, float _z = 0) => new Vector3(_vector.X, _vector.Y, _z);
+        public static Vector2 To2D(this Vector3 _vector) => new Vector2(_vector.X, _vector.Y);
 
         public static void Rotate(this List<Vector3> _vertices, float _radians, Vector3 _center)
         {
@@ -27,18 +31,78 @@ namespace Engine
             return diff + _center;
         }
 
+        public static Vector3 Avg(this IEnumerable<Vector3> _list)
+        {
+            var sum = new Vector3();
+            int count = 0;
+            foreach (var v in _list)
+            {
+                sum += v;
+                count++;
+            }
+            return sum / count;
+        }
+        public static Vector3 Sum(this IEnumerable<Vector3> _list)
+        {
+            var sum = new Vector3();
+            foreach (var v in _list)
+                sum += v;
+            return sum;
+        }
+
+        #endregion
+
+
+        #region Points & lines
+
         public static bool PointIsRightOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) < 0;
         public static bool PointIsLeftOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) > 0;
         public static bool PointOnLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) == 0;
         public static int PointSideOfLine(Vector3 point, Vector3 a, Vector3 b) => Math.Sign((b.X - a.X) * (point.Y - a.Y) - (b.Y - a.Y) * (point.X - a.X));
+        public static Vector3 PointOnLineAtX(Vector3 a, Vector3 b, float x)
+        {
+            var diffX = b.X - a.X;
+            return diffX == 0 ? (a + b) / 2 : new Vector3(x, (x - a.X) / diffX * (b.Y - a.Y) + a.Y, 0);
+        }
+        public static Vector3 PointOnLineAtY(Vector3 a, Vector3 b, float y)
+        {
+            var diffY = b.Y - a.Y;
+            return diffY == 0 ? (a + b) / 2 : new Vector3((y - a.Y) / diffY * (b.X - a.X) + a.X, y, 0);
+        }
+
+        #endregion
+
+
+        #region Points & triangles
+
+        /// <summary>
+        /// Checks whether a given point is inside a given triangle
+        /// </summary>
+        /// <param name="point">point that is being checked</param>
+        /// <param name="a">first point of triangle</param>
+        /// <param name="b">second point of triangle</param>
+        /// <param name="c">third point of triangle</param>
+        /// <returns>Whether the given point is inside the given triangle</returns>
         public static bool PointInTriangle(Vector3 point, Vector3 a, Vector3 b, Vector3 c)
         {
             var bc = PointIsRightOfLine(point, b, c);
             return PointIsRightOfLine(point, a, b) == bc && bc == PointIsRightOfLine(point, c, a);
         }
 
+        /// <summary>
+        /// Checks whether a triangle collides with another triangle
+        /// </summary>
+        /// <param name="a">first triangle</param>
+        /// <param name="b">second triangle</param>
+        /// <returns>Whether the two given triangles collide</returns>
         public static bool TrianglesCollide(List<Vector3> a, List<Vector3> b)
         {
+            if (a == null || b == null)
+                return false;
+
+            if (a.Count != 3 || b.Count != 3)
+                throw new ArgumentException("A triangle cannot have more than 3 vertices");
+
             var aRectangle = BoundingBox.RectangleFromPoints(a);
             var bRectangle = BoundingBox.RectangleFromPoints(b);
             if (!aRectangle.Collides(bRectangle))
@@ -57,17 +121,11 @@ namespace Engine
             }
             return false;
         }
-        
-        public static Vector3 PointOnLineAtX(Vector3 a, Vector3 b, float x)
-        {
-            var diffX = b.X - a.X;
-            return diffX == 0 ? (a + b) / 2 : new Vector3(x, (x - a.X) / diffX * (b.Y - a.Y) + a.Y, 0);
-        }
-        public static Vector3 PointOnLineAtY(Vector3 a, Vector3 b, float y)
-        {
-            var diffY = b.Y - a.Y;
-            return diffY == 0 ? (a + b) / 2 : new Vector3((y - a.Y) / diffY * (b.X - a.X) + a.X, y, 0);
-        }
+
+        #endregion
+
+
+        #region Line intersection
 
         private static bool OnSegment(Vector3 p, Vector3 q, Vector3 r)
             => OnSegment(p.X, p.Y, q.X, q.Y, r.X, r.Y);
@@ -140,23 +198,6 @@ namespace Engine
             return ip;
         }
 
-        public static Vector3 Avg(this IEnumerable<Vector3> list)
-        {
-            var sum = new Vector3();
-            int count = 0;
-            foreach (var v in list)
-            {
-                sum += v;
-                count++;
-            }
-            return sum / count;
-        }
-        public static Vector3 Sum(this IEnumerable<Vector3> list)
-        {
-            var sum = new Vector3();
-            foreach (var v in list)
-                sum += v;
-            return sum;
-        }
+        #endregion
     }
 }
