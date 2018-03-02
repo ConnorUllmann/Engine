@@ -12,7 +12,11 @@ namespace Engine
         public static Vector2 RandomUnitVector2() => UnitVector2((float)(Basics.Utils.RandomDouble() * Math.PI * 2));
         public static Vector3 To3D(this Vector2 _vector, float _z=0) => new Vector3(_vector.X, _vector.Y, _z);
 
-        public static void Rotate(this List<Vector3> _vertices, float _radians, Vector3 _center) => _vertices.ForEach(x => x.Rotate(_radians, _center));
+        public static void Rotate(this List<Vector3> _vertices, float _radians, Vector3 _center)
+        {
+            for (var i = 0; i < _vertices.Count; i++)
+                _vertices[i] = _vertices[i].Rotate(_radians, _center);
+        }
         public static Vector3 Rotate(this Vector3 _vertex, float _radians, Vector3 _center)
         {
             var diff = _vertex - _center;
