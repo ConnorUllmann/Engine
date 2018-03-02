@@ -32,7 +32,7 @@ namespace Engine
             Y = GetY();
 
             var rotationRad = grid.Horizontal ? (float)(0.5f * Math.PI) : 0;
-            polygonRenderer = new PolygonFillRenderer(ConvexPolygon.Regular(6, Radius, rotationRad), Color4.Red);
+            polygonRenderer = new PolygonFillRenderer(ConvexPolygon.Regular(6, Radius, rotationRad), X, Y, Color4.Red);
             polygonRenderer.Move(new Vector3(X, Y, 0));
         }
 

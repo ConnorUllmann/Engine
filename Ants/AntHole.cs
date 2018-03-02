@@ -18,7 +18,7 @@ namespace Ants
         {
             overworldGrid = _overworld;
             underworldGrid = _underworld;
-            renderer = new PolygonFillRenderer(ConvexPolygon.Square(overworldGrid.TileSize * 2), Color4.Black);
+            renderer = new PolygonFillRenderer(ConvexPolygon.Square(overworldGrid.TileSize * 2), X, Y, Color4.Black);
         }
 
         public override void Update()

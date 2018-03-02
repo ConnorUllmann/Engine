@@ -32,7 +32,7 @@ namespace Ants
         {
             Account = new ResourceAccount(_type);
             Account.Deposit(_amount);
-            renderer = new PolygonFillRenderer(ConvexPolygon.Square(8), Colors[_type]);
+            renderer = new PolygonFillRenderer(ConvexPolygon.Square(8), X, Y, Colors[_type]);
         }
 
         public override void Update()

@@ -108,7 +108,7 @@ namespace CellularAutomata
         public override void Start()
         {
             var polygon = ConvexPolygon.Regular(5, 100);
-            var renderer = new PolygonFillRenderer(polygon, Color4.Blue);
+            var renderer = new PolygonFillRenderer(polygon, 0, 0, Color4.Blue);
             actor = new ShellActor();
             actor.UpdateHandler += () =>
             {

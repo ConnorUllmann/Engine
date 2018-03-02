@@ -159,7 +159,7 @@ namespace Engine
             vertexBuffer.Move(_position);
         }
         
-        public void Rotate(float _angleRad, Vector3? _center=null) => vertexBuffer.Rotate(_angleRad, _center ?? positionPrev);
+        public void Rotate(float _angleRad, Vector3 _center) => vertexBuffer.Rotate(_angleRad, _center);
 
         public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
         public void Render(Vector3 positionCurr)

@@ -15,7 +15,7 @@ namespace Engine.Debug
         {
             var polygon = ConvexPolygon.Rectangle(_w, _h);
             _color = _color ?? Color4.White;
-            var renderer = _filled ? (PolygonRenderer)new PolygonFillRenderer(polygon, _color.Value) : new PolygonOutlineRenderer(polygon, _color.Value);
+            var renderer = _filled ? (PolygonRenderer)new PolygonFillRenderer(polygon, 0, 0, _color.Value) : new PolygonOutlineRenderer(polygon, 0, 0, _color.Value);
             renderer.Render(_x, _y);
         }
     }

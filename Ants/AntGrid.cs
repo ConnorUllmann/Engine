@@ -75,7 +75,7 @@ namespace Ants
         public VisualAntGrid(float _x, float _y, int _width, int _height, int _tileSize)
             : base(_x, _y, _width, _height, _tileSize)
         {
-            squareRenderer = new PolygonOutlineRenderer(ConvexPolygon.Square(TileSize), Color4.Red);
+            squareRenderer = new PolygonOutlineRenderer(ConvexPolygon.Square(TileSize), 0, 0, Color4.Red);
         }
 
         public override void Update()

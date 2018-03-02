@@ -19,7 +19,7 @@ namespace Ants
         public override void Start()
         {
             GenerateGrids();
-            //GenerateAnts(1);
+            GenerateAnts(10);
 
             GenerateAntPlayer();
             var ant = new Ant(world, WorldType.Underworld, -250, -250);
@@ -40,7 +40,6 @@ namespace Ants
         {
             var ant = new Ant(world, WorldType.Underworld);
             ant.AttachController(new AIAntController());
-            ant.Angle = (float)(Basics.Utils.RandomDouble() * Math.PI * 2);
             ant.AddToWorld();
             ai = ant;
         }

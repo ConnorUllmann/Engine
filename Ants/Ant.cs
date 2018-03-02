@@ -51,7 +51,7 @@ namespace Ants
                     return;
                 anglePrevious = angle;
                 angle = value;
-                Rotate(angle - anglePrevious, polygon.CenterOfMass + new Vector3(X, Y, 0));
+                Rotate(angle - anglePrevious, Polygon.CenterOfMass + new Vector3(X, Y, 0));
             }
         }
         private float speed;
@@ -84,6 +84,14 @@ namespace Ants
         
         private static AntType RandomAntType() => (AntType)Basics.Utils.RandomInt(Enum.GetNames(typeof(AntType)).Length);
 
+        private static Polygon AntPolygon(float _radius)
+            => new ConvexPolygon(new List<Vector2>
+                {
+                    new Vector2(-_radius, _radius),
+                    new Vector2(-_radius, -_radius),
+                    new Vector2(10 * _radius, 0)
+                });
+
         public Ant(AntWorld _world, WorldType _location)
             : this(_world, _location, Game.RandomPosition())
         { }
@@ -94,8 +102,7 @@ namespace Ants
             : this(RandomAntType(), _world, _location, _x, _y, 4)
         { }
         public Ant(AntType _type, AntWorld _world, WorldType _location, float _x, float _y, float _radius) 
-            : base(new ConvexPolygon(new List<Vector2> { new Vector2(-_radius, _radius), new Vector2(-_radius, -_radius), new Vector2(10*_radius, 0) }), 
-                  _x, _y)
+            : base(AntPolygon(_radius), _x, _y)
         {
             type = _type;
             World = _world;
@@ -204,7 +211,7 @@ namespace Ants
             base.Render();
             Engine.Debug.Draw.Rectangle(BoundingBox, X, Y, Color4.Aqua, false);
             Engine.Debug.Draw.Rectangle(X - 4, Y - 4, 8, 8, Color4.Red, true);
-            Engine.Debug.Draw.Rectangle(X + polygon.CenterOfMass.X - 4, Y + polygon.CenterOfMass.Y - 4, 8, 8, Color4.Blue, true);
+            Engine.Debug.Draw.Rectangle(X + Polygon.CenterOfMass.X - 4, Y + Polygon.CenterOfMass.Y - 4, 8, 8, Color4.Blue, true);
         }
     }
 }

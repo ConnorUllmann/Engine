@@ -30,6 +30,8 @@ namespace Engine
         }
         public Polygon Move(Vector3 _position)
         {
+            if (_position == Vector3.Zero)
+                return this;
             for (var i = 0; i < vertices.Count; i++)
                 vertices[i] += _position;
             return this;
@@ -306,7 +308,8 @@ namespace Engine
         public void SetColor(Color4 _color) => buffer.SetColor(_color);
         public void RandomizeColor() => buffer.RandomizeColor();
 
-        public void Rotate(float _angleRad, Vector3? _center = null) => array?.Rotate(_angleRad, _center);
+        public void Rotate(float _angleRad, Vector3 _center) => array?.Rotate(_angleRad, _center);
+        public void Move(float _x, float _y) => Move(new Vector3(_x, _y, 0));
         public void Move(Vector3 _position) => array?.Move(_position);
 
         public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
@@ -319,19 +322,23 @@ namespace Engine
 
     public class PolygonOutlineRenderer : PolygonRenderer
     {
-        public PolygonOutlineRenderer(Polygon _polygon) : this(_polygon, Color4.White) { }
-        public PolygonOutlineRenderer(Polygon _polygon, Color4 _outlineColor) : base(_polygon.GetOutlineBuffer(_outlineColor)) { }
+        public PolygonOutlineRenderer(Polygon _polygon, float _x=0, float _y=0, Color4? _outlineColor=null) : base(_polygon.GetOutlineBuffer(_outlineColor ?? Color4.White))
+        {
+            Move(_x, _y);
+        }
     }
 
     public class PolygonFillRenderer : PolygonRenderer
     {
-        public PolygonFillRenderer(Polygon _polygon) : this(_polygon, Color4.White) { }
-        public PolygonFillRenderer(Polygon _polygon, Color4 _fillColor) : base(_polygon.GetFillBuffer(_fillColor)) { }
+        public PolygonFillRenderer(Polygon _polygon, float _x=0, float _y=0, Color4? _fillColor=null) : base(_polygon.GetFillBuffer(_fillColor ?? Color4.White))
+        {
+            Move(_x, _y);
+        }
     }
     
     public class PolygonActor : Actor
     {
-        protected Polygon polygon;
+        public Polygon Polygon;
 
         public PolygonFillRenderer FillRenderer;
         public PolygonOutlineRenderer OutlineRenderer;
@@ -341,35 +348,41 @@ namespace Engine
 
         public PolygonActor(Polygon _polygon, float _x=0, float _y=0, bool _center=true) : base(_x, _y)
         {
-            polygon = _polygon;
+            Polygon = _polygon;
             if (_center) Center();
-            FillRenderer = new PolygonFillRenderer(polygon, ColorExtensions.RandomColor());
-            OutlineRenderer = new PolygonOutlineRenderer(polygon, ColorExtensions.RandomColor());
+            FillRenderer = new PolygonFillRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
+            OutlineRenderer = new PolygonOutlineRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
         }
 
-        private void UpdateBounds() => BoundingBox.SetDimensions(polygon.BoundingRectangle());
+        private void UpdateBounds() => BoundingBox.SetDimensions(Polygon.BoundingRectangle());
 
         private void Center()
         {
-            var com = polygon.CenterOfMass;
+            var com = Polygon.CenterOfMass;
             X += com.X;
             Y += com.Y;
-            polygon.Move(-com);
+            Polygon.Move(-com);
             UpdateBounds();
         }
 
         public void Rotate(float _angleRad, Vector3? _center=null)
         {
-            polygon.Rotate(_angleRad, _center.HasValue ? _center.Value - new Vector3(X, Y, 0) : new Vector3(0, 0, 0));
-            FillRenderer.Rotate(_angleRad, _center);
-            OutlineRenderer.Rotate(_angleRad, _center);
+            var centerRelative = _center.HasValue
+                ? _center.Value - new Vector3(X, Y, 0)
+                : Vector3.Zero;
+            var centerAbsolute = _center.HasValue
+                ? _center.Value
+                : Vector3.Zero;
+            Polygon.Rotate(_angleRad, centerRelative);
+            FillRenderer.Rotate(_angleRad, centerAbsolute);
+            OutlineRenderer.Rotate(_angleRad, centerAbsolute);
             UpdateBounds();
         }
 
         public IEnumerable<Polygon> SplitAlongLine(Vector3 pointA, Vector3 pointB)
         {
             var v = new Vector3(X, Y, 0);
-            var ret = polygon.SplitAlongLine(pointA - v, pointB - v).ToList();
+            var ret = Polygon.SplitAlongLine(pointA - v, pointB - v).ToList();
             ret.ForEach(o => o.Move(v));
             return ret;
         }
