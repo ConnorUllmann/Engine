@@ -122,7 +122,7 @@ namespace Engine
         public void Rotate(float _angleRad, Vector3 _center)
         {
             for (var i = 0; i < count; i++)
-                vertices[i].position = Utils.Rotate(vertices[i].position, _angleRad, _center);
+                vertices[i].position = vertices[i].position.Rotate(_angleRad, _center);
         }
 
         public void SetColor(Color4 _color)

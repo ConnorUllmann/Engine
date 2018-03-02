@@ -27,7 +27,7 @@ namespace Engine.Test
         {
             var input = new Vector3(a, b, c);
             var center = new Vector3(xcenter, ycenter, zcenter);
-            var result = Utils.Rotate(input, radians, center);
+            var result = input.Rotate(radians, center);
             Assert.Equal(Math.Round(x, 3), Math.Round(result.X, 3));
             Assert.Equal(Math.Round(y, 3), Math.Round(result.Y, 3));
             Assert.Equal(Math.Round(z, 3), Math.Round(result.Z, 3));
