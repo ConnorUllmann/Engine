@@ -36,6 +36,27 @@ namespace Engine
             var bc = PointIsRightOfLine(point, b, c);
             return PointIsRightOfLine(point, a, b) == bc && bc == PointIsRightOfLine(point, c, a);
         }
+
+        public static bool TrianglesCollide(List<Vector3> a, List<Vector3> b)
+        {
+            var aRectangle = BoundingBox.RectangleFromPoints(a);
+            var bRectangle = BoundingBox.RectangleFromPoints(b);
+            if (!aRectangle.Collides(bRectangle))
+                return false;
+
+            //Check if center of each triangle is in the other
+            if (PointInTriangle(a.Avg(), b[0], b[1], b[2]) || PointInTriangle(b.Avg(), a[0], a[1], a[2]))
+                return true;
+
+            for (var i = 0; i < 3; i++)
+            {
+                var i1 = (i + 1) % 3;
+                for (var j = 0; j < 3; j++)
+                    if (LinesIntersect(a[i], a[i1], b[j], b[(j + 1) % 3]))
+                        return true;
+            }
+            return false;
+        }
         
         public static Vector3 PointOnLineAtX(Vector3 a, Vector3 b, float x)
         {
@@ -46,6 +67,49 @@ namespace Engine
         {
             var diffY = b.Y - a.Y;
             return diffY == 0 ? (a + b) / 2 : new Vector3((y - a.Y) / diffY * (b.X - a.X) + a.X, y, 0);
+        }
+
+        private static bool OnSegment(Vector3 p, Vector3 q, Vector3 r)
+            => OnSegment(p.X, p.Y, q.X, q.Y, r.X, r.Y);
+        private static bool OnSegment(float px, float py, float qx, float qy, float rx, float ry)
+            => qx <= Math.Max(px, rx) && qx >= Math.Min(px, rx) &&
+               qy <= Math.Max(py, ry) && qy >= Math.Min(py, ry);
+
+        private enum TripletOrientation
+        {
+            Colinear,
+            Clockwise,
+            Counterclockwise
+        }
+        private static TripletOrientation GetTripletOrientation(Vector3 p, Vector3 q, Vector3 r)
+            => GetTripletOrientation(p.X, p.Y, q.X, q.Y, r.X, r.Y);
+        private static TripletOrientation GetTripletOrientation(float px, float py, float qx, float qy, float rx, float ry)
+        {
+            var val = (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
+            if (val == 0) return TripletOrientation.Colinear;
+            return val > 0 ? TripletOrientation.Clockwise : TripletOrientation.Counterclockwise;
+        }
+
+        public static bool LinesIntersect(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2)
+            => LinesIntersect(a1.X, a1.Y, a2.X, a2.Y, b1.X, b1.Y, b2.X, b2.Y);
+        public static bool LinesIntersect(float a1x, float a1y, float a2x, float a2y, float b1x, float b1y, float b2x, float b2y)
+        { //https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+            var o1 = GetTripletOrientation(a1x, a1y, a2x, a2y, b1x, b1y);
+            var o2 = GetTripletOrientation(a1x, a1y, a2x, a2y, b2x, b2y);
+            var o3 = GetTripletOrientation(b1x, b1y, b2x, b2y, a1x, a1y);
+            var o4 = GetTripletOrientation(b1x, b1y, b2x, b2y, a2x, a2y);
+
+            if (o1 != o2 && o3 != o4)
+                return true;
+            if (o1 == TripletOrientation.Colinear && OnSegment(a1x, a1y, b1x, b1y, a2x, a2y))
+                return true;
+            if (o2 == TripletOrientation.Colinear && OnSegment(a1x, a1y, b2x, b2y, a2x, a2y))
+                return true;
+            if (o3 == TripletOrientation.Colinear && OnSegment(b1x, b1y, a1x, a1y, b2x, b2y))
+                return true;
+            if (o4 == TripletOrientation.Colinear && OnSegment(b1x, b1y, a2x, a2y, b2x, b2y))
+                return true;
+            return false;
         }
         
         public static Vector3? LinesIntersectionPoint(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, bool asSeg = true)
