@@ -18,8 +18,8 @@ namespace Engine.Test
         [InlineData(false, 0,0, 1,0,  2,0, 2,2)] //Don't meet at corner
         [InlineData(false, -1,-1, -1,1,  1,-1, 1,1)] //Parallel vertical
         [InlineData(false, -1,1, 1,1,  -1,-1, 1,-1)] //Parallel horizontal
-        public void LinesIntersect_ReturnSucceed(bool expected, float a1x, float a1y, float a2x, float a2y, float b1x, float b1y, float b2x, float b2y)
-            => Assert.Equal(expected, Utils.LinesIntersect(a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y));
+        public void SegmentsIntersect_ReturnSucceed(bool expected, float a1x, float a1y, float a2x, float a2y, float b1x, float b1y, float b2x, float b2y)
+            => Assert.Equal(expected, Utils.SegmentsIntersect(a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y));
 
         [Theory]
         [InlineData(true, 0,0, 5,0, 0,5,  0,0, 5,0, 0,6)]

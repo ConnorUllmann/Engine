@@ -76,13 +76,13 @@ namespace Engine
         #region Points & triangles
 
         /// <summary>
-        /// Checks whether a given point is inside a given triangle
+        /// Checks whether a given point is inside a given triangle.
         /// </summary>
         /// <param name="point">point that is being checked</param>
         /// <param name="a">first point of triangle</param>
         /// <param name="b">second point of triangle</param>
         /// <param name="c">third point of triangle</param>
-        /// <returns>Whether the given point is inside the given triangle</returns>
+        /// <returns>Whether the given point is inside the given triangle.</returns>
         public static bool PointInTriangle(Vector3 point, Vector3 a, Vector3 b, Vector3 c)
         {
             var bc = PointIsRightOfLine(point, b, c);
@@ -90,11 +90,11 @@ namespace Engine
         }
 
         /// <summary>
-        /// Checks whether a triangle collides with another triangle
+        /// Checks whether a triangle collides with another triangle.
         /// </summary>
         /// <param name="a">first triangle</param>
         /// <param name="b">second triangle</param>
-        /// <returns>Whether the two given triangles collide</returns>
+        /// <returns>Whether the two given triangles collide.</returns>
         public static bool TrianglesCollide(List<Vector3> a, List<Vector3> b)
         {
             if (a == null || b == null)
@@ -116,7 +116,7 @@ namespace Engine
             {
                 var i1 = (i + 1) % 3;
                 for (var j = 0; j < 3; j++)
-                    if (LinesIntersect(a[i], a[i1], b[j], b[(j + 1) % 3]))
+                    if (SegmentsIntersect(a[i], a[i1], b[j], b[(j + 1) % 3]))
                         return true;
             }
             return false;
@@ -148,9 +148,30 @@ namespace Engine
             return val > 0 ? TripletOrientation.Clockwise : TripletOrientation.Counterclockwise;
         }
 
-        public static bool LinesIntersect(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2)
-            => LinesIntersect(a1.X, a1.Y, a2.X, a2.Y, b1.X, b1.Y, b2.X, b2.Y);
-        public static bool LinesIntersect(float a1x, float a1y, float a2x, float a2y, float b1x, float b1y, float b2x, float b2y)
+        /// <summary>
+        /// Checks if two given line segments (a1, a2) and (b1, b2) intersect.
+        /// </summary>
+        /// <param name="a1">1st point of 1st segment</param>
+        /// <param name="a2">2nd point of 1st segment</param>
+        /// <param name="b1">1st point of 2nd segment</param>
+        /// <param name="b2">2nd point of 2nd segment</param>
+        /// <returns>Whether the two line segments (a1, a2) and (b1, b2) intersect.</returns>
+        public static bool SegmentsIntersect(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2)
+            => SegmentsIntersect(a1.X, a1.Y, a2.X, a2.Y, b1.X, b1.Y, b2.X, b2.Y);
+
+        /// <summary>
+        /// Checks if two given line segments (a1, a2) and (b1, b2) intersect.
+        /// </summary>
+        /// <param name="a1x">x-position of 1st point of 1st segment</param>
+        /// <param name="a1y">y-position of 1st point of 1st segment</param>
+        /// <param name="a2x">x-position of 2nd point of 1st segment</param>
+        /// <param name="a2y">y-position of 2nd point of 1st segment</param>
+        /// <param name="b1x">x-position of 1st point of 2nd segment</param>
+        /// <param name="b1y">y-position of 1st point of 2nd segment</param>
+        /// <param name="b2x">x-position of 2nd point of 2nd segment</param>
+        /// <param name="b2y">y-position of 2nd point of 2nd segment</param>
+        /// <returns>Whether the two line segments (a1, a2) and (b1, b2) intersect.</returns>
+        public static bool SegmentsIntersect(float a1x, float a1y, float a2x, float a2y, float b1x, float b1y, float b2x, float b2y)
         { //https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
             var o1 = GetTripletOrientation(a1x, a1y, a2x, a2y, b1x, b1y);
             var o2 = GetTripletOrientation(a1x, a1y, a2x, a2y, b2x, b2y);
@@ -169,10 +190,19 @@ namespace Engine
                 return true;
             return false;
         }
-        
-        public static Vector3? LinesIntersectionPoint(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, bool asSeg = true)
+
+        /// <summary>
+        /// Finds where two given lines (or line segments if asSeg=true) intersect and returns the position
+        /// </summary>
+        /// <param name="a1">1st point of 1st line/segment</param>
+        /// <param name="a2">2nd point of 1st line/segment</param>
+        /// <param name="b1">1st point of 2nd line/segment</param>
+        /// <param name="b2">2nd point of 2nd line/segment</param>
+        /// <param name="areSegments">whether the points define lines or segments</param>
+        /// <returns>The position (if it exists) where the two lines/segments intersect</returns>
+        public static Vector3? LinesIntersectionPoint(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, bool areSegments = true)
         {
-            if (asSeg && !Rectangle.Collide(
+            if (areSegments && !Rectangle.Collide(
                 Basics.Utils.Min(a1.X, a2.X), Basics.Utils.Min(a1.Y, a2.Y), Math.Abs(a1.X - a2.X), Math.Abs(a1.Y - a2.Y),
                 Basics.Utils.Min(b1.X, b2.X), Basics.Utils.Min(b1.Y, b2.Y), Math.Abs(b1.X - b2.X), Math.Abs(b1.Y - b2.Y)))
                 return null;
@@ -189,7 +219,7 @@ namespace Engine
                 return null;
             var ip = new Vector3((adx * c2 - bdx * c1) / denom, (bdy * c1 - ady * c2) / denom, 0);
 
-            if (asSeg &&
+            if (areSegments &&
                 (ip.X - a2.X) * (ip.X - a2.X) + (ip.Y - a2.Y) * (ip.Y - a2.Y) > (a1.X - a2.X) * (a1.X - a2.X) + (a1.Y - a2.Y) * (a1.Y - a2.Y) ||
                 (ip.X - a1.X) * (ip.X - a1.X) + (ip.Y - a1.Y) * (ip.Y - a1.Y) > (a1.X - a2.X) * (a1.X - a2.X) + (a1.Y - a2.Y) * (a1.Y - a2.Y) ||
                 (ip.X - b2.X) * (ip.X - b2.X) + (ip.Y - b2.Y) * (ip.Y - b2.Y) > (b1.X - b2.X) * (b1.X - b2.X) + (b1.Y - b2.Y) * (b1.Y - b2.Y) ||
