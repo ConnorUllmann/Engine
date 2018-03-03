@@ -20,10 +20,15 @@ namespace Engine.Debug
             else
                 debugPolygon.Clone(BoundingBox.PointsFromRectangle(_w, _h));
             _color = _color ?? Color4.White;
+
+            /************************************************************************************************/
+            /**************** TODO: Lots of memory is constantly allocated by these lines! ******************/
+            /************************************************************************************************/
             var renderer = _filled
                 ? (PolygonRenderer)new PolygonFillRenderer(debugPolygon, 0, 0, _color.Value)
                 : new PolygonOutlineRenderer(debugPolygon, 0, 0, _color.Value);
-            //renderer.Render(_x, _y);
+            //Not sure how much this Render call contributes to the memory leak--doesn't look to be much right now
+            renderer.Render(_x, _y);
         }
     }
 }
