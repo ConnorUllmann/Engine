@@ -8,19 +8,18 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Engine
 {
-    public abstract class Polygon
+    public abstract class Polygon : List<Vector3>
     {
-        //Relative coordinates, rather than world coordinates
-        public Vector3 CenterOfMass => vertices.Avg();
-        public readonly int Sides;
-
-        protected readonly List<Vector3> vertices;
+        public Vector3 CenterOfMass => this.Avg();
+        public int Sides => Count;
 
         public Polygon(List<Vector2> _counterClockwiseVertices) : this(_counterClockwiseVertices.Select(x => new Vector3(x.X, x.Y, 0)).ToList()) { }
-        public Polygon(List<Vector3> _counterClockwiseVertices)
+        public Polygon(List<Vector3> _counterClockwiseVertices) : base(_counterClockwiseVertices) { }
+
+        public void Clone(List<Vector3> _counterClockwiseVertices)
         {
-            vertices = _counterClockwiseVertices;
-            Sides = vertices.Count;
+            this.Clear();
+            this.AddRange(_counterClockwiseVertices);
         }
 
         public Polygon Center()
@@ -32,27 +31,22 @@ namespace Engine
         {
             if (_position == Vector3.Zero)
                 return this;
-            for (var i = 0; i < vertices.Count; i++)
-                vertices[i] += _position;
-            return this;
-        }
-        public Polygon Rotate(float _angleRad, Vector3? _center = null)
-        {
-            vertices.Rotate(_angleRad, _center ?? CenterOfMass);
+            for (var i = 0; i < Count; i++)
+                this[i] += _position;
             return this;
         }
 
-        public float MinX() => vertices.Select(o => o.X).Min();
-        public float MaxX() => vertices.Select(o => o.X).Max();
-        public float MinY() => vertices.Select(o => o.Y).Min();
-        public float MaxY() => vertices.Select(o => o.Y).Max();
-        public Basics.Rectangle BoundingRectangle() => BoundingBox.RectangleFromPoints(vertices);
+        public float MinX() => this.Select(o => o.X).Min();
+        public float MaxX() => this.Select(o => o.X).Max();
+        public float MinY() => this.Select(o => o.Y).Min();
+        public float MaxY() => this.Select(o => o.Y).Max();
+        public Basics.Rectangle BoundingRectangle() => BoundingBox.RectangleFromPoints(this);
         
         public ColoredVertexBuffer GetOutlineBuffer() => GetOutlineBuffer(Color4.White);
         public ColoredVertexBuffer GetOutlineBuffer(Color4 _color)
         {
             var buffer = new ColoredVertexBuffer(PrimitiveType.LineLoop);
-            vertices.ForEach(v => buffer.AddVertex(new ColoredVertex(v, _color)));
+            ForEach(v => buffer.AddVertex(new ColoredVertex(v, _color)));
             return buffer;
         }
         public virtual ColoredVertexBuffer GetFillBuffer() => throw new NotImplementedException();
@@ -61,7 +55,7 @@ namespace Engine
 
         public IEnumerable<Polygon> SplitAlongLine(Vector3 pointA, Vector3 pointB)
         {
-            if (vertices.Count == 0)
+            if (Count == 0)
                 return new List<Polygon>();
 
             float xmin, ymin, xmax, ymax;
@@ -84,12 +78,11 @@ namespace Engine
             var points = new List<Vector3>();
             var intersections = new List<List<Vector3>>();
             var uncheckedPoints = new List<int>();
-            var count = vertices.Count;
 
-            for(var j = 0; j < count; j++)
+            for(var j = 0; j < Count; j++)
             {
-                var a = vertices[j];
-                var b = vertices[(j + 1) % count];
+                var a = this[j];
+                var b = this[(j + 1) % Count];
                 var p = Utils.LinesIntersectionPoint(m, n, a, b, true);
                 uncheckedPoints.Add(points.Count);
                 points.Add(a);
@@ -101,11 +94,11 @@ namespace Engine
             }
 
             if (intersections.Count <= 0)
-                return new List<Polygon>() { new ConcavePolygon(vertices) };
+                return new List<Polygon>() { new ConcavePolygon(new List<Vector3>(this)) };
 
             intersections.Sort((x, y) => Math.Sign((x.First() - m).LengthSquared - (y.First() - m).LengthSquared));
 
-            count = intersections.Count;
+            var count = intersections.Count;
             for(var i = 0; i < count; i+=2)
             {
                 var c = intersections[i];
@@ -182,33 +175,39 @@ namespace Engine
         public override List<Vector3> ToTriangles()
         {
             //Takes a list of n vertices and adds more vertices to form triangles consisting of each consecutive group of 3 vertices
+            if (Count <= 3)
+                return new List<Vector3>(this);
             var ret = new List<Vector3>();
-            if (vertices == null)
-                return ret;
-            else if (vertices.Count <= 3)
-                return vertices;
-            var baseVertex = vertices.First();
-            for (var i = 1; i < vertices.Count - 1; i++)
+            var baseVertex = this.First();
+            for (var i = 1; i < Count - 1; i++)
             {
                 ret.Add(baseVertex);
-                ret.Add(vertices[i]);
-                ret.Add(vertices[i + 1]);
+                ret.Add(this[i]);
+                ret.Add(this[i + 1]);
             }
             return ret;
         }
 
         public static ConvexPolygon Square(float size) => Rectangle(size, size);
+        
+        public static ConvexPolygon Rectangle(Basics.Rectangle _rectangle)
+            => Rectangle(_rectangle.X, _rectangle.Y, _rectangle.W, _rectangle.H);
         public static ConvexPolygon Rectangle(float width, float height)
-        {
-            var counterClockwiseVertices = new List<Vector3>()
+            => Rectangle(0, 0, width, height);
+        public static ConvexPolygon Rectangle(float x, float y, float width, float height)
+            => new ConvexPolygon(RectanglePoints(x, y, width, height));
+        public static List<Vector3> RectanglePoints(Basics.Rectangle _rectangle)
+            => RectanglePoints(_rectangle.X, _rectangle.Y, _rectangle.W, _rectangle.H);
+        public static List<Vector3> RectanglePoints(float width, float height)
+            => RectanglePoints(0, 0, width, height);
+        public static List<Vector3> RectanglePoints(float x, float y, float width, float height)
+            => new List<Vector3>()
             {
-                new Vector3(0, 0, 0),
-                new Vector3(width, 0, 0),
-                new Vector3(width, height, 0),
-                new Vector3(0, height, 0),
+                new Vector3(x, y, 0),
+                new Vector3(x + width, y, 0),
+                new Vector3(x + width, y + height, 0),
+                new Vector3(x, y + height, 0),
             };
-            return new ConvexPolygon(counterClockwiseVertices);
-        }
         public static ConvexPolygon Regular(int sides, float radius, float rotationRad = 0)
         {
             var counterClockwiseVertices = new List<Vector3>();
@@ -236,53 +235,52 @@ namespace Engine
 
         /// <summary>
         /// Ear-clipping algorithm
+        /// Takes a list of n vertices and adds more vertices to form triangles consisting of consecutive groups of 3 vertices
         /// </summary>
         /// <returns>list of vertex triplets which define a triangulation of this polygon</returns>
         public override List<Vector3> ToTriangles()
         {
-            //Takes a list of n vertices and adds more vertices to form triangles consisting of each consecutive group of 3 vertices
-            var ret = new List<Vector3>();
-            if (vertices == null)
-                return ret;
-            else if (vertices.Count <= 3)
-                return vertices;
+            //
+            if (Count <= 3)
+                return new List<Vector3>(this);
 
+            var ret = new List<Vector3>();
             var iSkip = new List<int>();
             int i = 0;
-            while (iSkip.Count < vertices.Count - 2)
+            while (iSkip.Count < Count - 2)
             {
-                var iCurr = i++ % vertices.Count;
+                var iCurr = i++ % Count;
 
                 if (iSkip.Contains(iCurr))
                     continue;
 
                 int iPrev = -1;
                 int iPrevCount = 1;
-                while ((iPrev < 0 || iSkip.Contains(iPrev)) && iPrevCount < vertices.Count)
-                    iPrev = (iCurr + vertices.Count - iPrevCount++) % vertices.Count;
-                if (iPrevCount >= vertices.Count)
+                while ((iPrev < 0 || iSkip.Contains(iPrev)) && iPrevCount < Count)
+                    iPrev = (iCurr + Count - iPrevCount++) % Count;
+                if (iPrevCount >= Count)
                     Console.WriteLine("Cannot find previous vertex in concave polygon triangulation");
 
                 var iNext = -1;
                 var iNextCount = 1;
-                while ((iNext == -1 || iSkip.Contains(iNext)) && iNextCount < vertices.Count)
-                    iNext = (iCurr + iNextCount++) % vertices.Count;
-                if (iNextCount >= vertices.Count)
+                while ((iNext == -1 || iSkip.Contains(iNext)) && iNextCount < Count)
+                    iNext = (iCurr + iNextCount++) % Count;
+                if (iNextCount >= Count)
                     Console.WriteLine("Cannot find next vertex in concave polygon triangulation");
 
-                var prev = vertices[iPrev];
-                var curr = vertices[iCurr];
-                var next = vertices[iNext];
+                var prev = this[iPrev];
+                var curr = this[iCurr];
+                var next = this[iNext];
                 var IsEar = true;
                 if (Utils.PointIsRightOfLine(next, prev, curr))
                     IsEar = false;
                 else
                 {
-                    for (var j = 0; j < vertices.Count; j++)
+                    for (var j = 0; j < Count; j++)
                     {
                         if (j == iPrev || j == iCurr || j == iNext || iSkip.Contains(j))
                             continue;
-                        if (Utils.PointInTriangle(vertices[j], prev, curr, next))
+                        if (Utils.PointInTriangle(this[j], prev, curr, next))
                         {
                             IsEar = false;
                             break;

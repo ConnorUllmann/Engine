@@ -80,7 +80,7 @@ namespace Ants
         public AntType Type => type;
         public WorldType Location = WorldType.Underworld;
         public AntWorld World;
-        public AntGrid Grid => World.WorldFromType(Location);
+        public AntGrid Grid => World?.WorldFromType(Location);
         
         private static AntType RandomAntType() => (AntType)Basics.Utils.RandomInt(Enum.GetNames(typeof(AntType)).Length);
 
@@ -106,7 +106,7 @@ namespace Ants
         {
             type = _type;
             World = _world;
-            World.AddAnt(this);
+            World?.AddAnt(this);
             Location = _location;
             anglePrevious = 0;
             angle = 0;
@@ -138,10 +138,10 @@ namespace Ants
 
         public override void Update()
         {
-            var collidedAnts = Grid.GetAntsThatCollide(X + BoundingBox.X, Y + BoundingBox.Y, BoundingBox.W, BoundingBox.H);
-            collidedAnts.Remove(this);
+            var collidedAnts = Grid?.GetAntsThatCollide(X + BoundingBox.X, Y + BoundingBox.Y, BoundingBox.W, BoundingBox.H);
+            collidedAnts?.Remove(this);
 
-            if(collidedAnts.Count > 0)
+            if (collidedAnts?.Count > 0)
                 FillRenderer.RandomizeColor();
             //foreach (var ant in collidedAnts)
             //    ant.Destroy();
@@ -164,7 +164,7 @@ namespace Ants
 
         private void UpdateTile()
         {
-            tile = Grid.Get(X, Y);
+            tile = Grid?.Get(X, Y);
             if (tile == null)
                 return;
 
@@ -209,7 +209,7 @@ namespace Ants
         public override void Render()
         {
             base.Render();
-            Engine.Debug.Draw.Rectangle(BoundingBox, X, Y, Color4.Aqua, false);
+            Engine.Debug.Draw.Rectangle(BoundingBox.ToRectangle(), X, Y, Color4.Aqua, false);
             Engine.Debug.Draw.Rectangle(X - 4, Y - 4, 8, 8, Color4.Red, true);
             Engine.Debug.Draw.Rectangle(X + Polygon.CenterOfMass.X - 4, Y + Polygon.CenterOfMass.Y - 4, 8, 8, Color4.Blue, true);
         }

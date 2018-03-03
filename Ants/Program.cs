@@ -73,14 +73,17 @@ namespace Ants
 
         public override void Update()
         {
-            world.Update();
+            world?.Update();
         }
 
         public override void Render()
         {
-            world.OverworldVisible = player.Location == WorldType.Overworld;
-            world.UnderworldVisible = player.Location == WorldType.Underworld;
-            world.Render();
+            if (world != null)
+            {
+                world.OverworldVisible = player.Location == WorldType.Overworld;
+                world.UnderworldVisible = player.Location == WorldType.Underworld;
+                world.Render();
+            }
         }
     }
 

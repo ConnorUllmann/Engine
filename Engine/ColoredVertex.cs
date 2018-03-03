@@ -51,13 +51,10 @@ namespace Engine
             width = _width;
             height = _height;
 
-            var a = x + width;
-            var b = y + height;
-
-            AddVertex(new ColoredVertex(new Vector3(a, y, depth), _bottomRightCorner));
+            AddVertex(new ColoredVertex(new Vector3(x + width, y, depth), _bottomRightCorner));
             AddVertex(new ColoredVertex(new Vector3(x, y, depth), _bottomLeftCorner));
-            AddVertex(new ColoredVertex(new Vector3(x, b, depth), _topLeftCorner));
-            AddVertex(new ColoredVertex(new Vector3(a, b, depth), _topRightCorner));
+            AddVertex(new ColoredVertex(new Vector3(x, y + height, depth), _topLeftCorner));
+            AddVertex(new ColoredVertex(new Vector3(x + width, y + height, depth), _topRightCorner));
         }
 
         public float X
@@ -88,6 +85,7 @@ namespace Engine
                 var diff = value - width;
                 vertices[0].position.X += diff;
                 vertices[3].position.X += diff;
+                width = value;
             }
         }
 
@@ -99,6 +97,7 @@ namespace Engine
                 var diff = height - value;
                 vertices[0].position.Y += diff;
                 vertices[1].position.Y += diff;
+                height = value;
             }
         }
     }

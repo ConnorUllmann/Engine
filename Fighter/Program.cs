@@ -60,9 +60,80 @@ namespace Fighter
 
     class Program
     {
+        class OVector3
+        {
+            public float X;
+            public float Y;
+            public float Z;
+
+            public OVector3(float _x=0, float _y=0, float _z=0)
+            {
+                X = _x;
+                Y = _y;
+                Z = _z;
+            }
+        }
+
         static void Main(string[] args)
         {
-            new FighterGame().Run();
+            //new FighterGame().Run();
+            ObjectListOutOfScope_Linear();
+        }
+
+        public static void StructListOutOfScope_Linear()
+        {
+            var list = new List<Vector3>();
+            while (true)
+            {
+                for (var i = 0; i < 1000; i++)
+                    list.Add(new Vector3(0, 0, 0));
+                Console.WriteLine(list.Count);
+            }
+        }
+
+        public static void ObjectListOutOfScope_Linear()
+        {
+            var list = new List<OVector3>();
+            while (true)
+            {
+                for (var i = 0; i < 1000; i++)
+                    list.Add(new OVector3(0, 0, 0));
+                Console.WriteLine(list.Count);
+            }
+        }
+
+        public static void StructVariableOutOfScope_Flat()
+        {
+            Vector3 o;
+            while (true)
+            {
+                o = new Vector3(0, 0, 0);
+            }
+        }
+
+        public static void ObjectVariableOutOfScope_Flat()
+        {
+            OVector3 o;
+            while (true)
+            {
+                o = new OVector3(0, 0, 0);
+            }
+        }
+
+        public static void StructVariableInScope_Flat()
+        {
+            while (true)
+            {
+                var o = new Vector3(0, 0, 0);
+            }
+        }
+
+        public static void ObjectVariableInScope_Flat()
+        {
+            while (true)
+            {
+                var o = new OVector3(0, 0, 0);
+            }
         }
     }
 }

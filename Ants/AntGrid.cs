@@ -60,8 +60,6 @@ namespace Ants
 
         public virtual void Render()
         {
-            foreach (var rectangle in Quadtree.GetRectangles())
-                Engine.Debug.Draw.Rectangle(rectangle, 0, 0, Color4.Red, false);
         }
         
         public HashSet<Actor> GetAntsThatCollide(Rectangle _r) => Quadtree.QueryRect(_r);
@@ -92,6 +90,9 @@ namespace Ants
                 squareRenderer.SetColor(tile.Signals.Select(x => x.Value.Select(y => y.Amount).Sum()).Sum() > 5 ? Color4.Red : Color4.Blue);
                 squareRenderer.Render(tile.X, tile.Y);
             });
+            
+            foreach (var rectangle in Quadtree.GetRectangles())
+                Engine.Debug.Draw.Rectangle(rectangle, 0, 0, Color4.Red, false);
         }
     }
 }

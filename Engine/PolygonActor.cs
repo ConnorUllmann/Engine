@@ -49,10 +49,10 @@ namespace Engine
             UpdateBounds();
         }
 
-        public IEnumerable<Polygon> SplitAlongLine(Vector3 pointA, Vector3 pointB)
+        public IEnumerable<Polygon> SplitAlongLine(Vector3 _a, Vector3 _b)
         {
             var v = new Vector3(X, Y, 0);
-            var ret = Polygon.SplitAlongLine(pointA - v, pointB - v).ToList();
+            var ret = Polygon.SplitAlongLine(_a - v, _b - v).ToList();
             ret.ForEach(o => o.Move(v));
             return ret;
         }
