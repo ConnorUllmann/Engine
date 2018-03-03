@@ -2,3 +2,5 @@
 *.pdb
 *.cache
 *.suo
+*/bin
+*/obj
