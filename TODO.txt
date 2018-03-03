@@ -11,3 +11,7 @@ vvvvvvvvvvvvvvvvvvvvvvv
 ~ Use interface for objects with start/update/render functions in World rather than assuming Actors
 ~ Add small-radius pathfinding for ants
 ~ Make bounding box sizes static for ants
+
+
+COMPLETE
+~ Add check for whether a given set of points is in counterclockwise order for Polygon constructors

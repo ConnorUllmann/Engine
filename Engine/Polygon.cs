@@ -6,6 +6,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using Engine.OpenGL.Colored;
+using Basics;
 
 namespace Engine
 {
@@ -14,14 +15,36 @@ namespace Engine
         public Vector3 CenterOfMass => this.Avg();
         public int Sides => Count;
 
-        public Polygon(List<Vector2> _counterClockwiseVertices) : this(_counterClockwiseVertices.Select(x => new Vector3(x.X, x.Y, 0)).ToList()) { }
-        public Polygon(List<Vector3> _counterClockwiseVertices) : base(_counterClockwiseVertices) { }
+        public Polygon(IEnumerable<Vector2> _vertices) : this(_vertices.Select(x => new Vector3(x.X, x.Y, 0)).ToList()) { }
+        public Polygon(List<Vector3> _vertices) : base(EnsureCounterClockwise(_vertices)) { }
 
-        public void Clone(List<Vector3> _counterClockwiseVertices)
+        public void Clone(List<Vector3> _vertices)
         {
             this.Clear();
-            this.AddRange(_counterClockwiseVertices);
+            this.AddRange(EnsureCounterClockwise(_vertices));
         }
+
+        public static bool IsCounterClockwise(IEnumerable<Vector2> _vertices)
+            => IsCounterClockwise(_vertices.Select(o => new Vector3(o.X, o.Y, 0)).ToList());
+        public static bool IsCounterClockwise(List<Vector3> _vertices)
+        { //https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+            var sum = 0f;
+            for(var i = 0; i < _vertices.Count; i++)
+            {
+                var a = _vertices[i];
+                var b = _vertices[(i + 1) % _vertices.Count];
+                sum += (b.X - a.X) * (b.Y + a.Y);
+            }
+            return sum < 0; //>0 means clockwise
+        }
+
+        /// <summary>
+        /// Determines if the given vertices are in counter-clockwise order and reverses them if they are not.
+        /// </summary>
+        /// <param name="_vertices">vertices to ensure are in counter-clockwise order</param>
+        /// <returns>The given vertices in counter-clockwise order.</returns>
+        public static IEnumerable<Vector3> EnsureCounterClockwise(List<Vector3> _vertices)
+            => IsCounterClockwise(_vertices) ? _vertices : _vertices.Reversed();
 
         public Polygon Center()
         {
@@ -158,14 +181,15 @@ namespace Engine
 
     public class ConvexPolygon : Polygon
     {
-        public ConvexPolygon(List<Vector2> _counterClockwiseVertices) : base(_counterClockwiseVertices) { }
-        public ConvexPolygon(List<Vector3> _counterClockwiseVertices) : base(_counterClockwiseVertices) { }
+        public ConvexPolygon(IEnumerable<Vector2> _vertices) : base(_vertices) { }
+        public ConvexPolygon(List<Vector3> _vertices) : base(_vertices) { }
 
         public override ColoredVertexBuffer GetFillBuffer() => GetFillBuffer(Color4.White);
         public override ColoredVertexBuffer GetFillBuffer(Color4 _color)
         {
-            var buffer = new ColoredVertexBuffer(PrimitiveType.Triangles);
-            ToTriangles().ForEach(v => buffer.AddVertex(new ColoredVertex(v, _color)));
+            //PrimitiveType.Polygon appears to only work for convex polygons
+            var buffer = new ColoredVertexBuffer(PrimitiveType.Polygon);
+            buffer.AddVertices(this.Select(x => new ColoredVertex(x, _color)));
             return buffer;
         }
 
@@ -223,8 +247,8 @@ namespace Engine
 
     public class ConcavePolygon : Polygon
     {
-        public ConcavePolygon(List<Vector2> _counterClockwiseVertices) : base(_counterClockwiseVertices) { }
-        public ConcavePolygon(List<Vector3> _counterClockwiseVertices) : base(_counterClockwiseVertices) { }
+        public ConcavePolygon(IEnumerable<Vector2> _vertices) : base(_vertices) { }
+        public ConcavePolygon(List<Vector3> _vertices) : base(_vertices) { }
 
         public override ColoredVertexBuffer GetFillBuffer() => GetFillBuffer(Color4.White);
         public override ColoredVertexBuffer GetFillBuffer(Color4 _color)
