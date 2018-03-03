@@ -5,7 +5,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace Engine.Shaders
+namespace Engine.OpenGL.Shaders
 {
 
     public class BasicShaderProgram : ShaderProgram

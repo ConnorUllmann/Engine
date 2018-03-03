@@ -1,0 +1,13 @@
+vvvvvvvvvvvvvvvvvvvvvvv
+~ Follow OpenGL tutorials: http://www.siltutorials.com/opentkbasics/1
+^^^^^^^^^^^^^^^^^^^^^^^
+~ Use PrimitiveType.quadstrip for Grid rendering
+~ Color ground based on tile solidity
+~ Visually distinguish overworld/underworld
+~ Add breeders/breeding
+~ Add holes that connect overworld with underworld
+~ Test Polygon functionality
+~ Test Quadtree functionality
+~ Use interface for objects with start/update/render functions in World rather than assuming Actors
+~ Add small-radius pathfinding for ants
+~ Make bounding box sizes static for ants

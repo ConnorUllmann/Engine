@@ -5,6 +5,7 @@ using System.Linq;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using Engine.OpenGL.Colored;
 using OpenTK.Input;
 using System.Diagnostics;
 

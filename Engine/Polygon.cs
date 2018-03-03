@@ -5,6 +5,7 @@ using System.Linq;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using Engine.OpenGL.Colored;
 
 namespace Engine
 {
@@ -240,7 +241,6 @@ namespace Engine
         /// <returns>list of vertex triplets which define a triangulation of this polygon</returns>
         public override List<Vector3> ToTriangles()
         {
-            //
             if (Count <= 3)
                 return new List<Vector3>(this);
 

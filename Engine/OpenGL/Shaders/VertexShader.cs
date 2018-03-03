@@ -5,8 +5,9 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
+using Engine.OpenGL.Colored;
 
-namespace Engine.Shaders
+namespace Engine.OpenGL.Shaders
 {
     public class BasicVertexShader : VertexShader
     {

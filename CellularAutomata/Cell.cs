@@ -5,6 +5,7 @@ using Engine;
 using Basics;
 using System.Linq;
 using OpenTK.Graphics;
+using Engine.OpenGL.Colored;
 
 namespace CellularAutomata
 {

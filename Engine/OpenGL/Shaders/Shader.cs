@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using Engine.Shaders;
+using Engine.OpenGL.Shaders;
 
-namespace Engine
+namespace Engine.OpenGL.Shaders
 {
     public class Shader
     {

@@ -5,7 +5,8 @@ using System.Text;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using Engine.Shaders;
+using Engine.OpenGL;
+using Engine.OpenGL.Shaders;
 
 namespace Engine
 {

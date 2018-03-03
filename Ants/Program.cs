@@ -22,11 +22,11 @@ namespace Ants
             GenerateAnts(10);
 
             GenerateAntPlayer();
-            var ant = new Ant(world, WorldType.Underworld, -250, -250);
-            ant.AttachController(new AIAntController());
-            ant.Angle = 0;
-            ant.AddToWorld();
-            ai = ant;
+            //var ant = new Ant(world, WorldType.Underworld, -250, -250);
+            //ant.AttachController(new AIAntController());
+            //ant.Angle = 0;
+            //ant.AddToWorld();
+            //ai = ant;
 
             //GenerateResources(25);
         }

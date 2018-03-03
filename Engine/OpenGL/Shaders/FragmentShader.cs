@@ -5,8 +5,9 @@ using System.Text;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using Engine.OpenGL;
 
-namespace Engine.Shaders
+namespace Engine.OpenGL.Shaders
 {
     public class BasicFragmentShader : FragmentShader
     {

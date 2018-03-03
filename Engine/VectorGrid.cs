@@ -5,6 +5,7 @@ using Basics;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using Engine.OpenGL.Colored;
 
 namespace Engine
 {
