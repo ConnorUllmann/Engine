@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Engine.OpenGL.Shaders
+namespace Images
 {
-    struct Texture2D
+    public struct Texture2D
     {
         private int id;
         private int width;
