@@ -4,3 +4,7 @@
 *.suo
 */bin
 */obj
+*.lock
+*.ide-shm
+*.ide-wal
+*.ide
