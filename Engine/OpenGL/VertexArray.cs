@@ -31,6 +31,7 @@ namespace Engine.OpenGL
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+        public void Destroy() => GL.DeleteVertexArray(handle);
         
         /// <summary>
         /// Bind for usage (modification or rendering)

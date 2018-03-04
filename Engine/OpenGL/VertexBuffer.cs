@@ -21,6 +21,8 @@ namespace Engine.OpenGL
             handle = GL.GenBuffer();
         }
 
+        public void Destroy() => GL.DeleteBuffer(handle);
+
         public void AddVertex(TVertex _vertex)
         {
             //Double size of array once we fill our current array

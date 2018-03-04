@@ -20,6 +20,12 @@ namespace Engine
             array = ColoredVertexArray.FromBuffer(buffer);
         }
 
+        public void Destroy()
+        {
+            buffer.Destroy();
+            array.Destroy();
+        }
+
         public void SetColor(Color4 _color) => buffer.SetColor(_color);
         public void RandomizeColor() => buffer.RandomizeColor();
 

@@ -29,6 +29,7 @@ namespace Engine.Debug
                 : new PolygonOutlineRenderer(debugPolygon, 0, 0, _color.Value);
             //Not sure how much this Render call contributes to the memory leak--doesn't look to be much right now
             renderer.Render(_x, _y);
+            renderer.Destroy();
         }
     }
 }
