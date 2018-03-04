@@ -1,6 +1,7 @@
 vvvvvvvvvvvvvvvvvvvvvvv
 ~ Follow OpenGL tutorials: http://www.siltutorials.com/opentkbasics/1
 ^^^^^^^^^^^^^^^^^^^^^^^
+~ Add Depth property to Actors and update/render based on it (use z-component of position)
 ~ Use PrimitiveType.quadstrip for Grid rendering
 ~ Color ground based on tile solidity
 ~ Visually distinguish overworld/underworld

@@ -18,7 +18,7 @@ namespace Engine.OpenGL
             vertexSize = _vertexSize;
             primitiveType = _primitiveType;
 
-            this.handle = GL.GenBuffer();
+            handle = GL.GenBuffer();
         }
 
         public void AddVertex(TVertex _vertex)
@@ -42,7 +42,7 @@ namespace Engine.OpenGL
                 _func(vertex);
         }
 
-        public void Bind() => GL.BindBuffer(BufferTarget.ArrayBuffer, this.handle);
+        public void Bind() => GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
         public void BufferData() => GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexSize * count), vertices, BufferUsageHint.StreamDraw);
         public void Draw() => GL.DrawArrays(primitiveType, 0, count);
     }

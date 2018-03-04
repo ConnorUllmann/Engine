@@ -14,7 +14,7 @@ namespace Engine.OpenGL
         public VertexArray(VertexBuffer<TVertex> vertexBuffer, ShaderProgram program, params VertexAttribute[] attributes)
         {
             // create new vertex array object
-            GL.GenVertexArrays(1, out this.handle);
+            GL.GenVertexArrays(1, out handle);
 
             // bind the object so we can modify it
             Bind();
@@ -31,10 +31,10 @@ namespace Engine.OpenGL
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void Bind()
-        {
-            // bind for usage (modification or rendering)
-            GL.BindVertexArray(this.handle);
-        }
+        
+        /// <summary>
+        /// Bind for usage (modification or rendering)
+        /// </summary>
+        public void Bind() => GL.BindVertexArray(handle);
     }
 }
