@@ -15,6 +15,8 @@ namespace Engine
         //Coordinates relative to the Actor's position
         //(e.g. 40x60 box centered around the player = new BoundingBox(-20, -30, 40, 60))
         public BoundingBox BoundingBox;
+        public Rectangle CollisionBox => new Rectangle(X + BoundingBox.X, Y + BoundingBox.Y, BoundingBox.W, BoundingBox.H);
+        public bool Collides(Actor _actor) => CollisionBox.Collides(_actor.CollisionBox);
 
         private bool destroyed;
         public bool Destroyed => destroyed;
@@ -43,10 +45,7 @@ namespace Engine
 
             BoundingBox = new BoundingBox(_w, _h, _halign, _valign);
         }
-
-        public bool Collides(Actor _actor)
-            => BoundingBox.Collides(_actor.X + _actor.BoundingBox.X, _actor.Y + _actor.BoundingBox.Y, _actor.BoundingBox.W, _actor.BoundingBox.H, X, Y);
-
+        
         public void ScreenWrap(float _margin=0) => Position = Game.ScreenWrap(Position, _margin);
         public void ScreenClamp(float _margin=0) => Position = Game.ScreenClamp(Position, _margin);
 
