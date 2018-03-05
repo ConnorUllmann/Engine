@@ -14,10 +14,10 @@ namespace Engine
 
         public bool Visible { get; set; } = true;
 
-        public ColoredVertexRenderer(ColoredVertexBuffer _buffer)
-        {
-            array = ColoredVertexArray.FromBuffer(_buffer);
-        }
+        public ColoredVertexRenderer() { }
+        public ColoredVertexRenderer(ColoredVertexBuffer _buffer) => Initialize(_buffer);
+
+        public void Initialize(ColoredVertexBuffer _buffer) => array = ColoredVertexArray.FromBuffer(_buffer);
 
         public void Destroy()
         {
