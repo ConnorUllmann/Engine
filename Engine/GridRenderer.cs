@@ -13,23 +13,35 @@ using Rectangle = Basics.Rectangle;
 
 namespace Engine
 {
-    public class GridRenderer<T>
+    public class GridRenderer<T> : ColoredVertexRenderer
     {
         private Grid<T> grid;
 
-        public GridRenderer(Grid<T> _grid, float _tileWidth, float _tileHeight)
+        public GridRenderer(Grid<T> _grid, Func<T, Color4> _colorSelector, float _tileWidth, float _tileHeight)
         {
             grid = _grid;
+            Initialize(GetBuffer(_grid, _colorSelector, _tileWidth, _tileHeight));
+        }
 
-            var rectangles = new List<Rectangle>();
+        public ColoredVertexBuffer GetBuffer(Grid<T> _grid, Func<T, Color4> _colorSelector, float _tileWidth, float _tileHeight)
+        {
+            var rectanglesVertices = new List<IEnumerable<ColoredVertex>>();
             for (var i = 0; i < _grid.Width; i++)
+            {
                 for (var j = 0; j < _grid.Height; j++)
-                    rectangles.Add(new Rectangle(i * _tileWidth, j * _tileHeight, _tileWidth, _tileHeight));
-            var vertices = rectangles.SelectMany(o => o.ToVertices().Select(p => new ColoredVertex(new Vector3(p.X, p.Y, 0), Color4.Aqua)));
+                {
+                    var rectangle = new Rectangle(i * _tileWidth, j * _tileHeight, _tileWidth, _tileHeight);
+                    var vertices = rectangle.ToVertices();
+                    var tile = _grid.Get(i, j);
+                    var color = _colorSelector(tile);
+                    var coloredVertices = vertices.Select(v => new ColoredVertex(new Vector3(v.X, v.Y, 0), color));
+                    rectanglesVertices.Add(coloredVertices);
+                }
+            }
 
             var buffer = new ColoredVertexBuffer(PrimitiveType.Quads);
-            buffer.AddVertices(vertices);
-            var array = ColoredVertexArray.FromBuffer(buffer);
+            buffer.AddVertices(rectanglesVertices.SelectMany(x => x));
+            return buffer;
         }
     }
 }

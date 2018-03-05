@@ -39,22 +39,4 @@ namespace Engine
                 array?.Render(_position);
         }
     }
-
-    public class PolygonOutlineRenderer : ColoredVertexRenderer
-    {
-        public PolygonOutlineRenderer(Polygon _polygon, float _x = 0, float _y = 0, Color4? _outlineColor = null) 
-            : base(_polygon.GetOutlineBuffer(_outlineColor ?? Color4.White))
-        {
-            Move(_x, _y);
-        }
-    }
-
-    public class PolygonFillRenderer : ColoredVertexRenderer
-    {
-        public PolygonFillRenderer(Polygon _polygon, float _x = 0, float _y = 0, Color4? _fillColor = null) 
-            : base(_polygon.GetFillBuffer(_fillColor ?? Color4.White))
-        {
-            Move(_x, _y);
-        }
-    }
 }
