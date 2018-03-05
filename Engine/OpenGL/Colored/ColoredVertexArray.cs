@@ -56,15 +56,14 @@ namespace Engine.OpenGL.Colored
         private static BasicShaderProgram basicShaderProgram;
         public static ColoredVertexArray FromBuffer(ColoredVertexBuffer buffer, ShaderProgram _shaderProgram = null)
         {
-            if (_shaderProgram == null && basicShaderProgram == null)
-                basicShaderProgram = new BasicShaderProgram();
+            if (_shaderProgram == null)
+                basicShaderProgram = basicShaderProgram ?? new BasicShaderProgram();
             return new ColoredVertexArray(buffer, _shaderProgram ?? basicShaderProgram);
         }
 
         public static void Start()
         {
-            if (basicShaderProgram == null)
-                basicShaderProgram = new BasicShaderProgram();
+            basicShaderProgram = basicShaderProgram ?? new BasicShaderProgram();
             // activate shader program and set uniforms
             basicShaderProgram.Use();
             Game.Camera.ProjectionMatrix.Set(basicShaderProgram);

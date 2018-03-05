@@ -10,8 +10,8 @@ namespace Engine.Debug
     public static class Draw
     {
         private static Polygon debugPolygon;
-        private static PolygonRenderer debugPolygonRenderer(bool _filled, Color4 _color)
-            => _filled ? (PolygonRenderer)new PolygonFillRenderer(debugPolygon, 0, 0, _color)
+        private static ColoredVertexRenderer debugPolygonRenderer(bool _filled, Color4 _color)
+            => _filled ? (ColoredVertexRenderer)new PolygonFillRenderer(debugPolygon, 0, 0, _color)
                        : new PolygonOutlineRenderer(debugPolygon, 0, 0, _color);
         private static Polygon setRectangleDebugPolygon(float _w, float _h)
         {

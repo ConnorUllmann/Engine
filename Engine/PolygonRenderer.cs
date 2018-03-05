@@ -7,17 +7,16 @@ using Engine.OpenGL.Colored;
 
 namespace Engine
 {
-    public abstract class PolygonRenderer
+    public abstract class ColoredVertexRenderer
     {
-        private ColoredVertexBuffer buffer;
+        private ColoredVertexBuffer buffer => array.vertexBuffer;
         private ColoredVertexArray array;
 
         public bool Visible { get; set; } = true;
 
-        public PolygonRenderer(ColoredVertexBuffer _buffer)
+        public ColoredVertexRenderer(ColoredVertexBuffer _buffer)
         {
-            buffer = _buffer;
-            array = ColoredVertexArray.FromBuffer(buffer);
+            array = ColoredVertexArray.FromBuffer(_buffer);
         }
 
         public void Destroy()
@@ -41,7 +40,7 @@ namespace Engine
         }
     }
 
-    public class PolygonOutlineRenderer : PolygonRenderer
+    public class PolygonOutlineRenderer : ColoredVertexRenderer
     {
         public PolygonOutlineRenderer(Polygon _polygon, float _x = 0, float _y = 0, Color4? _outlineColor = null) 
             : base(_polygon.GetOutlineBuffer(_outlineColor ?? Color4.White))
@@ -50,7 +49,7 @@ namespace Engine
         }
     }
 
-    public class PolygonFillRenderer : PolygonRenderer
+    public class PolygonFillRenderer : ColoredVertexRenderer
     {
         public PolygonFillRenderer(Polygon _polygon, float _x = 0, float _y = 0, Color4? _fillColor = null) 
             : base(_polygon.GetFillBuffer(_fillColor ?? Color4.White))
