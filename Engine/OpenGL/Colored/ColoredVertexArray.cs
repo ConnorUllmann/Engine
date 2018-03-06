@@ -30,14 +30,20 @@ namespace Engine.OpenGL.Colored
 
         public void Rotate(float _angleRad, Vector3 _center) => vertexBuffer.Rotate(_angleRad, _center);
 
+        public void MoveTo(Vector3 positionCurr)
+        {
+            if (positionPrev == positionCurr)
+                return;
+
+            vertexBuffer.Move(positionCurr - positionPrev);
+            positionPrev = positionCurr;
+        }
+
+        public void Render() => Render(positionPrev);
         public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
         public void Render(Vector3 positionCurr)
         {
-            if (positionPrev != positionCurr)
-            {
-                vertexBuffer.Move(positionCurr - positionPrev);
-                positionPrev = positionCurr;
-            }
+            MoveTo(positionCurr);
 
             // bind vertex buffer and array objects
             vertexBuffer.Bind();

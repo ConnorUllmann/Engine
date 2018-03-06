@@ -53,7 +53,9 @@ namespace Engine
             return grid.Y + 1.5f * j * Radius + Altitude;
         }
 
-        public override void Render() => polygonRenderer.Render(X, Y); 
+        public override void Update() => polygonRenderer.Update(X, Y);
+
+        public override void Render() => polygonRenderer.Render(); 
     }
 
     public class HexGrid : IPosition

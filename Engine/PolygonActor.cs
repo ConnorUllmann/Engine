@@ -55,12 +55,18 @@ namespace Engine
             return ret;
         }
 
+        public override void PostUpdate()
+        {
+            FillRenderer.Update(X, Y);
+            OutlineRenderer.Update(X, Y);
+        }
+
         public override void Render()
         {
             if (FillVisible)
-                FillRenderer.Render(X, Y);
+                FillRenderer.Render();
             if (OutlineVisible)
-                OutlineRenderer.Render(X, Y);
+                OutlineRenderer.Render();
         }
     }
 }

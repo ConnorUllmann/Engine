@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using Basics;
 using Engine;
+using Engine.OpenGL;
+using Engine.OpenGL.Colored;
+using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using Rectangle = Basics.Rectangle;
 
 namespace Engine.Debug
 {
@@ -28,8 +33,28 @@ namespace Engine.Debug
         {
             setRectangleDebugPolygon(_w, _h);
             var renderer = debugPolygonRenderer(_filled, _color ?? Color4.White);
-            renderer.Render(_x, _y);
+            renderer.Update(_x, _y);
+            renderer.Render();
             renderer.Destroy();
+        }
+
+        public static void Line(IPosition a, IPosition b, Color4? _color = null)
+            => Line(a.X, a.Y, b.X, b.Y, _color);
+        public static void Line(float x1, float y1, float x2, float y2, Color4? _color=null)
+        {
+            //Create
+            var color = _color ?? Color4.White;
+            var buffer = new ColoredVertexBuffer(PrimitiveType.Lines);
+            buffer.AddVertex(new ColoredVertex(new Vector3(x1, y1, 0), color));
+            buffer.AddVertex(new ColoredVertex(new Vector3(x2, y2, 0), color));
+            var array = ColoredVertexArray.FromBuffer(buffer);
+
+            //Use
+            array.Render();
+
+            //Destroy
+            buffer.Destroy();
+            array.Destroy();
         }
     }
 }
