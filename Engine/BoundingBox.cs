@@ -7,10 +7,10 @@ using Rectangle = Basics.Rectangle;
 
 namespace Engine
 {
-    public struct BoundingBox
+    public struct BoundingBox : IPosition
     {
-        public float X;
-        public float Y;
+        public float X { get; set; }
+        public float Y { get; set; }
         public float W;
         public float H;
 

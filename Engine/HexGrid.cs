@@ -56,11 +56,11 @@ namespace Engine
         public override void Render() => polygonRenderer.Render(X, Y); 
     }
 
-    public class HexGrid
+    public class HexGrid : IPosition
     {
         private Grid<HexTile> grid;
-        public readonly float X;
-        public readonly float Y;
+        public float X { get; set; }
+        public float Y { get; set; }
         public readonly float Radius;
         public readonly bool Horizontal;
         public readonly Vector4 BoundingBox;

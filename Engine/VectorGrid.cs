@@ -54,7 +54,7 @@ namespace Engine
         }
     }
 
-    public class VectorGrid : Grid<VectorTile>
+    public class VectorGrid : Grid<VectorTile>, IPosition
     {
         public float X { get; private set; }
         public float Y { get; private set; }

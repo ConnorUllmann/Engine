@@ -29,6 +29,17 @@ namespace Engine
         public static float FPS => FPSHandler.FPS;
         public static float Delta => FPSHandler.Delta;
 
+        public static Color4 BackgroundColor
+        {
+            get => game.backgroundColor;
+            set => game.backgroundColor = value;
+        }
+        private Color4 backgroundColor
+        {
+            get => window.BackgroundColor;
+            set => window.BackgroundColor = value;
+        }
+
         private Window window;
 
         public Game(int width, int height, string title = "")

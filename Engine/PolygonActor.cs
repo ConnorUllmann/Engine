@@ -24,7 +24,7 @@ namespace Engine
             OutlineRenderer = new PolygonOutlineRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
         }
 
-        private void UpdateBounds() => BoundingBox.MatchPositionAndDimensions(Polygon.BoundingRectangle());
+        public void UpdateBoundingBoxToMatchPolygon() => BoundingBox.MatchPositionAndDimensions(Polygon.BoundingRectangle());
 
         private void Center()
         {
@@ -32,7 +32,6 @@ namespace Engine
             X += com.X;
             Y += com.Y;
             Polygon.Move(-com);
-            UpdateBounds();
         }
 
         public void Rotate(float _angleRad, Vector3? _center = null)
@@ -46,7 +45,6 @@ namespace Engine
             Polygon.Rotate(_angleRad, centerRelative);
             FillRenderer.Rotate(_angleRad, centerAbsolute);
             OutlineRenderer.Rotate(_angleRad, centerAbsolute);
-            UpdateBounds();
         }
 
         public IEnumerable<Polygon> SplitAlongLine(Vector3 _a, Vector3 _b)

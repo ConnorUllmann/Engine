@@ -29,6 +29,7 @@ namespace Engine
         public long LastUpdateDurationMilliseconds { get; private set; }
         public long LastRenderDurationMilliseconds { get; private set; }
 
+        public Color4 BackgroundColor = Color4.Black;
         public bool PauseIfUnfocused = true;
 
         private string titlePrefix;
@@ -84,7 +85,7 @@ namespace Engine
             SwapBuffers();
         }
 
-        private void ClearBuffer() => ClearBuffer(Color4.Black);
+        private void ClearBuffer() => ClearBuffer(BackgroundColor);
         private void ClearBuffer(Color4 color)
         {
             GL.ClearColor(color);

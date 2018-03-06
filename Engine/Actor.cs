@@ -5,7 +5,7 @@ using Basics;
 
 namespace Engine
 {
-    public class Actor
+    public class Actor : IPosition
     {
         public Actor AddToWorld() => ActorGroup.World.AddToWorld(this);
         
