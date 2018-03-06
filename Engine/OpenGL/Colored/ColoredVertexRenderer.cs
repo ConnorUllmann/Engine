@@ -32,11 +32,15 @@ namespace Engine
         public void Move(float _x, float _y) => Move(new Vector3(_x, _y, 0));
         public void Move(Vector3 _position) => array?.Move(_position);
 
-        public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
-        public void Render(Vector3 _position)
+        public void Update(float _x, float _y)
+            => Update(new Vector3(_x, _y, 0));
+        public void Update(Vector3 _position)
+            => array?.MoveTo(_position);
+        
+        public void Render()
         {
             if (Visible)
-                array?.Render(_position);
+                array?.Render();
         }
     }
 }
