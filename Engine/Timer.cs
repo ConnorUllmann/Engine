@@ -6,18 +6,20 @@ namespace Engine
 {
     public class Timer
     {
-        private Action Action;
         private float Period;
-        private float Current;
+        private Action Action;
         private bool Repeat;
+        private float Current;
 
-        public Timer(Action _action, float _period, bool _repeat=true)
+        public Timer(float _period, Action _action = null, bool _repeat = true)
         {
-            Action = _action;
             Period = _period;
-            Current = 0;
+            Action = _action;
             Repeat = _repeat;
+            Restart();
         }
+
+        public void Restart() => Current = 0;
 
         public float Percent => Current / Period;
 
@@ -33,7 +35,7 @@ namespace Engine
                     Current = Basics.Utils.Clamp(Current - Period, 0, Period);
                 else
                     Current = Period;
-                Action();
+                Action?.Invoke();
             }
         }
     }

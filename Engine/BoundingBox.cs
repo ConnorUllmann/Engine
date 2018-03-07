@@ -21,7 +21,7 @@ namespace Engine
             W = _w;
             H = _h;
         }
-        public BoundingBox(float _w, float _h, Align.Horizontal _halign, Align.Vertical _valign)
+        public BoundingBox(float _w, float _h, Align.Horizontal _halign=Align.Horizontal.Center, Align.Vertical _valign=Align.Vertical.Middle)
             : this(_w * GetHAlignNormalizedOffset(_halign), _h * GetVAlignNormalizedOffset(_valign), _w, _h)
         { }
 

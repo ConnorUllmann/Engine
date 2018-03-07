@@ -2,9 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using Basics;
+using Basics.QuadTree;
 
 namespace Engine
 {
+    public static class QuadTreeExtensions
+    {
+        public static void Insert<T>(this QuadTree<T> _tree, T _actor) where T : Actor
+            => _tree.Insert(_actor, _actor.CollisionBox);
+    }
+
     public class Actor : IPosition
     {
         public Actor AddToWorld() => ActorGroup.World.AddToWorld(this);
@@ -50,12 +57,22 @@ namespace Engine
         public void ScreenClamp(float _margin=0) => Position = Game.ScreenClamp(Position, _margin);
 
         internal Action DestroyHandler;
+
+        /// <summary>
+        /// Adds an action to the list of functions which should be called on the frame the actor's Destroy() function is called
+        /// </summary>
+        /// <param name="_action">new action to trigger when the actor is destroyed</param>
+        public void AddDestroyTrigger(Action _action)
+        {
+            DestroyHandler += _action;
+        }
+
         public void Destroy()
         {
             if (Destroyed)
                 return;
-            DestroyHandler();
             destroyed = true;
+            DestroyHandler();
         }
 
         public virtual void OnRemove() { }

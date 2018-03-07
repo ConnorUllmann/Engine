@@ -38,6 +38,12 @@ namespace Engine.Debug
             renderer.Destroy();
         }
 
+        public static void Line(Vector2 a, IPosition b, Color4? _color = null)
+            => Line(a.X, a.Y, b.X, b.Y, _color);
+        public static void Line(IPosition a, Vector2 b, Color4? _color = null)
+            => Line(a.X, a.Y, b.X, b.Y, _color);
+        public static void Line(Vector2 a, Vector2 b, Color4? _color = null)
+            => Line(a.X, a.Y, b.X, b.Y, _color);
         public static void Line(IPosition a, IPosition b, Color4? _color = null)
             => Line(a.X, a.Y, b.X, b.Y, _color);
         public static void Line(float x1, float y1, float x2, float y2, Color4? _color=null)
