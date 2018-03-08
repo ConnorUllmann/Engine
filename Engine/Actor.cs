@@ -23,7 +23,12 @@ namespace Engine
         //(e.g. 40x60 box centered around the player = new BoundingBox(-20, -30, 40, 60))
         public BoundingBox BoundingBox;
         public Rectangle CollisionBox => new Rectangle(X + BoundingBox.X, Y + BoundingBox.Y, BoundingBox.W, BoundingBox.H);
-        public bool Collides(Actor _actor) => CollisionBox.Collides(_actor.CollisionBox);
+        public bool Collides(Actor _actor)
+        {
+            if (_actor == null)
+                return false;
+            return CollisionBox.Collides(_actor.CollisionBox);
+        }
 
         private bool destroyed;
         public bool Destroyed => destroyed;

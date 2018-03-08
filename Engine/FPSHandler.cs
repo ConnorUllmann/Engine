@@ -20,7 +20,7 @@ namespace Engine
 
         public static int FramesSinceStart;
         public static float MillisecondsSinceStart => Singleton.stopwatch.ElapsedMilliseconds;
-        public static float FPS => Singleton.FPSSamples.Average();
+        public static float FPS => Singleton.FPSSamples?.Count > 0 ? Singleton.FPSSamples.Average() : 0;
         public static float Delta => Singleton.deltaMillis / 1000f;
 
         private Window window;

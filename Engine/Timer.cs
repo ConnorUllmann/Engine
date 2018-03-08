@@ -21,7 +21,7 @@ namespace Engine
 
         public void Restart() => Current = 0;
 
-        public float Percent => Current / Period;
+        public float NormalizedPercent => Current / Period;
 
         public void Update()
         {
