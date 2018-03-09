@@ -62,5 +62,25 @@ namespace Engine.Debug
             buffer.Destroy();
             array.Destroy();
         }
+
+        public static void Lines(IEnumerable<(Vector2 a, Vector2 b)> _positions, Color4? _color=null)
+        {
+            //Create
+            var color = _color ?? Color4.White;
+            var buffer = new ColoredVertexBuffer(PrimitiveType.Lines);
+            foreach (var position in _positions)
+            {
+                buffer.AddVertex(new ColoredVertex(new Vector3(position.a.X, position.a.Y, 0), color));
+                buffer.AddVertex(new ColoredVertex(new Vector3(position.b.X, position.b.Y, 0), color));
+            }
+            var array = ColoredVertexArray.FromBuffer(buffer);
+
+            //Use
+            array.Render();
+
+            //Destroy
+            buffer.Destroy();
+            array.Destroy();
+        }
     }
 }
