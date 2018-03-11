@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Basics;
 using Engine;
 using Engine.OpenGL;
@@ -63,7 +63,7 @@ namespace Engine.Debug
             array.Destroy();
         }
 
-        public static void Lines(IEnumerable<(Vector2 a, Vector2 b)> _positions, Color4? _color=null)
+        public static void Lines(IEnumerable<(Vector2 a, Vector2 b)> _positions, Color4? _color = null)
         {
             //Create
             var color = _color ?? Color4.White;
@@ -73,6 +73,25 @@ namespace Engine.Debug
                 buffer.AddVertex(new ColoredVertex(new Vector3(position.a.X, position.a.Y, 0), color));
                 buffer.AddVertex(new ColoredVertex(new Vector3(position.b.X, position.b.Y, 0), color));
             }
+            var array = ColoredVertexArray.FromBuffer(buffer);
+
+            //Use
+            array.Render();
+
+            //Destroy
+            buffer.Destroy();
+            array.Destroy();
+        }
+
+        public static void LineStrip<T>(IEnumerable<T> _positions, Color4? _color = null) where T : IPosition
+            => LineStrip(_positions.Select(p => new Vector2(p.X, p.Y)), _color);
+        public static void LineStrip(IEnumerable<Vector2> _positions, Color4? _color = null)
+        {
+            //Create
+            var color = _color ?? Color4.White;
+            var buffer = new ColoredVertexBuffer(PrimitiveType.LineStrip);
+            foreach (var position in _positions)
+                buffer.AddVertex(new ColoredVertex(new Vector3(position.X, position.Y, 0), color));
             var array = ColoredVertexArray.FromBuffer(buffer);
 
             //Use

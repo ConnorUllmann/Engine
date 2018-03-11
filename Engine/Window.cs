@@ -80,10 +80,11 @@ namespace Engine
 
             renderStopwatch.Reset();
             renderStopwatch.Start();
-            Render();
             ActorGroup.World.Render();
+            Render();
             renderStopwatch.Stop();
             LastRenderDurationMilliseconds = renderStopwatch.ElapsedMilliseconds;
+
 
             SwapBuffers();
         }
