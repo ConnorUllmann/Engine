@@ -28,7 +28,7 @@ namespace Engine.Test
         [InlineData(true, 0,0, 5,0, 2.5f,5,  0,4, 2.5f,-1, 5,4)]
         [InlineData(false, 0,0, 1,1, 0,2,  2,1, 3,0, 3,2)]
         [InlineData(false, 0,0, 1,1, 0,2,  2,1, 3,-2, 3,4)]
-        [InlineData(true, 0,0, 1,0, 0,1,  1,0, 2,0, 1,1)] //On boundary
+        [InlineData(false, 0,0, 1,0, 0,1,  1,0, 2,0, 1,1)] //On boundary
         public void TrianglesCollide_ReturnSucceed(bool expected,
             float a1x, float a1y, float a2x, float a2y, float a3x, float a3y, 
             float b1x, float b1y, float b2x, float b2y, float b3x, float b3y)
