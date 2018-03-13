@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Basics;
 using Basics.QuadTree;
+using OpenTK;
+using Rectangle = Basics.Rectangle;
 
-namespace Engine
+namespace Engine.Actors
 {
     public static class QuadTreeExtensions
     {
@@ -18,6 +18,29 @@ namespace Engine
         
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
+
+        /// <summary>
+        /// The actor with the highest depth will update and render last
+        /// while the actor with the lower depth will update and render first.
+        /// Ties are decided by the actors' IDs (lowest will update/render first).
+        /// </summary>
+        public float Depth
+        {
+            get => depth;
+            set
+            {
+                if (changeDepth != null)
+                    changeDepth(this, value);
+                else
+                    depth = value;
+            }
+        }
+
+        /// <summary>
+        /// ActorGroups utilize this with their depth sorter to tell when there is a change it needs to act on.
+        /// </summary>
+        internal Action<Actor, float> changeDepth;
+        internal float depth = 0;
 
         //Coordinates relative to the Actor's position
         //(e.g. 40x60 box centered around the player = new BoundingBox(-20, -30, 40, 60))
@@ -33,9 +56,9 @@ namespace Engine
         private bool destroyed;
         public bool Destroyed => destroyed;
 
-        public virtual OpenTK.Vector2 Position
+        public virtual Vector2 Position
         {
-            get => new OpenTK.Vector2(X, Y);
+            get => new Vector2(X, Y);
             set { X = value.X; Y = value.Y; }
         }
 

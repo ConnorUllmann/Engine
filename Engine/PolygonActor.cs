@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenTK;
 using System.Linq;
+using Engine.Actors;
 
 namespace Engine
 {

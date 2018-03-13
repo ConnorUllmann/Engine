@@ -8,6 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using Engine.OpenGL.Colored;
 using OpenTK.Input;
 using System.Diagnostics;
+using Engine.Actors;
 
 namespace Engine
 {

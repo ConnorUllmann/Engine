@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Basics;
 
-namespace Engine
+namespace Engine.Actors
 {
     public class ActorGroup
     {
@@ -23,6 +23,8 @@ namespace Engine
         private HashSet<Actor> actorsToAdd;
         private HashSet<Actor> actorsToRemove;
 
+        private ActorDepthSorter depthSorter;
+
         private ActorGroup()
         {
             Reset();
@@ -35,30 +37,40 @@ namespace Engine
             typeIDByName = new Dictionary<string, int>();
             actorsToAdd = new HashSet<Actor>();
             actorsToRemove = new HashSet<Actor>();
+            depthSorter = new ActorDepthSorter();
         }
 
         public void Update()
         {
             UpdateRemoveActors();
             UpdateAddActors();
-            foreach (var actor in actorsByID.Values)
+
+            depthSorter.ForEach(actor =>
             {
                 if (actor.Active)
                     actor.PreUpdate();
+            });
+            depthSorter.ForEach(actor =>
+            {
                 if (actor.Active)
                     actor.Update();
+            });
+            depthSorter.ForEach(actor =>
+            {
                 if (actor.Active)
                     actor.PostUpdate();
-            }
+            });
         }
 
         public void Render()
         {
-            foreach (var actor in actorsByID.Values)
+            depthSorter.ForEach(actor =>
+            {
                 if (actor.Visible)
                     actor.Render();
+            });
         }
-        
+
         private void UpdateAddActors()
         {
             actorsToAdd.ForEach(AddActorNow);
@@ -73,6 +85,8 @@ namespace Engine
 
         private void AddActorNow(Actor _actor)
         {
+            //Add to depthSorter so that 1) the actor's depth in the constructor is used, and 2) if it is overridden in the actor's Start(), 
+            depthSorter.Add(_actor);
             _actor.Start();
             actorsByID[_actor.ID] = _actor;
             actorsByTypeID.GetOrAddNew(_actor.TypeID).Add(_actor);
@@ -80,6 +94,7 @@ namespace Engine
 
         private void RemoveActorNow(Actor _actor)
         {
+            depthSorter.Remove(_actor);
             _actor.OnRemove();
             actorsByID.Remove(_actor.ID);
             if (actorsByTypeID.TryGetValue(_actor.TypeID, out var set))
@@ -104,6 +119,64 @@ namespace Engine
         {
             actorsToAdd.Remove(_actor);
             actorsToRemove.Add(_actor);
+        }
+
+        /// <summary>
+        /// Sorts actors by their depth value
+        /// </summary>
+        internal class ActorDepthSorter
+        {
+            private SortedSet<Actor> actors;
+
+            public ActorDepthSorter() => actors = new SortedSet<Actor>(actorDepthComparer);
+
+            public void Add(Actor _actor)
+            {
+                if (actors.Add(_actor))
+                    _actor.changeDepth += ChangeDepth;
+            }
+
+            public void Remove(Actor _actor)
+            {
+                if (actors.Remove(_actor))
+                    _actor.changeDepth -= ChangeDepth;
+            }
+
+            internal void ChangeDepth(Actor _actor, float _newDepth)
+            {
+                actors.Remove(_actor);
+                _actor.depth = _newDepth;
+                actors.Add(_actor);
+            }
+
+            public void ForEach(Action<Actor> _action)
+            {
+                foreach (var actor in actors)
+                    _action(actor);
+            }
+
+            private static IComparer<Actor> actorDepthComparer => Comparer<Actor>.Create((a, b) => actorDepthComparison(a, b));
+            private static Comparison<Actor> actorDepthComparison = new Comparison<Actor>(compareActorDepths);
+
+            /// <summary>
+            /// -1 if _a has a lower depth than _b (or they have the same depth and _a has a lower ID)
+            /// 1 if _a has a higher depth than _b (or they have the same depth and _a has a higher ID)
+            /// </summary>
+            /// <param name="_a">actor to compare</param>
+            /// <param name="_b">actor to compare against</param>
+            /// <returns>relative depths of _a and _b = (-1, 0, 1) if _a is (less than, equal to, greater than) _b)</returns>
+            private static int compareActorDepths(Actor _a, Actor _b)
+            {
+                return _a.Depth < _b.Depth
+                    ? -1
+                    : _a.Depth > _b.Depth
+                        ? 1
+                        : _a.ID < _b.ID
+                            ? -1
+                            : _a.ID > _b.ID
+                                ? 1
+                                : 0;
+            }
         }
     }
 }
