@@ -35,6 +35,9 @@ namespace Test
 
             game.StartHandler += () =>
             {
+                b.Depth = 100;
+                g.Depth = 0;
+                r.Depth = -100;
 
                 r.AddToWorld();
                 g.AddToWorld();
@@ -43,7 +46,7 @@ namespace Test
 
             game.UpdateHandler += () =>
             {
-                b.Depth = -1;
+                b.Depth--;
             };
             
             game.Run();

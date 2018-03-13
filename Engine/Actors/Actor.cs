@@ -20,8 +20,8 @@ namespace Engine.Actors
         public virtual float Y { get; set; }
 
         /// <summary>
-        /// The actor with the highest depth will update and render last
-        /// while the actor with the lower depth will update and render first.
+        /// The actor with the lowest depth will update and render last
+        /// while the actor with the highest depth will update and render first.
         /// Ties are decided by the actors' IDs (lowest will update/render first).
         /// </summary>
         public float Depth
@@ -67,8 +67,8 @@ namespace Engine.Actors
 
         public readonly int ID;
         public readonly int TypeID;
-        
-        public Actor(float _x=0, float _y=0, float _w=0, float _h=0, 
+
+        public Actor(float _x = 0, float _y = 0, float _w = 0, float _h = 0, float _depth = 0,
             Align.Horizontal _halign = Align.Horizontal.Center, 
             Align.Vertical _valign = Align.Vertical.Middle)
         {
@@ -77,6 +77,7 @@ namespace Engine.Actors
 
             X = _x;
             Y = _y;
+            Depth = _depth;
 
             BoundingBox = new BoundingBox(_w, _h, _halign, _valign);
         }

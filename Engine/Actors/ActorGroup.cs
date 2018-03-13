@@ -127,6 +127,7 @@ namespace Engine.Actors
         internal class ActorDepthSorter
         {
             private SortedSet<Actor> actors;
+            private Dictionary<Actor, float> toUpdate = new Dictionary<Actor, float>();
 
             public ActorDepthSorter() => actors = new SortedSet<Actor>(actorDepthComparer);
 
@@ -142,15 +143,42 @@ namespace Engine.Actors
                     _actor.changeDepth -= ChangeDepth;
             }
 
+            /// <summary>
+            /// Enqueues an update to an actor's depth that will execute before the next iteration over the set.
+            /// Actor.Depth is updated instantly, but the dictionary brings the actors set into sync on the next UpdateActors call.
+            /// </summary>
+            /// <param name="_actor"></param>
+            /// <param name="_newDepth"></param>
             internal void ChangeDepth(Actor _actor, float _newDepth)
             {
-                actors.Remove(_actor);
-                _actor.depth = _newDepth;
-                actors.Add(_actor);
+                if (_actor.Depth == _newDepth)
+                    return;
+                toUpdate[_actor] = _actor.Depth;
+                _actor.depth = _newDepth; //So that any calls to _actor.Depth will return the new depth value
             }
 
+            /// <summary>
+            /// Called before each iteration over the set to bring it into sync with current actor depth values
+            /// </summary>
+            internal void UpdateActors()
+            {
+                //Execute each change to each actors' place within the actors set
+                foreach(var kv in toUpdate)
+                {
+                    var actor = kv.Key;
+                    var oldDepth = kv.Value;
+                    var newDepth = actor.depth;
+                    actor.depth = oldDepth;
+                    actors.Remove(actor);
+                    actor.depth = newDepth;
+                    actors.Add(actor);
+                }
+                toUpdate.Clear();
+            }
+            
             public void ForEach(Action<Actor> _action)
             {
+                UpdateActors();
                 foreach (var actor in actors)
                     _action(actor);
             }
@@ -167,9 +195,9 @@ namespace Engine.Actors
             /// <returns>relative depths of _a and _b = (-1, 0, 1) if _a is (less than, equal to, greater than) _b)</returns>
             private static int compareActorDepths(Actor _a, Actor _b)
             {
-                return _a.Depth < _b.Depth
+                return _a.Depth > _b.Depth
                     ? -1
-                    : _a.Depth > _b.Depth
+                    : _a.Depth < _b.Depth
                         ? 1
                         : _a.ID < _b.ID
                             ? -1
