@@ -8,6 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using Engine.OpenGL.Colored;
 using OpenTK.Input;
 using System.Diagnostics;
+using Basics;
 
 namespace Engine
 {
@@ -30,6 +31,10 @@ namespace Engine
         public static float Delta => FPSHandler.Delta;
 
         public static string Title { set => game.window.SetTitle(value); }
+
+        //TODO: make this a configurable option instead of a const string
+        private const string logPath = "..\\Logs\\basics.log";
+        private Log log = new Log(logPath);
 
         public static Color4 BackgroundColor
         {
@@ -55,7 +60,17 @@ namespace Engine
             window.Update += PreUpdate;
             window.Update += Update;
             window.Render += Render;
+            window.Closing += Closing;
         }
+
+        private void Closing(object sender, System.ComponentModel.CancelEventArgs e) => LogFlush();
+
+        public static void LogDebug(string line) => game.log.Debug(line);
+        public static void LogInfo(string line) => game.log.Info(line);
+        public static void LogWarning(string line) => game.log.Warning(line);
+        public static void LogError(string line) => game.log.Error(line);
+        public static void LogCritical(string line) => game.log.Critical(line);
+        public static void LogFlush() => game.log.Flush();
 
         public void Run() => window.Run();
 

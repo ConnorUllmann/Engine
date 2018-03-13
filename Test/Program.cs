@@ -26,6 +26,12 @@ namespace Test
 
         static void Main(string[] args)
         {
+            var log = new Log("..\\Logs\\basics.log", false, Log.Level.Debug, 1000000);
+            while (true)
+            {
+                log.Debug("LINE");
+            }
+
             //Basics.VisualTests.Pathfinding();)
             var game = new ShellGame(640, 480);
 
@@ -47,6 +53,9 @@ namespace Test
             game.UpdateHandler += () =>
             {
                 b.Depth--;
+                Game.LogDebug(b.Depth.ToString());
+                Game.LogWarning(r.Depth.ToString());
+                Game.LogCritical(r.Depth.ToString());
             };
             
             game.Run();
