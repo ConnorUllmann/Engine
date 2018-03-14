@@ -135,8 +135,8 @@ namespace Engine.Actors
             actorsToRemove.Add(_actor);
         }
 
-        private IEnumerable<Actor> GetActorsOfType(Type _type)
-            => GetActorsOfType(_type.Name);
+        public IEnumerable<T> GetActorsOfType<T>() where T : class
+            => GetActorsOfType(typeof(T).Name)?.Select(a => a as T);
         private IEnumerable<Actor> GetActorsOfType(string _typeString)
             => typeIDByName.TryGetValue(_typeString, out int typeID) && actorsByTypeID.TryGetValue(typeID, out var set) ? set : null;
 
