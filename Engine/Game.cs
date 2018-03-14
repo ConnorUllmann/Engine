@@ -61,8 +61,13 @@ namespace Engine
             log = new Log(logPath);
             group = new ActorGroup(log);
 
+            initializeWindow(title);
+        }
+
+        private void initializeWindow(string title)
+        {
             //Not sure why, but the dimensions always seem to inflate by 1.5x... these divisions are done to offset that
-            window = new Window((int)(width / 1.5f), (int)(height / 1.5f), title);
+            window = new Window((int)(Width / 1.5f), (int)(Height / 1.5f), title ?? "");
             window.Start += Start;
             window.Update += PreUpdate;
             window.Update += Update;
