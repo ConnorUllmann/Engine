@@ -82,7 +82,7 @@ namespace Engine
                 {
                     var tile = new HexTile(this, i, j, Radius);
                     grid.Set(tile, i, j);
-                    tile.AddToWorld();
+                    tile.AddToGroup();
                 }
             }
             BoundingBox = GetBoundingBox();

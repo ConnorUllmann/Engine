@@ -5,10 +5,13 @@ using Basics;
 
 namespace Engine.Actors
 {
+    /// <summary>
+    /// A group of actors which can be updated and rendered together. 
+    /// Handles administering IDs to actors and ensuring that they are added/removed from the world cleanly.
+    /// Sorts actors by depth in order to update & render them in the right order while using the Active & Visible properties.
+    /// </summary>
     public class ActorGroup
     {
-        public static ActorGroup World = new ActorGroup();
-
         private int nextID = 0;
         public int GetNextID() => nextID++;
         private Dictionary<int, Actor> actorsByID;
@@ -25,8 +28,11 @@ namespace Engine.Actors
 
         private ActorDepthSorter depthSorter;
 
-        private ActorGroup()
+        public Log Log;
+
+        public ActorGroup(Log _log=null)
         {
+            Log = _log;
             Reset();
         }
 
@@ -42,6 +48,8 @@ namespace Engine.Actors
 
         public void Update()
         {
+            Log?.Debug($"ActorGroup.Update() started");
+
             UpdateRemoveActors();
             UpdateAddActors();
 
@@ -60,15 +68,21 @@ namespace Engine.Actors
                 if (actor.Active)
                     actor.PostUpdate();
             });
+
+            Log?.Debug("ActorGroup.Update() finished");
         }
 
         public void Render()
         {
+            Log?.Debug("ActorGroup.Render() started");
+
             depthSorter.ForEach(actor =>
             {
                 if (actor.Visible)
                     actor.Render();
             });
+
+            Log?.Debug("ActorGroup.Render() finished");
         }
 
         private void UpdateAddActors()
@@ -106,7 +120,7 @@ namespace Engine.Actors
         }
 
         //Slightly more appealing name for the externally-facing version of AddOnNextFrame
-        public Actor AddToWorld(Actor _actor) => AddOnNextFrame(_actor);
+        public Actor AddToGroup(Actor _actor) => AddOnNextFrame(_actor);
         private Actor AddOnNextFrame(Actor _actor)
         {
             _actor.DestroyHandler += () => RemoveOnNextFrame(_actor);
@@ -120,6 +134,11 @@ namespace Engine.Actors
             actorsToAdd.Remove(_actor);
             actorsToRemove.Add(_actor);
         }
+
+        private IEnumerable<Actor> GetActorsOfType(Type _type)
+            => GetActorsOfType(_type.Name);
+        private IEnumerable<Actor> GetActorsOfType(string _typeString)
+            => typeIDByName.TryGetValue(_typeString, out int typeID) && actorsByTypeID.TryGetValue(typeID, out var set) ? set : null;
 
         /// <summary>
         /// Sorts actors by their depth value

@@ -14,7 +14,7 @@ namespace Engine.Actors
 
     public class Actor : IPosition
     {
-        public Actor AddToWorld() => ActorGroup.World.AddToWorld(this);
+        public Actor AddToGroup() => Game.Group.AddToGroup(this);
         
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
@@ -67,13 +67,15 @@ namespace Engine.Actors
 
         public readonly int ID;
         public readonly int TypeID;
-
+        
         public Actor(float _x = 0, float _y = 0, float _w = 0, float _h = 0, float _depth = 0,
             Align.Horizontal _halign = Align.Horizontal.Center, 
-            Align.Vertical _valign = Align.Vertical.Middle)
+            Align.Vertical _valign = Align.Vertical.Middle, 
+            ActorGroup _group=null)
         {
-            ID = ActorGroup.World.GetNextID();
-            TypeID = ActorGroup.World.GetTypeID(this);
+            _group = _group ?? Game.Group;
+            ID = _group.GetNextID();
+            TypeID = _group.GetTypeID(this);
 
             X = _x;
             Y = _y;

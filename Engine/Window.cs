@@ -63,7 +63,7 @@ namespace Engine
                 updateStopwatch.Reset();
                 updateStopwatch.Start();
                 Update();
-                ActorGroup.World.Update();
+                Game.Group.Update();
                 updateStopwatch.Stop();
                 LastUpdateDurationMilliseconds = updateStopwatch.ElapsedMilliseconds;
             }
@@ -81,7 +81,7 @@ namespace Engine
 
             renderStopwatch.Reset();
             renderStopwatch.Start();
-            ActorGroup.World.Render();
+            Game.Group.Render();
             Render();
             renderStopwatch.Stop();
             LastRenderDurationMilliseconds = renderStopwatch.ElapsedMilliseconds;

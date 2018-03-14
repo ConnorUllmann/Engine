@@ -78,7 +78,7 @@ namespace Engine
                 {
                     var tile = new VectorTile(x, y, this, Vector2.Zero);
                     Set(tile, x, y);
-                    tile.AddToWorld();
+                    tile.AddToGroup();
                 }
             }
         }

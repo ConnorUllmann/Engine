@@ -9,6 +9,7 @@ using Engine.OpenGL.Colored;
 using OpenTK.Input;
 using System.Diagnostics;
 using Basics;
+using Engine.Actors;
 
 namespace Engine
 {
@@ -34,7 +35,9 @@ namespace Engine
 
         //TODO: make this a configurable option instead of a const string
         private const string logPath = "..\\Logs\\basics.log";
-        private Log log = new Log(logPath);
+        private Log log;
+        private ActorGroup group;
+        public static ActorGroup Group => game.group;
 
         public static Color4 BackgroundColor
         {
@@ -54,6 +57,10 @@ namespace Engine
             game = this;
             Width = width;
             Height = height;
+            
+            log = new Log(logPath);
+            group = new ActorGroup(log);
+
             //Not sure why, but the dimensions always seem to inflate by 1.5x... these divisions are done to offset that
             window = new Window((int)(width / 1.5f), (int)(height / 1.5f), title);
             window.Start += Start;
@@ -86,8 +93,23 @@ namespace Engine
         /// <param name="_verticalMargin">Distance from the top & bottom edges of the screen that the point must be</param>
         /// <returns></returns>
         public static Vector2 RandomPosition(float _horizontalMargin = 0, float _verticalMargin = 0)
-            => new Vector2((float)((Basics.Utils.RandomDouble() - 0.5) * (Width - 2 * _horizontalMargin)),
-                           (float)((Basics.Utils.RandomDouble() - 0.5) * (Height - 2 * _verticalMargin)));
+            => new Vector2(RandomX(_horizontalMargin), RandomY(_verticalMargin));
+
+        /// <summary>
+        /// Returns a random x-coordinate on the screen
+        /// </summary>
+        /// <param name="_horizontalMargin">Distance from the left & right sides of the screen that the coordinate must be</param>
+        /// <returns></returns>
+        public static float RandomX(float _horizontalMargin = 0)
+            => (float)((Basics.Utils.RandomDouble() - 0.5) * (Width - 2 * _horizontalMargin));
+
+        /// <summary>
+        /// Returns a random y-coordinate on the screen
+        /// </summary>
+        /// <param name="_verticalMargin">Distance from the top & bottom of the screen that the coordinate must be</param>
+        /// <returns></returns>
+        public static float RandomY(float _verticalMargin = 0)
+            => (float)((Basics.Utils.RandomDouble() - 0.5) * (Height - 2 * _verticalMargin));
 
         /// <summary>
         /// Returns the position to place _position after it has been wrapped around the screen. _margin specifies how much space outside the screen to include (negative values work)
