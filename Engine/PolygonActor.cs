@@ -17,12 +17,15 @@ namespace Engine
         public bool FillVisible = true;
         public bool OutlineVisible = true;
 
-        public PolygonActor(Polygon _polygon, float _x = 0, float _y = 0, bool _center = true) : base(_x, _y)
+        public PolygonActor(Polygon _polygon, float _x = 0, float _y = 0, bool _center = true, bool _filled=true, bool _outlined=true) : base(_x, _y)
         {
             Polygon = _polygon;
-            if (_center) Center();
-            FillRenderer = new PolygonFillRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
-            OutlineRenderer = new PolygonOutlineRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
+            if (_center)
+                Center();
+            if(_filled)
+                FillRenderer = new PolygonFillRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
+            if(_outlined)
+                OutlineRenderer = new PolygonOutlineRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
         }
 
         public void UpdateBoundingBoxToMatchPolygon() => BoundingBox.MatchPositionAndDimensions(Polygon.BoundingRectangle());
@@ -44,8 +47,8 @@ namespace Engine
                 ? _center.Value
                 : Vector3.Zero;
             Polygon.Rotate(_angleRad, centerRelative);
-            FillRenderer.Rotate(_angleRad, centerAbsolute);
-            OutlineRenderer.Rotate(_angleRad, centerAbsolute);
+            FillRenderer?.Rotate(_angleRad, centerAbsolute);
+            OutlineRenderer?.Rotate(_angleRad, centerAbsolute);
         }
 
         public IEnumerable<Polygon> SplitAlongLine(Vector3 _a, Vector3 _b)
@@ -58,16 +61,16 @@ namespace Engine
 
         public override void PostUpdate()
         {
-            FillRenderer.Update(X, Y);
-            OutlineRenderer.Update(X, Y);
+            FillRenderer?.Update(X, Y);
+            OutlineRenderer?.Update(X, Y);
         }
 
         public override void Render()
         {
             if (FillVisible)
-                FillRenderer.Render();
+                FillRenderer?.Render();
             if (OutlineVisible)
-                OutlineRenderer.Render();
+                OutlineRenderer?.Render();
         }
     }
 }
