@@ -76,15 +76,15 @@ namespace Engine
         /// <param name="a">line point a</param>
         /// <param name="b">line point b</param>
         /// <returns>The point on the line [a, b] that is closest to 'point'></returns>
-        public static Vector3 PointOnLineNearestPoint(Vector3 point, Vector3 a, Vector3 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y).To3D();
-        public static Vector2 PointOnLineNearestPoint(IPosition point, IPosition a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnLineNearestPoint(Vector2 point, IPosition a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnLineNearestPoint(IPosition point, Vector2 a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnLineNearestPoint(Vector2 point, Vector2 a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnLineNearestPoint(IPosition point, IPosition a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnLineNearestPoint(Vector2 point, IPosition a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnLineNearestPoint(IPosition point, Vector2 a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnLineNearestPoint(Vector2 point, Vector2 a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector3 NearestPointOnLine(this Vector3 point, Vector3 a, Vector3 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y).To3D();
+        public static Vector2 NearestPointOnLine(this IPosition point, IPosition a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnLine(this Vector2 point, IPosition a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnLine(this IPosition point, Vector2 a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnLine(this Vector2 point, Vector2 a, IPosition b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnLine(this IPosition point, IPosition a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnLine(this Vector2 point, IPosition a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnLine(this IPosition point, Vector2 a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnLine(this Vector2 point, Vector2 a, Vector2 b) => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static Vector2 PointOnLineNearestPoint(float pointX, float pointY, float aX, float aY, float bX, float bY)
         {
             if (aX == bX)
@@ -108,15 +108,15 @@ namespace Engine
         /// <param name="a">segment starting point</param>
         /// <param name="b">segment ending point</param>
         /// <returns>The point on the segment [a, b] that is closest to 'point' (it will always lie on the segment [a, b])</returns>
-        public static Vector3 PointOnSegmentNearestPoint(Vector3 point, Vector3 a, Vector3 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y).To3D();
-        public static Vector2 PointOnSegmentNearestPoint(IPosition point, IPosition a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, IPosition a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnSegmentNearestPoint(IPosition point, Vector2 a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, Vector2 a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnSegmentNearestPoint(IPosition point, IPosition a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, IPosition a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnSegmentNearestPoint(IPosition point, Vector2 a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, Vector2 a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector3 NearestPointOnSegment(this Vector3 point, Vector3 a, Vector3 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y).To3D();
+        public static Vector2 NearestPointOnSegment(this IPosition point, IPosition a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnSegment(this Vector2 point, IPosition a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnSegment(this IPosition point, Vector2 a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnSegment(this Vector2 point, Vector2 a, IPosition b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnSegment(this IPosition point, IPosition a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnSegment(this Vector2 point, IPosition a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnSegment(this IPosition point, Vector2 a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 NearestPointOnSegment(this Vector2 point, Vector2 a, Vector2 b) => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static Vector2 PointOnSegmentNearestPoint(float pointX, float pointY, float aX, float aY, float bX, float bY)
         {
             var q = PointOnLineNearestPoint(pointX, pointY, aX, aY, bX, bY);
@@ -132,15 +132,15 @@ namespace Engine
         /// <param name="a">segment starting point</param>
         /// <param name="b">segment ending point</param>
         /// <returns>Distance between 'point' and the nearest point on the segment [a, b]</returns>
-        public static float DistanceToSegment(Vector3 point, Vector3 a, Vector3 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(IPosition point, IPosition a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(Vector2 point, IPosition a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(IPosition point, Vector2 a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(Vector2 point, Vector2 a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(IPosition point, IPosition a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(Vector2 point, IPosition a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(IPosition point, Vector2 a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToSegment(Vector2 point, Vector2 a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this Vector3 point, Vector3 a, Vector3 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this IPosition point, IPosition a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this Vector2 point, IPosition a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this IPosition point, Vector2 a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this Vector2 point, Vector2 a, IPosition b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this IPosition point, IPosition a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this Vector2 point, IPosition a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this IPosition point, Vector2 a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToSegment(this Vector2 point, Vector2 a, Vector2 b) => DistanceToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static float DistanceToSegment(float pointX, float pointY, float aX, float aY, float bX, float bY)
             => PointOnSegmentNearestPoint(pointX, pointY, aX, aY, bX, bY).Distance(pointX, pointY);
 
@@ -151,15 +151,15 @@ namespace Engine
         /// <param name="a">segment starting point</param>
         /// <param name="b">segment ending point</param>
         /// <returns>Distance between 'point' and the nearest point on the line [a, b]</returns>
-        public static float DistanceToLine(Vector3 point, Vector3 a, Vector3 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(IPosition point, IPosition a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(Vector2 point, IPosition a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(IPosition point, Vector2 a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(Vector2 point, Vector2 a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(IPosition point, IPosition a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(Vector2 point, IPosition a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(IPosition point, Vector2 a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceToLine(Vector2 point, Vector2 a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this Vector3 point, Vector3 a, Vector3 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this IPosition point, IPosition a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this Vector2 point, IPosition a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this IPosition point, Vector2 a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this Vector2 point, Vector2 a, IPosition b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this IPosition point, IPosition a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this Vector2 point, IPosition a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this IPosition point, Vector2 a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceToLine(this Vector2 point, Vector2 a, Vector2 b) => DistanceToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static float DistanceToLine(float pointX, float pointY, float aX, float aY, float bX, float bY)
             => PointOnLineNearestPoint(pointX, pointY, aX, aY, bX, bY).Distance(pointX, pointY);
 
@@ -170,15 +170,15 @@ namespace Engine
         /// <param name="a">segment starting point</param>
         /// <param name="b">segment ending point</param>
         /// <returns>Squared distance between 'point' and the nearest point on the segment [a, b]</returns>
-        public static float DistanceSquaredToSegment(Vector3 point, Vector3 a, Vector3 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(IPosition point, IPosition a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(Vector2 point, IPosition a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(IPosition point, Vector2 a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(Vector2 point, Vector2 a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(IPosition point, IPosition a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(Vector2 point, IPosition a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(IPosition point, Vector2 a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToSegment(Vector2 point, Vector2 a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this Vector3 point, Vector3 a, Vector3 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this IPosition point, IPosition a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this Vector2 point, IPosition a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this IPosition point, Vector2 a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this Vector2 point, Vector2 a, IPosition b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this IPosition point, IPosition a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this Vector2 point, IPosition a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this IPosition point, Vector2 a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToSegment(this Vector2 point, Vector2 a, Vector2 b) => DistanceSquaredToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static float DistanceSquaredToSegment(float pointX, float pointY, float aX, float aY, float bX, float bY)
             => PointOnSegmentNearestPoint(pointX, pointY, aX, aY, bX, bY).DistanceSquared(pointX, pointY);
 
@@ -189,32 +189,32 @@ namespace Engine
         /// <param name="a">segment starting point</param>
         /// <param name="b">segment ending point</param>
         /// <returns>Squared distance between 'point' and the nearest point on the line [a, b]</returns>
-        public static float DistanceSquaredToLine(Vector3 point, Vector3 a, Vector3 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(IPosition point, IPosition a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(Vector2 point, IPosition a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(IPosition point, Vector2 a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(Vector2 point, Vector2 a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(IPosition point, IPosition a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(Vector2 point, IPosition a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(IPosition point, Vector2 a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static float DistanceSquaredToLine(Vector2 point, Vector2 a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this Vector3 point, Vector3 a, Vector3 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this IPosition point, IPosition a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this Vector2 point, IPosition a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this IPosition point, Vector2 a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this Vector2 point, Vector2 a, IPosition b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this IPosition point, IPosition a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this Vector2 point, IPosition a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this IPosition point, Vector2 a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float DistanceSquaredToLine(this Vector2 point, Vector2 a, Vector2 b) => DistanceSquaredToLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static float DistanceSquaredToLine(float pointX, float pointY, float aX, float aY, float bX, float bY)
             => PointOnLineNearestPoint(pointX, pointY, aX, aY, bX, bY).DistanceSquared(pointX, pointY);
 
-        public static bool PointIsRightOfLine(Vector3 point, Vector3 a, Vector3 b) => PointIsRightOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static bool PointIsRightOfLine(Vector2 point, Vector2 a, Vector2 b) => PointIsRightOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool IsRightOfLine(this Vector3 point, Vector3 a, Vector3 b) => PointIsRightOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool IsRightOfLine(this Vector2 point, Vector2 a, Vector2 b) => PointIsRightOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static bool PointIsRightOfLine(float pointX, float pointY, float aX, float aY, float bX, float bY) => PointSideOfLine(pointX, pointY, aX, aY, bX, bY) < 0;
 
-        public static bool PointIsLeftOfLine(Vector3 point, Vector3 a, Vector3 b) => PointIsLeftOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static bool PointIsLeftOfLine(Vector2 point, Vector2 a, Vector2 b) => PointIsLeftOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool IsLeftOfLine(this Vector3 point, Vector3 a, Vector3 b) => PointIsLeftOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool IsLeftOfLine(this Vector2 point, Vector2 a, Vector2 b) => PointIsLeftOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static bool PointIsLeftOfLine(float pointX, float pointY, float aX, float aY, float bX, float bY) => PointSideOfLine(pointX, pointY, aX, aY, bX, bY) > 0;
 
         public static bool Colinear(Vector3 a, Vector3 b, Vector3 c) => Colinear(a.X, a.Y, b.X, b.Y, c.X, c.Y);
         public static bool Colinear(Vector2 a, Vector2 b, Vector2 c) => Colinear(a.X, a.Y, b.X, b.Y, c.X, c.Y);
         public static bool Colinear(float aX, float aY, float bX, float bY, float cX, float cY) => PointSideOfLine(aX, aY, bX, bY, cX, cY) == 0;
 
-        public static int PointSideOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-        public static int PointSideOfLine(Vector2 point, Vector2 a, Vector2 b) => PointSideOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static int SideOfLine(this Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static int SideOfLine(this Vector2 point, Vector2 a, Vector2 b) => PointSideOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static int PointSideOfLine(float pointX, float pointY, float aX, float aY, float bX, float bY) => Math.Sign((bX - aX) * (pointY - aY) - (bY - aY) * (pointX - aX));
 
         public static Vector3 PointOnLineAtX(Vector3 a, Vector3 b, float x)
@@ -280,8 +280,8 @@ namespace Engine
         /// <returns>Whether the given point is inside the given triangle.</returns>
         public static bool PointInTriangle(Vector3 point, Vector3 a, Vector3 b, Vector3 c)
         {
-            var bc = PointIsRightOfLine(point, b, c);
-            return PointIsRightOfLine(point, a, b) == bc && bc == PointIsRightOfLine(point, c, a);
+            var bc = point.IsRightOfLine(b, c);
+            return point.IsRightOfLine(a, b) == bc && bc == point.IsRightOfLine(c, a);
         }
 
         /// <summary>

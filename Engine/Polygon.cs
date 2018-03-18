@@ -296,7 +296,7 @@ namespace Engine
                 var curr = this[iCurr];
                 var next = this[iNext];
                 var IsEar = true;
-                if (Utils.PointIsRightOfLine(next, prev, curr))
+                if (next.IsRightOfLine(prev, curr))
                     IsEar = false;
                 else
                 {
