@@ -3,12 +3,20 @@ using System.Collections.Generic;
 using System.Text;
 using OpenTK;
 using Rectangle = Basics.Rectangle;
+using Basics;
 
 namespace Engine
 {
     public static class Utils
     {
         #region Vectors
+
+        public static float Distance(this Vector2 _v, IPosition _u) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _u.X, _u.Y);
+        public static float Distance(this Vector2 _v, Vector2 _u) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _u.X, _u.Y);
+        public static float Distance(this Vector2 _v, float _x, float _y) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _x, _y);
+        public static float DistanceSquared(this Vector2 _v, IPosition _u) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _u.X, _u.Y);
+        public static float DistanceSquared(this Vector2 _v, Vector2 _u) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _u.X, _u.Y);
+        public static float DistanceSquared(this Vector2 _v, float _x, float _y) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _x, _y);
 
         public static Vector2 Vector2(float _radians, float _length=1) => _length * new Vector2((float)Math.Cos(_radians), (float)Math.Sin(_radians));
         public static Vector2 RandomUnitVector2() => Vector2((float)(Basics.Utils.RandomDouble() * Math.PI * 2));
@@ -58,6 +66,51 @@ namespace Engine
 
         #region Points & lines
 
+        /// <summary>
+        /// UNTESTED
+        /// Determines the point that is closest to 'point' on line [a, b]
+        /// </summary>
+        /// <param name="point">point to find the nearest point to</param>
+        /// <param name="a">line point a</param>
+        /// <param name="b">line point b</param>
+        /// <returns>The point on the line [a, b] that is closest to 'point'></returns>
+        public static Vector3 PointOnLineNearestPoint(Vector3 point, Vector3 a, Vector3 b)
+        {
+            var result = PointOnLineNearestPoint(new Vector2(point.X, point.Y), new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
+            return new Vector3(result.X, result.Y, 0);
+        }
+        public static Vector2 PointOnLineNearestPoint(Vector2 point, Vector2 a, IPosition b)
+            => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnLineNearestPoint(Vector2 point, IPosition a, Vector2 b)
+            => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnLineNearestPoint(Vector2 point, IPosition a, IPosition b)
+            => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnLineNearestPoint(IPosition point, Vector2 a, Vector2 b)
+            => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnLineNearestPoint(IPosition point, IPosition a, IPosition b)
+            => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnLineNearestPoint(IPosition point, Vector2 a, IPosition b)
+            => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnLineNearestPoint(Vector2 point, Vector2 a, Vector2 b)
+            => PointOnLineNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnLineNearestPoint(float pointX, float pointY, float aX, float aY, float bX, float bY)
+        {
+            if (aX == bX)
+                return new Vector2(aX, Basics.Utils.Clamp(pointY, Basics.Utils.Min(aY, bY), Basics.Utils.Max(aY, bY)));
+
+            var m = (bY - aY) / (bX - aX);
+            var f = aY - m * aX;
+            var q = new Vector2();
+            q.X = (m * (pointY - f) + pointX) / (m * m + 1);
+            if (m == 0)
+                q.Y = pointY;
+            else
+                q.Y = -1 / m * (q.X - pointX) + pointY;
+
+            q.X = Basics.Utils.Clamp(q.X, Math.Min(aX, bX), Math.Max(aX, bX));
+            q.Y = Basics.Utils.Clamp(q.Y, Math.Min(aY, bY), Math.Max(aY, bY));
+            return q;
+        }
         public static bool PointIsRightOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) < 0;
         public static bool PointIsLeftOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) > 0;
         public static bool PointOnLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) == 0;
@@ -71,6 +124,21 @@ namespace Engine
         {
             var diffY = b.Y - a.Y;
             return diffY == 0 ? (a + b) / 2 : new Vector3((y - a.Y) / diffY * (b.X - a.X) + a.X, y, 0);
+        }
+
+        /// <summary>
+        /// UNTESTED
+        /// Returns a number between 0 and 1 that represents the percentage between points 'a' -> 'b' that 'point' is. (point == a will return 0)
+        /// </summary>
+        /// <param name="point">point to see how far along the line it is</param>
+        /// <param name="a">first point on line</param>
+        /// <param name="b">second point on line</param>
+        /// <returns>Returns a number between 0 and 1 that represents the percentage between points 'a' -> 'b' that 'point' is</returns>
+        public static float PercentAlongLine(Vector2 point, Vector2 a, Vector2 b)
+        {
+            if (b.X == a.X)
+                return (point.Y - a.Y) / (b.Y - a.Y);
+            return (point.X - a.X) / (b.X - a.X);
         }
 
         #endregion
