@@ -17,6 +17,9 @@ namespace Engine
         public static float DistanceSquared(this Vector2 _v, IPosition _u) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _u.X, _u.Y);
         public static float DistanceSquared(this Vector2 _v, Vector2 _u) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _u.X, _u.Y);
         public static float DistanceSquared(this Vector2 _v, float _x, float _y) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _x, _y);
+        public static Vector2 Midpoint(this Vector2 a, IPosition b) => Basics.Utils.Midpoint(a.X, a.Y, b.X, b.Y).ToVector2();
+        public static Vector2 Midpoint(this Vector2 a, Vector2 b) => Basics.Utils.Midpoint(a.X, a.Y, b.X, b.Y).ToVector2();
+        public static Vector2 ToVector2(this (float X, float Y) _tuple) => new Vector2(_tuple.X, _tuple.Y);
 
         public static Vector2 Vector2(float _radians, float _length=1) => _length * new Vector2((float)Math.Cos(_radians), (float)Math.Sin(_radians));
         public static Vector2 RandomUnitVector2() => Vector2((float)(Basics.Utils.RandomDouble() * Math.PI * 2));
@@ -67,7 +70,6 @@ namespace Engine
         #region Points & lines
 
         /// <summary>
-        /// UNTESTED
         /// Determines the point that is closest to 'point' on line [a, b]
         /// </summary>
         /// <param name="point">point to find the nearest point to</param>
@@ -127,7 +129,7 @@ namespace Engine
         }
 
         /// <summary>
-        /// UNTESTED
+        /// Warning: this function assumes the 3 points are colinear!
         /// Returns a number between 0 and 1 that represents the percentage between points 'a' -> 'b' that 'point' is. (point == a will return 0)
         /// </summary>
         /// <param name="point">point to see how far along the line it is</param>
@@ -135,11 +137,13 @@ namespace Engine
         /// <param name="b">second point on line</param>
         /// <returns>Returns a number between 0 and 1 that represents the percentage between points 'a' -> 'b' that 'point' is</returns>
         public static float PercentAlongLine(Vector2 point, Vector2 a, Vector2 b)
-        {
-            if (b.X == a.X)
-                return (point.Y - a.Y) / (b.Y - a.Y);
-            return (point.X - a.X) / (b.X - a.X);
-        }
+            => PercentAlongLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float PercentAlongLine(float pointX, float pointY, float aX, float aY, float bX, float bY)
+            => aX != bX
+                ? (pointX - aX) / (bX - aX)
+                : aY != bY
+                    ? (pointY - aY) / (bY - aY)
+                    : 0;
 
         #endregion
 

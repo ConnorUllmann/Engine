@@ -109,5 +109,40 @@ namespace Engine.Test
             Assert.Equal(Math.Round(y, 3), Math.Round(result.Y, 3));
             Assert.Equal(Math.Round(z, 3), Math.Round(result.Z, 3));
         }
+
+        [Theory]
+        [InlineData(0, 2, 0, 0, 2, 2, 1, 1)]
+        [InlineData(2, 0, -2, 2, 2, -2, 1, -1)]
+        [InlineData(-1, 0, -1, 0, 1, 0, -1, 0)]
+        [InlineData(0, 0, -1, 0, 1, 0, 0, 0)]
+        [InlineData(2, 2, -1, 3, 2, -3, 0, 1)]
+        [InlineData(-2, 0, -1, 3, 2, -3, 0, 1)]
+        public void PointOnLineNearestPoint_ReturnSucceed(float px, float py, float ax, float ay, float bx, float by, float rx, float ry)
+        {
+            var point = Utils.PointOnLineNearestPoint(px, py, ax, ay, bx, by);
+            Assert.Equal(rx, point.X);
+            Assert.Equal(ry, point.Y);
+        }
+
+        [Theory]
+        [InlineData(1, 0, -1, 0, 1, 0, 1)]
+        [InlineData(-1, 0, -1, 0, 1, 0, 0)]
+        [InlineData(1, 3, -3, -5, 3, 7, 2f / 3)]
+        [InlineData(6, 13, -3, -5, 3, 7, 1.5f)]
+        [InlineData(-6, -11, -3, -5, 3, 7, -0.5f)]
+        [InlineData(-12, -5, 6, -1, 6, -1, 0)]
+        [InlineData(0, 0, 0, 0, 0, 0, 0)]
+        public void PercentAlongLine_ReturnSucceed(float px, float py, float ax, float ay, float bx, float by, float v)
+            => Assert.Equal(v, Utils.PercentAlongLine(px, py, ax, ay, bx, by));
+
+        [Theory]
+        [InlineData(1235, -12385, 443225, 3452)]
+        [InlineData(-124905, 1231224, 823786, 919208)]
+        public void PercentAlongLine_ReturnSucceed_Midpoint(float ax, float ay, float bx, float by)
+        {
+            var a = new Vector2(ax, ay);
+            var b = new Vector2(bx, by);
+            Assert.Equal(0.5f, Utils.PercentAlongLine(a.Midpoint(b), a, b));
+        }
     }
 }
