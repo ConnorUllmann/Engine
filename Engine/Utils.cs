@@ -108,15 +108,59 @@ namespace Engine
                 q.Y = pointY;
             else
                 q.Y = -1 / m * (q.X - pointX) + pointY;
+            return q;
+        }
 
+        /// <summary>
+        /// Determines the point that is closest to 'point' on segment [a, b]
+        /// </summary>
+        /// <param name="point">point to find the nearest point to</param>
+        /// <param name="a">segment starting point</param>
+        /// <param name="b">segment ending point</param>
+        /// <returns>The point on the segment [a, b] that is closest to 'point' (it will always line on the segment [a, b])</returns>
+        public static Vector3 PointOnSegmentNearestPoint(Vector3 point, Vector3 a, Vector3 b)
+        {
+            var result = PointOnSegmentNearestPoint(new Vector2(point.X, point.Y), new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
+            return new Vector3(result.X, result.Y, 0);
+        }
+        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, Vector2 a, IPosition b)
+            => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, IPosition a, Vector2 b)
+            => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, IPosition a, IPosition b)
+            => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnSegmentNearestPoint(IPosition point, Vector2 a, Vector2 b)
+            => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnSegmentNearestPoint(IPosition point, IPosition a, IPosition b)
+            => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnSegmentNearestPoint(IPosition point, Vector2 a, IPosition b)
+            => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnSegmentNearestPoint(Vector2 point, Vector2 a, Vector2 b)
+            => PointOnSegmentNearestPoint(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static Vector2 PointOnSegmentNearestPoint(float pointX, float pointY, float aX, float aY, float bX, float bY)
+        {
+            var q = PointOnLineNearestPoint(pointX, pointY, aX, aY, bX, bY);
             q.X = Basics.Utils.Clamp(q.X, Math.Min(aX, bX), Math.Max(aX, bX));
             q.Y = Basics.Utils.Clamp(q.Y, Math.Min(aY, bY), Math.Max(aY, bY));
             return q;
         }
-        public static bool PointIsRightOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) < 0;
-        public static bool PointIsLeftOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) > 0;
-        public static bool PointOnLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point, a, b) == 0;
-        public static int PointSideOfLine(Vector3 point, Vector3 a, Vector3 b) => Math.Sign((b.X - a.X) * (point.Y - a.Y) - (b.Y - a.Y) * (point.X - a.X));
+
+        public static bool PointIsRightOfLine(Vector3 point, Vector3 a, Vector3 b) => PointIsRightOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool PointIsRightOfLine(Vector2 point, Vector2 a, Vector2 b) => PointIsRightOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool PointIsRightOfLine(float pointX, float pointY, float aX, float aY, float bX, float bY) => PointSideOfLine(pointX, pointY, aX, aY, bX, bY) < 0;
+
+        public static bool PointIsLeftOfLine(Vector3 point, Vector3 a, Vector3 b) => PointIsLeftOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool PointIsLeftOfLine(Vector2 point, Vector2 a, Vector2 b) => PointIsLeftOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static bool PointIsLeftOfLine(float pointX, float pointY, float aX, float aY, float bX, float bY) => PointSideOfLine(pointX, pointY, aX, aY, bX, bY) > 0;
+
+        public static bool Colinear(Vector3 a, Vector3 b, Vector3 c) => Colinear(a.X, a.Y, b.X, b.Y, c.X, c.Y);
+        public static bool Colinear(Vector2 a, Vector2 b, Vector2 c) => Colinear(a.X, a.Y, b.X, b.Y, c.X, c.Y);
+        public static bool Colinear(float aX, float aY, float bX, float bY, float cX, float cY) => PointSideOfLine(aX, aY, bX, bY, cX, cY) == 0;
+
+        public static int PointSideOfLine(Vector3 point, Vector3 a, Vector3 b) => PointSideOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static int PointSideOfLine(Vector2 point, Vector2 a, Vector2 b) => PointSideOfLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static int PointSideOfLine(float pointX, float pointY, float aX, float aY, float bX, float bY) => Math.Sign((bX - aX) * (pointY - aY) - (bY - aY) * (pointX - aX));
+
         public static Vector3 PointOnLineAtX(Vector3 a, Vector3 b, float x)
         {
             var diffX = b.X - a.X;
@@ -129,21 +173,41 @@ namespace Engine
         }
 
         /// <summary>
-        /// Warning: this function assumes the 3 points are colinear!
-        /// Returns a number between 0 and 1 that represents the percentage between points 'a' -> 'b' that 'point' is. (point == a will return 0)
+        /// Returns a number between 0 and 1 that represents the percentage between points 'a' -> 'b' that 'point' is relative to 'a'.
+        /// (point == a will return 0, point == b will return 1)
         /// </summary>
         /// <param name="point">point to see how far along the line it is</param>
         /// <param name="a">first point on line</param>
         /// <param name="b">second point on line</param>
-        /// <returns>Returns a number between 0 and 1 that represents the percentage between points 'a' -> 'b' that 'point' is</returns>
-        public static float PercentAlongLine(Vector2 point, Vector2 a, Vector2 b)
-            => PercentAlongLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        /// <returns>Returns a number between 0 and 1 that represents the percentage along line 'a' -> 'b' that 'point' is relative to 'a'</returns>
+        public static float PercentAlongLine(Vector3 point, Vector3 a, Vector3 b) => PercentAlongLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float PercentAlongLine(Vector2 point, Vector2 a, Vector2 b) => PercentAlongLine(point.X, point.Y, a.X, a.Y, b.X, b.Y);
         public static float PercentAlongLine(float pointX, float pointY, float aX, float aY, float bX, float bY)
-            => aX != bX
+        {
+            if (!Colinear(pointX, pointY, aX, aY, bX, bY))
+            {
+                var temp = PointOnLineNearestPoint(pointX, pointY, aX, aY, bX, bY);
+                pointX = temp.X;
+                pointY = temp.Y;
+            }
+            return aX != bX
                 ? (pointX - aX) / (bX - aX)
                 : aY != bY
                     ? (pointY - aY) / (bY - aY)
                     : 0;
+        }
+
+        /// <summary>
+        /// Returns a number between 0 and 1 that represents the percentage along line 'a' -> 'b' that 'point' is relative to 'a'.
+        /// (point == a will return 0, point == b will return 1)
+        /// </summary>
+        /// <param name="point">point to see how far along the line it is</param>
+        /// <param name="a">first point on segment</param>
+        /// <param name="b">second point on lisegmentne</param>
+        /// <returns>Returns a number between 0 and 1 that represents the percentage along segment 'a' -> 'b' that 'point' is relative to 'a'</returns>
+        public static float PercentAlongSegment(Vector3 point, Vector3 a, Vector3 b) => PercentAlongSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float PercentAlongSegment(Vector2 point, Vector2 a, Vector2 b) => PercentAlongSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
+        public static float PercentAlongSegment(float pointX, float pointY, float aX, float aY, float bX, float bY) => Basics.Utils.Clamp(PercentAlongLine(pointX, pointY, aX, aY, bX, bY), 0, 1);
 
         #endregion
 
