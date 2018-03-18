@@ -20,6 +20,8 @@ namespace Engine.Actors
         private int nextTypeID = 0;
         public int GetNextTypeID() => nextTypeID++;
         public int GetTypeID(Actor _actor) => typeIDByName.GetOrAdd(_actor.GetType().Name, GetNextTypeID);
+        public int GetTypeID<T>() => typeIDByName.GetOrAdd(typeof(T).Name, GetNextTypeID);
+        public int Count<T>() where T : Actor => actorsByTypeID.TryGetValue(GetTypeID<T>(), out var actors) ? actors.Count : 0;
         private Dictionary<string, int> typeIDByName;
         private Dictionary<int, HashSet<Actor>> actorsByTypeID;
 

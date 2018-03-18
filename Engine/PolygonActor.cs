@@ -17,7 +17,8 @@ namespace Engine
         public bool FillVisible = true;
         public bool OutlineVisible = true;
 
-        public PolygonActor(Polygon _polygon, float _x = 0, float _y = 0, bool _center = true, bool _filled=true, bool _outlined=true) : base(_x, _y)
+        public PolygonActor(Polygon _polygon, float _x = 0, float _y = 0, bool _center = true, bool _filled=true, bool _outlined=true) 
+            : base(_x, _y)
         {
             Polygon = _polygon;
             if (_center)
