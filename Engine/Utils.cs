@@ -35,14 +35,19 @@ namespace Engine
             for (var i = 0; i < _vertices.Count; i++)
                 _vertices[i] = _vertices[i].Rotate(_radians, _center);
         }
-        public static Vector3 Rotate(this Vector3 _vertex, float _radians, Vector3 _center)
+        public static Vector3 Rotate(this Vector3 _vertex, float _radians, Vector3 _center) => Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y).To3D();
+        public static Vector2 Rotate(this IPosition _vertex, float _radians, IPosition _center=null) => Rotate(_vertex.X, _vertex.Y, _radians, _center?.X ?? 0, _center?.Y ?? 0);
+        public static Vector2 Rotate(this Vector2 _vertex, float _radians, IPosition _center=null) => Rotate(_vertex.X, _vertex.Y, _radians, _center?.X ?? 0, _center?.Y ?? 0);
+        public static Vector2 Rotate(this IPosition _vertex, float _radians, Vector2 _center) => Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y);
+        public static Vector2 Rotate(this Vector2 _vertex, float _radians, Vector2 _center) => Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y);
+        public static Vector2 Rotate(this IPosition _vertex, float _radians) => Rotate(_vertex.X, _vertex.Y, _radians);
+        public static Vector2 Rotate(this Vector2 _vertex, float _radians) => Rotate(_vertex.X, _vertex.Y, _radians);
+        public static Vector2 Rotate(float _vertexX, float _vertexY, float _radians, float _centerX=0, float _centerY=0)
         {
-            var diff = _vertex - _center;
-            diff = new Vector3(
-                (float)(diff.X * Math.Cos(_radians) - diff.Y * Math.Sin(_radians)),
-                (float)(diff.Y * Math.Cos(_radians) + diff.X * Math.Sin(_radians)),
-                diff.Z);
-            return diff + _center;
+            var diffX = _vertexX - _centerX;
+            var diffY = _vertexY - _centerY;
+            return new Vector2((float)(diffX * Math.Cos(_radians) - diffY * Math.Sin(_radians)) + _centerX,
+                               (float)(diffY * Math.Cos(_radians) + diffX * Math.Sin(_radians)) + _centerY);
         }
 
         public static Vector3 Avg(this IEnumerable<Vector3> _list)
