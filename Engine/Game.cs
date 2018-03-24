@@ -52,13 +52,13 @@ namespace Engine
 
         private Window window;
 
-        public Game(int width, int height, string title = "")
+        public Game(int width, int height, string title = "", Log.Level _threshold=Log.Level.Error)
         {
             game = this;
             Width = width;
             Height = height;
             
-            log = new Log(logPath);
+            log = new Log(logPath, false, true, _threshold);
             group = new ActorGroup(log);
 
             initializeWindow(title);
@@ -77,6 +77,9 @@ namespace Engine
 
         private void Closing(object sender, System.ComponentModel.CancelEventArgs e) => LogFlush();
 
+        public static Log.Level LogThreshold { get => game.log.Threshold; set => game.log.Threshold = value; }
+        public static bool LogShouldPrintToFile { get => game.log.ShouldPrintToFile; set => game.log.ShouldPrintToFile = value; }
+        public static bool LogShouldPrintToConsole { get => game.log.ShouldPrintToConsole; set => game.log.ShouldPrintToConsole = value; }
         public static void LogDebug(string line) => game.log.Debug(line);
         public static void LogInfo(string line) => game.log.Info(line);
         public static void LogWarning(string line) => game.log.Warning(line);
