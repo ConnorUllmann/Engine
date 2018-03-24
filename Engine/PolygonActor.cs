@@ -31,6 +31,8 @@ namespace Engine
 
         public void UpdateBoundingBoxToMatchPolygon() => BoundingBox.MatchPositionAndDimensions(Polygon.BoundingRectangle());
 
+        public Vector3 CenterOfMass => Polygon.CenterOfMass + new Vector3(X, Y, 0);
+
         private void Center()
         {
             var com = Polygon.CenterOfMass;

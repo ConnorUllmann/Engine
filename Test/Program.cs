@@ -10,29 +10,46 @@ namespace Test
     {
         private class TestActor : Actor
         {
-            private Color4 color;
-            public TestActor(float _x, float _y, Color4 _color) : base(_x, _y, 150, 150)
+            private Mover mover;
+            public float Angle
             {
+                get => mover.Angle;
+                private set => mover.Angle = value;
+            }
+            public float Speed
+            {
+                get => mover.Speed;
+                private set => mover.Speed = value;
+            }
+            public float SpeedMax
+            {
+                get => mover.SpeedMax;
+                private set => mover.SpeedMax = value;
+            }
+
+            private Color4 color;
+            public TestActor(float _x, float _y, Color4 _color) : base(_x, _y, 10, 10)
+            {
+                mover = new Mover(null, 0, 10);
+                Speed = 10;
+                Angle = (float)Basics.Utils.RandomAngleRad();
                 color = _color;
+            }
+
+            public override void Update()
+            {
+                Angle += Game.Delta;
+                Position += mover.DeltaPosition();
             }
 
             public override void Render()
             {
-                base.Render();
-
                 Engine.Debug.Draw.Rectangle(CollisionBox, _color: color);
             }
         }
 
         static void Main(string[] args)
         {
-            var log = new Log("..\\Logs\\basics.log", false, Log.Level.Debug, 1000000);
-            while (true)
-            {
-                log.Debug("LINE");
-            }
-
-            //Basics.VisualTests.Pathfinding();)
             var game = new ShellGame(640, 480);
 
             var r = new TestActor(-50, -50, Color4.Red);
@@ -41,21 +58,13 @@ namespace Test
 
             game.StartHandler += () =>
             {
-                b.Depth = 100;
-                g.Depth = 0;
-                r.Depth = -100;
-
-                r.AddToWorld();
-                g.AddToWorld();
-                b.AddToWorld();
+                r.AddToGroup();
+                g.AddToGroup();
+                b.AddToGroup();
             };
 
             game.UpdateHandler += () =>
             {
-                b.Depth--;
-                Game.LogDebug(b.Depth.ToString());
-                Game.LogWarning(r.Depth.ToString());
-                Game.LogCritical(r.Depth.ToString());
             };
             
             game.Run();
