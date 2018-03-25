@@ -27,6 +27,9 @@ namespace Engine
         public static Vector3 To3D(this Vector2 _vector, float _z = 0) => new Vector3(_vector.X, _vector.Y, _z);
         public static Vector2 To2D(this Vector3 _vector) => new Vector2(_vector.X, _vector.Y);
 
+        public static bool IsNaN(this Vector3 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y) || float.IsNaN(_vector.Z);
+        public static bool IsNaN(this Vector2 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y);
+
         public static float Radians(this Vector2 _vector) => (float)Math.Atan2(_vector.Y, _vector.X);
         public static float Radians(this Vector3 _vector) => (float)Math.Atan2(_vector.Y, _vector.X);
 

@@ -138,9 +138,13 @@ namespace Engine.Actors
         }
 
         public IEnumerable<T> GetActorsOfType<T>() where T : class
-            => GetActorsOfType(typeof(T).Name)?.Select(a => a as T);
-        private IEnumerable<Actor> GetActorsOfType(string _typeString)
-            => typeIDByName.TryGetValue(_typeString, out int typeID) && actorsByTypeID.TryGetValue(typeID, out var set) ? set : null;
+            => getActorsOfType(typeof(T).Name)?.Select(a => a as T) ?? new List<T>();
+        private IEnumerable<Actor> getActorsOfType(string _typeString)
+        {
+            var bool0 = typeIDByName.TryGetValue(_typeString, out int typeID);
+            var bool1 = actorsByTypeID.TryGetValue(typeID, out var set);
+            return bool0 && bool1 ? set : null;
+        }
 
         /// <summary>
         /// Sorts actors by their depth value

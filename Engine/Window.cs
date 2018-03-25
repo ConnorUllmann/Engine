@@ -69,7 +69,7 @@ namespace Engine
             }
 
             fpsHandler.Update();
-            Title = title ?? $"{titlePrefix} {Input.Mouse} {Game.Delta} FPS: {fpsHandler.fps.ToString("0.0")} Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
+            Title = title ?? $"{titlePrefix} ({(int)Input.Mouse.X}, {(int)Input.Mouse.Y}) FPS: {fpsHandler.fps.ToString("0")} Total: {(Game.Delta * 1000).ToString("0")}ms Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
         }
 
         private string title = null;
