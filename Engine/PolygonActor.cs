@@ -111,12 +111,6 @@ namespace Engine
             rocket = new Rocket((_a) => Rotate(_a));
         }
 
-        private void updatePosition() => Position += rocket.DeltaPosition();
-
-        public override void Update()
-        {
-            base.Update();
-            updatePosition();
-        }
+        public Vector2 NextPosition => Position + rocket.DeltaPosition();
     }
 }

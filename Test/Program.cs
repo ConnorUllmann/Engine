@@ -38,7 +38,7 @@ namespace Test
                 angleNext = instinct.Angle() ?? angleNext;
                 
                 base.Update();
-                Position = Game.ScreenWrap(Position);
+                Position = Game.ScreenWrap(NextPosition);
             }
 
             public override void PostUpdate()
