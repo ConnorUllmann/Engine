@@ -15,7 +15,7 @@ namespace Engine.OpenGL.Colored
                 vertices[_index].position = _position;
         }
 
-        public void Move(Vector3 _position)
+        public void MoveRelative(Vector3 _position)
         {
             for (var i = 0; i < count; i++)
                 vertices[i].position += _position;

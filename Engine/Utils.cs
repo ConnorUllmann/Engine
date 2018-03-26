@@ -29,11 +29,12 @@ namespace Engine
 
         public static bool IsNaN(this Vector3 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y) || float.IsNaN(_vector.Z);
         public static bool IsNaN(this Vector2 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y);
+        
 
         public static float Radians(this Vector2 _vector) => (float)Math.Atan2(_vector.Y, _vector.X);
         public static float Radians(this Vector3 _vector) => (float)Math.Atan2(_vector.Y, _vector.X);
 
-        public static void Rotate(this List<Vector3> _vertices, float _radians, Vector3 _center)
+        public static void RotateRelative(this List<Vector3> _vertices, float _radians, Vector3 _center)
         {
             for (var i = 0; i < _vertices.Count; i++)
                 _vertices[i] = _vertices[i].Rotate(_radians, _center);
@@ -53,22 +54,41 @@ namespace Engine
                                (float)(diffY * Math.Cos(_radians) + diffX * Math.Sin(_radians)) + _centerY);
         }
 
-        public static Vector3 Avg(this IEnumerable<Vector3> _list)
+        public static Vector3 Avg(this IEnumerable<Vector3> _vectors)
         {
-            var sum = new Vector3();
+            var sum = Vector3.Zero;
             int count = 0;
-            foreach (var v in _list)
+            foreach (var v in _vectors)
             {
                 sum += v;
                 count++;
             }
             return sum / count;
         }
-        public static Vector3 Sum(this IEnumerable<Vector3> _list)
+        public static Vector2 Avg(this IEnumerable<Vector2> _vectors)
         {
-            var sum = new Vector3();
-            foreach (var v in _list)
+            var sum = OpenTK.Vector2.Zero;
+            int count = 0;
+            foreach (var v in _vectors)
+            {
                 sum += v;
+                count++;
+            }
+            return sum / count;
+        }
+
+        public static Vector3 Sum(this IEnumerable<Vector3> _vectors)
+        {
+            var sum = Vector3.Zero;
+            foreach (var _vector in _vectors)
+                sum += _vector;
+            return sum;
+        }
+        public static Vector2 Sum(this IEnumerable<Vector2> _vectors)
+        {
+            var sum = OpenTK.Vector2.Zero;
+            foreach (var _vector in _vectors)
+                sum += _vector;
             return sum;
         }
 

@@ -9,10 +9,10 @@ namespace Engine
 {
     public class PolygonActor : Actor
     {
-        public Polygon Polygon;
+        public readonly Polygon Polygon;
 
         public PolygonFillRenderer FillRenderer;
-        public PolygonOutlineRenderer OutlineRenderer;
+        public readonly PolygonOutlineRenderer OutlineRenderer;
 
         public bool FillVisible = true;
         public bool OutlineVisible = true;
@@ -22,7 +22,7 @@ namespace Engine
         {
             Polygon = _polygon;
             if (_center)
-                Center();
+                center();
             if(_filled)
                 FillRenderer = new PolygonFillRenderer(Polygon, X, Y, ColorExtensions.RandomColor());
             if(_outlined)
@@ -31,49 +31,92 @@ namespace Engine
 
         public void UpdateBoundingBoxToMatchPolygon() => BoundingBox.MatchPositionAndDimensions(Polygon.BoundingRectangle());
 
-        public Vector3 CenterOfMass => Polygon.CenterOfMass + new Vector3(X, Y, 0);
+        public Vector3 CenterOfMassRelative => Polygon.CenterOfMass;
+        public Vector3 CenterOfMassAbsolute => Polygon.CenterOfMass + new Vector3(X, Y, 0);
 
-        private void Center()
+        protected void center()
         {
-            var com = Polygon.CenterOfMass;
+            var com = CenterOfMassRelative;
             X += com.X;
             Y += com.Y;
-            Polygon.Move(-com);
+            Polygon.MoveRelative(-com);
         }
 
-        public void Rotate(float _angleRad, Vector3? _center = null)
+        /// <summary>
+        /// Rotates the PolygonActor around its current position (offset by the given offse, or Vector3.Zero if nothing)
+        /// </summary>
+        /// <param name="_angleRad">angle by which to rotate</param>
+        /// <param name="_offset">position relative to the PolygonActor around which it should rotate</param>
+        public void Rotate(float _angleRad, Vector3? _offset = null)
         {
-            var centerRelative = _center.HasValue
-                ? _center.Value - new Vector3(X, Y, 0)
-                : Vector3.Zero;
-            var centerAbsolute = _center.HasValue
-                ? _center.Value
-                : Vector3.Zero;
-            Polygon.Rotate(_angleRad, centerRelative);
-            FillRenderer?.Rotate(_angleRad, centerAbsolute);
-            OutlineRenderer?.Rotate(_angleRad, centerAbsolute);
+            if (_angleRad % (2 * Math.PI) == 0)
+                return;
+
+            var realOffset = _offset ?? Vector3.Zero;
+            Polygon.RotateRelative(_angleRad, realOffset);
+            FillRenderer?.RotateRelative(_angleRad, realOffset);
+            OutlineRenderer?.RotateRelative(_angleRad, realOffset);
         }
 
         public IEnumerable<Polygon> SplitAlongLine(Vector3 _a, Vector3 _b)
         {
             var v = new Vector3(X, Y, 0);
             var ret = Polygon.SplitAlongLine(_a - v, _b - v).ToList();
-            ret.ForEach(o => o.Move(v));
+            ret.ForEach(o => o.MoveRelative(v));
             return ret;
         }
-
-        public override void PostUpdate()
-        {
-            FillRenderer?.Update(X, Y);
-            OutlineRenderer?.Update(X, Y);
-        }
-
+        
         public override void Render()
         {
             if (FillVisible)
+            {
+                FillRenderer?.MoveAbsolute(X, Y);
                 FillRenderer?.Render();
+            }
             if (OutlineVisible)
+            {
+                OutlineRenderer?.MoveAbsolute(X, Y);
                 OutlineRenderer?.Render();
+            }
+        }
+    }
+
+    public class RocketPolygonActor : PolygonActor
+    {
+        private Rocket rocket;
+        public float Angle
+        {
+            get => rocket.Angle;
+            protected set => rocket.Angle = value;
+        }
+        public float Speed
+        {
+            get => rocket.Speed;
+            protected set => rocket.Speed = value;
+        }
+        public float SpeedMax
+        {
+            get => rocket.SpeedMax;
+            protected set => rocket.SpeedMax = value;
+        }
+        public float SpeedMin
+        {
+            get => rocket.SpeedMin;
+            protected set => rocket.SpeedMin = value;
+        }
+
+        public RocketPolygonActor(Polygon _polygon, float _x = 0, float _y = 0, bool _center = true, bool _filled = true, bool _outlined = true)
+            : base(_polygon, _x, _y, _center, _filled, _outlined)
+        {
+            rocket = new Rocket((_a) => Rotate(_a));
+        }
+
+        private void updatePosition() => Position += rocket.DeltaPosition();
+
+        public override void Update()
+        {
+            base.Update();
+            updatePosition();
         }
     }
 }

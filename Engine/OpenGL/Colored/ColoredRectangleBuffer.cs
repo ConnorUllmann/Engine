@@ -43,7 +43,7 @@ namespace Engine.OpenGL.Colored
             get => x;
             set
             {
-                Move(new Vector3(value - x, 0, 0));
+                MoveRelative(new Vector3(value - x, 0, 0));
                 x = value;
             }
         }
@@ -53,7 +53,7 @@ namespace Engine.OpenGL.Colored
             get => y;
             set
             {
-                Move(new Vector3(0, value - y, 0));
+                MoveRelative(new Vector3(0, value - y, 0));
                 y = value;
             }
         }

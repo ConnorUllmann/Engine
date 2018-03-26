@@ -34,7 +34,7 @@ namespace Engine
 
             var rotationRad = grid.Horizontal ? (float)(0.5f * Math.PI) : 0;
             polygonRenderer = new PolygonFillRenderer(ConvexPolygon.Regular(6, Radius, rotationRad), X, Y, Color4.Red);
-            polygonRenderer.Move(new Vector3(X, Y, 0));
+            polygonRenderer.MoveRelative(new Vector3(X, Y, 0));
         }
 
         public void SetColor(Color4 _color) => polygonRenderer.SetColor(_color);
@@ -54,7 +54,7 @@ namespace Engine
             return grid.Y + 1.5f * j * Radius + Altitude;
         }
 
-        public override void Update() => polygonRenderer.Update(X, Y);
+        public override void Update() => polygonRenderer.MoveAbsolute(X, Y);
 
         public override void Render() => polygonRenderer.Render(); 
     }

@@ -10,7 +10,7 @@ namespace Engine
         public PolygonOutlineRenderer(Polygon _polygon, float _x = 0, float _y = 0, Color4? _outlineColor = null)
             : base(_polygon.GetOutlineBuffer(_outlineColor ?? Color4.White))
         {
-            Move(_x, _y);
+            MoveRelative(_x, _y);
         }
     }
 }

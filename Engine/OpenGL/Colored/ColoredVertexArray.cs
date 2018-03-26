@@ -4,14 +4,17 @@ using System.Text;
 using OpenTK;
 using OpenTK.Graphics;
 using Engine.OpenGL.Shaders;
+using Basics;
 
 namespace Engine.OpenGL.Colored
 {
-    public class ColoredVertexArray : VertexArray<ColoredVertex>
+    public class ColoredVertexArray : VertexArray<ColoredVertex>, IPosition
     {
         public ColoredVertexBuffer vertexBuffer;
         public ShaderProgram shaderProgram;
-        private Vector3 positionPrev = Vector3.Zero;
+        public Vector3 Position = Vector3.Zero;
+        public float X { get => Position.X; }
+        public float Y { get => Position.Y; }
 
         public ColoredVertexArray(ColoredVertexBuffer _vertexBuffer, ShaderProgram _shaderProgram) :
             base(_vertexBuffer, _shaderProgram, BasicVertexShader.Position, BasicVertexShader.Color)
@@ -22,29 +25,34 @@ namespace Engine.OpenGL.Colored
 
         public void SetColor(Color4 _color) => vertexBuffer.SetColor(_color);
 
-        public void Move(Vector3 _position)
+        public void MoveRelative(Vector3 _position)
         {
-            positionPrev += _position;
-            vertexBuffer.Move(_position);
+            Position += _position;
+            vertexBuffer.MoveRelative(_position);
         }
 
-        public void Rotate(float _angleRad, Vector3 _center) => vertexBuffer.Rotate(_angleRad, _center);
+        /// <summary>
+        /// Rotates the buffer by the given angle around the given point
+        /// </summary>
+        /// <param name="_angleRad">angle by which to rotate the buffer</param>
+        /// <param name="_center">position relative to the screen around which to rotate (if no position is given, use the last position the buffer moved to)</param>
+        public void Rotate(float _angleRad, Vector3? _center=null) => vertexBuffer.Rotate(_angleRad, _center ?? Position);
 
-        public void MoveTo(Vector3 positionCurr)
+        public void MoveAbsolute(Vector3 newPosition)
         {
-            if (positionPrev == positionCurr)
+            if (Position == newPosition)
                 return;
 
-            vertexBuffer.Move(positionCurr - positionPrev);
-            positionPrev = positionCurr;
+            vertexBuffer.MoveRelative(newPosition - Position);
+            Position = newPosition;
         }
 
-        public void Render() => Render(positionPrev);
-        public void Render(float _x, float _y) => Render(new Vector3(_x, _y, 0));
-        public void Render(Vector3 positionCurr)
+        /// <summary>
+        /// Render the vertex array at its current position
+        /// </summary>
+        public void Render() => render(Position);
+        private void render(Vector3 positionCurr)
         {
-            MoveTo(positionCurr);
-
             // bind vertex buffer and array objects
             vertexBuffer.Bind();
             Bind();

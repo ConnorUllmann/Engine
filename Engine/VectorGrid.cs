@@ -13,15 +13,9 @@ namespace Engine
     {
         private int i;
         private int j;
-        private Vector2 vector;
-        public Vector2 Vector
-        {
-            get => vector;
-            set => vectorLine.vertexBuffer.Move(1, (vectorLineLength * (vector = value).Normalized() + Position).To3D());
-        }
+        public Vector2 Vector { get; private set; }
         public void SetColor(Color4 _color) => FillRenderer.SetColor(_color);
-
-        private ColoredVertexArray vectorLine;
+        
         private const float vectorLineLength = 10;
 
         public VectorTile(int _i, int _j, VectorGrid _grid, Vector2 _vector)
@@ -32,25 +26,16 @@ namespace Engine
             X = (i + 0.5f) * _grid.CellSize + _grid.X;
             Y = (j + 0.5f) * _grid.CellSize + _grid.Y;
 
-            vector = _vector;
-            vectorLine = GetVectorLine(_vector);
+            Vector = _vector;
             
             FillVisible = false;
             OutlineVisible = false;
         }
 
-        private static ColoredVertexArray GetVectorLine(Vector2 _vector)
-        {
-            var buffer = new ColoredVertexBuffer(PrimitiveType.Lines);
-            buffer.AddVertex(new ColoredVertex(Vector3.Zero, Color4.Red));
-            buffer.AddVertex(new ColoredVertex(vectorLineLength * _vector.Normalized().To3D(), Color4.White));
-            return ColoredVertexArray.FromBuffer(buffer);
-        }
-
         public override void Render()
         {
             base.Render();
-            vectorLine.Render(X, Y);
+            Debug.Draw.Line(Position, Position + vectorLineLength * Vector.Normalized(), Color4.White);
         }
     }
 

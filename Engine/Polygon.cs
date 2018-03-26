@@ -48,10 +48,10 @@ namespace Engine
 
         public Polygon Center()
         {
-            Move(-CenterOfMass);
+            MoveRelative(-CenterOfMass);
             return this;
         }
-        public Polygon Move(Vector3 _position)
+        public Polygon MoveRelative(Vector3 _position)
         {
             if (_position == Vector3.Zero)
                 return this;

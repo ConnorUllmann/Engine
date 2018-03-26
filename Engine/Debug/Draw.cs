@@ -33,7 +33,7 @@ namespace Engine.Debug
         {
             setRectangleDebugPolygon(_w, _h);
             var renderer = debugPolygonRenderer(_filled, _color ?? Color4.White);
-            renderer.Update(_x, _y);
+            renderer.MoveAbsolute(_x, _y);
             renderer.Render();
             renderer.Destroy();
         }

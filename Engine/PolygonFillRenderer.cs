@@ -10,7 +10,7 @@ namespace Engine
         public PolygonFillRenderer(Polygon _polygon, float _x = 0, float _y = 0, Color4? _fillColor = null)
             : base(_polygon.GetFillBuffer(_fillColor ?? Color4.White))
         {
-            Move(_x, _y);
+            MoveRelative(_x, _y);
         }
     }
 }

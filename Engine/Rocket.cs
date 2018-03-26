@@ -6,7 +6,7 @@ using OpenTK.Graphics;
 
 namespace Engine.Actors
 {
-    public class Mover
+    public class Rocket
     {
         private float anglePrevious;
         private float angle;
@@ -33,7 +33,7 @@ namespace Engine.Actors
 
         private Action<float> rotate;
 
-        public Mover(Action<float> _rotate=null, float _speedMin=0, float _speedMax=float.MaxValue)
+        public Rocket(Action<float> _rotate=null, float _speedMin=0, float _speedMax=float.MaxValue)
         {
             rotate = _rotate;
             SpeedMin = _speedMin;
