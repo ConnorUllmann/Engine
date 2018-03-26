@@ -38,7 +38,7 @@ namespace Engine
         public static float? Radians(this Vector2 _vector)
         {
             if (_vector == OpenTK.Vector2.Zero)
-                return 0;
+                return null;
             return (float)Math.Atan2(_vector.Y, _vector.X);
         }
         public static float? Radians(this Vector3 _vector) => _vector.To2D().Radians();
@@ -62,7 +62,7 @@ namespace Engine
             return new Vector2((float)(diffX * Math.Cos(_radians) - diffY * Math.Sin(_radians)) + _centerX,
                                (float)(diffY * Math.Cos(_radians) + diffX * Math.Sin(_radians)) + _centerY);
         }
-
+        
         public static Vector3 Avg(this IEnumerable<Vector3> _vectors)
         {
             var sum = Vector3.Zero;

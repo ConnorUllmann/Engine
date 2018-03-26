@@ -7,32 +7,22 @@ using Engine;
 using Engine.Actors;
 using OpenTK;
 using OpenTK.Graphics;
+using Rectangle = Basics.Rectangle;
 
 namespace Test
 {
     class Program
     {
-        private class TestActor : RocketPolygonActor
+        private class Swarmer : RocketPolygonActor, ISwarmer
         {
-            //R_O_ATTRACTION > R_O_ALIGNMENT > R_O_REPULSION
-            public const float RADIUS_OF_REPULSION = 20;
-            public const float RADIUS_OF_ALIGNMENT = 30;
-            public const float RADIUS_OF_ATTRACTION = 60;
-            public const float RADIUS2_OF_REPULSION = RADIUS_OF_REPULSION * RADIUS_OF_REPULSION;
-            public const float RADIUS2_OF_ALIGNMENT = RADIUS_OF_ALIGNMENT * RADIUS_OF_ALIGNMENT;
-            public const float RADIUS2_OF_ATTRACTION = RADIUS_OF_ATTRACTION * RADIUS_OF_ATTRACTION;
-
-            private const float RepulsionMultiplier = 10;
-            private const float AlignmentMultiplier = 1;
-            private const float AttractionMultiplier = 1;
+            private SwarmInstinct instinct;
 
             private Color4 color;
-            
             private float angleNext;
 
-
-            public TestActor(float _x, float _y, Color4 _color) : base(ConvexPolygon.Regular(3, 10, (float)-Math.PI/2), _x, _y)
+            public Swarmer(float _x, float _y, Color4 _color) : base(ConvexPolygon.Regular(3, 10, (float)-Math.PI/2), _x, _y)
             {
+                instinct = new SwarmInstinct(this);
                 SpeedMax = 60;
                 Speed = 60;
                 Angle = (float)Basics.Utils.RandomAngleRad();
@@ -40,13 +30,15 @@ namespace Test
                 color = _color;
                 BoundingBox = new BoundingBox(20, 20);
             }
-
+            
+            public IEnumerable<ISwarmer> Swarmers => quadtree.QueryRect(instinct.VisibleRectangle).Select(o => (ISwarmer)o);
+            
             public override void Update()
             {
-                angleNext = AngleForSwarm() ?? angleNext;
+                angleNext = instinct.Angle() ?? angleNext;
                 
                 base.Update();
-                Position = Game.ScreenClamp(Position);
+                Position = Game.ScreenWrap(Position);
             }
 
             public override void PostUpdate()
@@ -64,60 +56,26 @@ namespace Test
                 base.Render();
 
                 Engine.Debug.Draw.Line(this, Position + Engine.Utils.Vector2(Angle, 15), Color4.Red);
-                //var neighbors = new List<TestActor>(actorsInRadius(RADIUS_OF_ATTRACTION));
-                //foreach (var neighbor in neighbors)
-                //    Engine.Debug.Draw.Line(this, neighbor, Color4.Gray);
-                //Engine.Debug.Draw.Rectangle(CollisionBox, _color: color);
-            }
-            
-            private HashSet<TestActor> actorsWithinRange(float _radius)
-            {
-                var actors = actorsPotentiallyWithinRange(_radius);
-                actors.Remove(this);
-                actors.RemoveWhereOutsideRange(this, _radius);
-                return actors;
-            }
-
-            private HashSet<TestActor> actorsPotentiallyWithinRange(float _radius)
-                => quadtree.QueryRect(X - _radius, Y - _radius, 2 * _radius, 2 * _radius);
-
-            /// <summary>
-            /// Returns the angle that the swarm instinct is indicating to move (if any)
-            /// </summary>
-            /// <returns>The angle the swarm instinct is indicating (if any)</returns>
-            public float? AngleForSwarm() => actorsWithinRange(RADIUS_OF_ATTRACTION).Select(SwarmDirectionForNeighbor).Sum().Radians();
-
-            public Vector2 SwarmDirectionForNeighbor(TestActor _neighbor)
-            {
-                var distanceSquared = _neighbor.Position.DistanceSquared(Position);
-                if (distanceSquared < 0.001f)
-                    return Vector2.Zero;
-
-                return distanceSquared <= RADIUS2_OF_REPULSION
-                    ? RepulsionMultiplier * (Position - _neighbor.Position).Normalized()
-                    : distanceSquared <= RADIUS2_OF_ALIGNMENT
-                        ? AlignmentMultiplier * Engine.Utils.Vector2(_neighbor.Angle)
-                        : AttractionMultiplier * (_neighbor.Position - Position).Normalized();
             }
         }
 
-        private static QuadTree<TestActor> quadtree;
+        private static QuadTree<Swarmer> quadtree;
 
         static void Main(string[] args)
         {
-            var game = new ShellGame(640, 480);
-            quadtree = new QuadTree<TestActor>(-Game.Width/2, -Game.Height/2, Game.Width, Game.Height, 2, 20);
+            var game = new ShellGame(1280, 960);
+            quadtree = new QuadTree<Swarmer>(-Game.Width/2, -Game.Height/2, Game.Width, Game.Height, 2, 20);
 
 
             game.StartHandler += () =>
             {
-                100.Repetitions(() => new TestActor(Game.RandomX(), Game.RandomY(), Color4.Blue).AddToGroup());
+                100.Repetitions(() => new Swarmer(Game.RandomX(), Game.RandomY(), Color4.Blue).AddToGroup());
             };
 
             game.UpdateHandler += () =>
             {
                 quadtree.Reset();
-                var objs = Game.Group.GetActorsOfType<TestActor>();
+                var objs = Game.Group.GetActorsOfType<Swarmer>();
                 foreach (var obj in objs)
                     quadtree.Insert(obj);
             };
