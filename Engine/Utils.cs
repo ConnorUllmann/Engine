@@ -29,10 +29,19 @@ namespace Engine
 
         public static bool IsNaN(this Vector3 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y) || float.IsNaN(_vector.Z);
         public static bool IsNaN(this Vector2 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y);
-        
 
-        public static float Radians(this Vector2 _vector) => (float)Math.Atan2(_vector.Y, _vector.X);
-        public static float Radians(this Vector3 _vector) => (float)Math.Atan2(_vector.Y, _vector.X);
+        /// <summary>
+        /// Determines the angle of the given vector (in radians)
+        /// </summary>
+        /// <param name="_vector">the vector whose angle is being calculated.</param>
+        /// <returns>The angle (in radians) of the given vector (or null if the vector is zero)</returns>
+        public static float? Radians(this Vector2 _vector)
+        {
+            if (_vector == OpenTK.Vector2.Zero)
+                return 0;
+            return (float)Math.Atan2(_vector.Y, _vector.X);
+        }
+        public static float? Radians(this Vector3 _vector) => _vector.To2D().Radians();
 
         public static void RotateRelative(this List<Vector3> _vertices, float _radians, Vector3 _center)
         {

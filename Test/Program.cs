@@ -27,9 +27,8 @@ namespace Test
             private const float AttractionMultiplier = 1;
 
             private Color4 color;
-
-            private Vector2 direction = new Vector2(0, 1);
-            private float targetAngle;
+            
+            private float angleNext;
 
 
             public TestActor(float _x, float _y, Color4 _color) : base(ConvexPolygon.Regular(3, 10, (float)-Math.PI/2), _x, _y)
@@ -37,30 +36,27 @@ namespace Test
                 SpeedMax = 60;
                 Speed = 60;
                 Angle = (float)Basics.Utils.RandomAngleRad();
-                targetAngle = (float)Basics.Utils.RandomAngleRad();
+                angleNext = (float)Basics.Utils.RandomAngleRad();
                 color = _color;
                 BoundingBox = new BoundingBox(20, 20);
             }
 
             public override void Update()
             {
-
-                direction = GetDirection() ?? direction;
-                targetAngle = direction.Radians();
-
-                /* Move to PostUpdate */
-                var diff = Basics.Utils.AngleDifferenceRadians(Angle, targetAngle);
-                var amount = 5 * Game.Delta;
-                if (Math.Abs(diff) < amount)
-                    Angle = targetAngle;
-                else
-                    Angle += amount * Math.Sign(diff);
-                /**/
-
-                //Do position update after setting the Angle
+                angleNext = AngleForSwarm() ?? angleNext;
+                
                 base.Update();
                 Position = Game.ScreenClamp(Position);
+            }
 
+            public override void PostUpdate()
+            {                
+                var diff = Basics.Utils.AngleDifferenceRadians(Angle, angleNext);
+                var amount = 5 * Game.Delta;
+                if (Math.Abs(diff) < amount)
+                    Angle = angleNext;
+                else
+                    Angle += amount * Math.Sign(diff);
             }
 
             public override void Render()
@@ -85,17 +81,13 @@ namespace Test
             private HashSet<TestActor> actorsPotentiallyWithinRange(float _radius)
                 => quadtree.QueryRect(X - _radius, Y - _radius, 2 * _radius, 2 * _radius);
 
-            public Vector2? GetDirection()
-            {
-                var neighbors = actorsWithinRange(RADIUS_OF_ATTRACTION);
-                if (neighbors.Count == 0)
-                    return null;
+            /// <summary>
+            /// Returns the angle that the swarm instinct is indicating to move (if any)
+            /// </summary>
+            /// <returns>The angle the swarm instinct is indicating (if any)</returns>
+            public float? AngleForSwarm() => actorsWithinRange(RADIUS_OF_ATTRACTION).Select(SwarmDirectionForNeighbor).Sum().Radians();
 
-                var result = neighbors.Select(GetDirectionForNeighbor).Sum();
-                return result == Vector2.Zero ? (Vector2?)null : result.Normalized();
-            }
-
-            public Vector2 GetDirectionForNeighbor(TestActor _neighbor)
+            public Vector2 SwarmDirectionForNeighbor(TestActor _neighbor)
             {
                 var distanceSquared = _neighbor.Position.DistanceSquared(Position);
                 if (distanceSquared < 0.001f)
