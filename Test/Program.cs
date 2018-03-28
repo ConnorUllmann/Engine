@@ -84,6 +84,18 @@ namespace Test
             {
                 foreach (var r in quadtree.GetRectangles())
                     Engine.Debug.Draw.Rectangle(r, 0, 0, Color4.Green, false);
+
+                (float X, float Y) start = (-50, -50);
+                (float X, float Y) target = (Input.Mouse.X, Input.Mouse.Y);
+                var elbow = Basics.Utils.SingleJoint(start.X, start.Y, target.X, target.Y, 250, 200, false);
+                if (elbow.HasValue)
+                {
+                    Engine.Debug.Draw.Line(start.X, start.Y, elbow.Value.X, elbow.Value.Y, Color4.Red);
+                    Engine.Debug.Draw.Line(target.X, target.Y, elbow.Value.X, elbow.Value.Y, Color4.Orange);
+                }
+                Engine.Debug.Draw.Line(start.X, start.Y, target.X, target.Y, Color4.Green);
+                Engine.Debug.Draw.Rectangle(new Rectangle(-8, -8, 16, 16), start.X, start.Y, Color4.Blue);
+                Engine.Debug.Draw.Rectangle(new Rectangle(-8, -8, 16, 16), target.X, target.Y, Color4.Yellow);
             };
 
             game.Run();
