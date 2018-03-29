@@ -30,6 +30,8 @@ namespace Engine
         public static bool IsNaN(this Vector3 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y) || float.IsNaN(_vector.Z);
         public static bool IsNaN(this Vector2 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y);
 
+        public static Vector2 Position(this IPosition _position) => new OpenTK.Vector2(_position.X, _position.Y);
+
         /// <summary>
         /// Determines the angle of the given vector (in radians)
         /// </summary>
