@@ -66,8 +66,8 @@ namespace Engine
 
         private void initializeWindow(string title)
         {
-            //Not sure why, but the dimensions always seem to inflate by 1.5x... these divisions are done to offset that
-            window = new Window((int)(Width / 1.5f), (int)(Height / 1.5f), title ?? "");
+            //TODO: Figure out why, on some computers, the dimensions are inflated (e.g. by 1.5x, so the width/height must be divided by 1.5)
+            window = new Window(Width, Height, title ?? "");
             window.Start += Start;
             window.Update += PreUpdate;
             window.Update += Update;
