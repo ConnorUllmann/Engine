@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using OpenTK;
 using Rectangle = Basics.Rectangle;
 using Basics;
@@ -429,7 +429,136 @@ namespace Engine
 
             var minY = Math.Min(a.Y, b.Y);
             var maxY = Math.Max(a.Y, b.Y);
-            return (x - minX) * 1f / (maxX - minX) * (maxY - minY) + minY;
+            return (x - a.X) * 1f / (b.X - a.X) * (b.Y - a.Y) + a.Y;
+        }
+
+        /// <summary>
+        /// Finds all points on the segment _a->_b which intersect with _rectangle
+        /// </summary>
+        /// <param name="_rectangle">rectangle to check intersections against</param>
+        /// <param name="_a">first point of the line segment</param>
+        /// <param name="_b">second point of the line segment</param>
+        /// <returns>points on the segment _a->_b which intersect with _rectangle</returns>
+        public static IEnumerable<Vector2> PointsRectangleCollidesSegment(Rectangle _rectangle, Vector2 _a, Vector2 _b)
+        {
+            //Check bounding boxes first
+            if (!_rectangle.Collides(BoundingBox.RectangleFromPoints(new[] { _a.To3D(), _b.To3D() })))
+                return new Vector2[0];
+            return PointsRectangleCollidesLine(_rectangle, _a, _b).Where(o =>
+            {
+                var pct = PercentAlongLine(o, _a, _b);
+                return pct >= 0 && pct <= 1;
+            });
+        }
+
+        /// <summary>
+        /// Finds all points on the line _a->_b which intersect with _rectangle
+        /// </summary>
+        /// <param name="_rectangle">rectangle to check intersections against</param>
+        /// <param name="_a">first point on the line</param>
+        /// <param name="_b">second point on the line</param>
+        /// <returns>points on the line _a->_b which intersect with _rectangle</returns>
+        public static IEnumerable<Vector2> PointsRectangleCollidesLine(Rectangle _rectangle, Vector2 _a, Vector2 _b)
+        {
+            var rectangleVertices = new[]
+            {
+                new Vector2(_rectangle.X, _rectangle.Y),
+                new Vector2(_rectangle.X + _rectangle.W, _rectangle.Y),
+                new Vector2(_rectangle.X + _rectangle.W, _rectangle.Y + _rectangle.H),
+                new Vector2(_rectangle.X, _rectangle.Y + _rectangle.H)
+            };
+
+            for (var i = 0; i < 4; i++)
+            {
+                var j = (i + 1) % 4;
+                if(i % 2 == 0)
+                {
+                    var y = rectangleVertices[i].Y;
+                    var x = GetXAtYForLine(y, _a, _b);
+                    if (x.HasValue 
+                        && x >= Math.Min(rectangleVertices[i].X, rectangleVertices[j].X) 
+                        && x <= Math.Max(rectangleVertices[i].X, rectangleVertices[j].X))
+                        yield return new Vector2(x.Value, y);
+                }
+                else
+                {
+                    var x = rectangleVertices[i].X;
+                    var y = GetYAtXForLine(x, _a, _b);
+                    if (y.HasValue 
+                        && y >= Math.Min(rectangleVertices[i].Y, rectangleVertices[j].Y) 
+                        && y <= Math.Max(rectangleVertices[i].Y, rectangleVertices[j].Y))
+                        yield return new Vector2(x, y.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Finds all of the positions at which the given rectangles collide with the line a->b
+        /// </summary>
+        /// <param name="_rectangles">rectangles to check collisions against</param>
+        /// <param name="_a">first point of line</param>
+        /// <param name="_b">second point of line</param>
+        /// <returns>the positions at which the given rectangles collide with the line a->b</returns>
+        public static IEnumerable<Vector2> PointsRectanglesCollideLine(IEnumerable<Rectangle> _rectangles, Vector2 _a, Vector2 _b)
+        {
+            foreach (var rectangle in _rectangles)
+                foreach (var point in PointsRectangleCollidesLine(rectangle, _a, _b))
+                    yield return point;
+        }
+
+        /// <summary>
+        /// Finds all of the positions at which the given rectangles collide with the line segment a->b
+        /// </summary>
+        /// <param name="_rectangles">rectangles to check collisions against</param>
+        /// <param name="_a">first point of segment</param>
+        /// <param name="_b">second point of segment</param>
+        /// <returns>the positions at which the given rectangles collide with the line segment a->b</returns>
+        public static IEnumerable<Vector2> PointsRectanglesCollideSegment(IEnumerable<Rectangle> _rectangles, Vector2 _a, Vector2 _b)
+        {
+            foreach (var rectangle in _rectangles)
+                foreach (var point in PointsRectangleCollidesSegment(rectangle, _a, _b))
+                    yield return point;
+        }
+
+
+        public static Vector2? RaycastAgainstRectangles(IEnumerable<Rectangle> _rectangles, Vector2 _source, float _angle)
+        {
+            var destination = _source + Vector2(_angle);
+            float? minPercent = null;
+            Vector2? minPoint = null;
+            foreach(var point in PointsRectanglesCollideLine(_rectangles, _source, destination))
+            {
+                var percent = PercentAlongLine(point, _source, destination);
+                if (percent < 0)
+                    continue;
+                if(!minPercent.HasValue || percent < minPercent)
+                {
+                    minPercent = percent;
+                    minPoint = point;
+                }
+            }
+            return minPoint;
+        }
+
+        /// <summary>
+        /// Finds all the points at which the two rectangles intersect
+        /// </summary>
+        /// <param name="_a">first rectangle to check intersections against</param>
+        /// <param name="_b">second rectangle to check intersections against</param>
+        /// <returns>the points at which the two given rectangles intersect</returns>
+        public static IEnumerable<Vector2> PointsRectangleCollidesRectangle(Rectangle _a, Rectangle _b)
+        {
+            var a = new[]
+            {
+                new Vector2(_a.X, _a.Y),
+                new Vector2(_a.X + _a.W, _a.Y),
+                new Vector2(_a.X + _a.W, _a.Y + _a.H),
+                new Vector2(_a.X, _a.Y + _a.H)
+            };
+
+            for (var i = 0; i < 4; i++)
+                foreach (var point in PointsRectangleCollidesSegment(_b, a[i], a[(i + 1) % 4]))
+                    yield return point;
         }
 
         private enum TripletOrientation

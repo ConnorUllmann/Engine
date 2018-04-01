@@ -18,10 +18,21 @@ namespace Engine.Test
         [InlineData(null, -4, -1, 4, -1, -3)]
         [InlineData(-1, -1, -1, 4, -1, -3)]
         [InlineData(-1, 3, -1, 4, -1, -3)]
+        [InlineData(-54, 60, -40, -80, -60, 120)]
+        [InlineData(-48, 0, -40, -80, -60, 120)]
         public void GetXAtYForSegment_ReturnSucceed(float? expectedX, float y, float ax, float ay, float bx, float by)
         {
-            Assert.Equal(expectedX, Utils.GetXAtYForSegment(y, new Vector2(ax, ay), new Vector2(bx, by)));
-            Assert.Equal(expectedX, Utils.GetXAtYForSegment(y, new Vector2(bx, by), new Vector2(ax, ay)));
+            Assert.True(FloatsEqual(expectedX, Utils.GetXAtYForSegment(y, new Vector2(ax, ay), new Vector2(bx, by))));
+            Assert.True(FloatsEqual(expectedX, Utils.GetXAtYForSegment(y, new Vector2(bx, by), new Vector2(ax, ay))));
+        }
+
+        private bool FloatsEqual(float? _a, float? _b)
+        {
+            if (_a == null && _b == null)
+                return true;
+            if (_a == null || _b == null)
+                return false;
+            return (float)Math.Round((double)_a, 4) == (float)Math.Round((double)_b, 4);
         }
 
         [Theory]
@@ -34,10 +45,12 @@ namespace Engine.Test
         [InlineData(-1, -4, -1, 4, -1, -3)]
         [InlineData(-1, -1, -1, 4, -1, -3)]
         [InlineData(-1, 3, -1, 4, -1, -3)]
+        [InlineData(-54, 60, -40, -80, -60, 120)]
+        [InlineData(-48, 0, -40, -80, -60, 120)]
         public void GetXAtYForLine_ReturnSucceed(float? expectedX, float y, float ax, float ay, float bx, float by)
         {
-            Assert.Equal(expectedX, Utils.GetXAtYForLine(y, new Vector2(ax, ay), new Vector2(bx, by)));
-            Assert.Equal(expectedX, Utils.GetXAtYForLine(y, new Vector2(bx, by), new Vector2(ax, ay)));
+            Assert.True(FloatsEqual(expectedX, Utils.GetXAtYForLine(y, new Vector2(ax, ay), new Vector2(bx, by))));
+            Assert.True(FloatsEqual(expectedX, Utils.GetXAtYForLine(y, new Vector2(bx, by), new Vector2(ax, ay))));
         }
 
         [Theory]
