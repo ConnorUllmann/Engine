@@ -14,9 +14,13 @@ namespace Engine
         public static float Distance(this Vector2 _v, IPosition _u) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _u.X, _u.Y);
         public static float Distance(this Vector2 _v, Vector2 _u) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _u.X, _u.Y);
         public static float Distance(this Vector2 _v, float _x, float _y) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _x, _y);
+        public static float Distance(this IPosition _v, Vector2 _u) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _u.X, _u.Y);
+        public static float Distance(this IPosition _v, float _x, float _y) => Basics.Utils.EuclideanDistance(_v.X, _v.Y, _x, _y);
         public static float DistanceSquared(this Vector2 _v, IPosition _u) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _u.X, _u.Y);
         public static float DistanceSquared(this Vector2 _v, Vector2 _u) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _u.X, _u.Y);
         public static float DistanceSquared(this Vector2 _v, float _x, float _y) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _x, _y);
+        public static float DistanceSquared(this IPosition _v, Vector2 _u) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _u.X, _u.Y);
+        public static float DistanceSquared(this IPosition _v, float _x, float _y) => Basics.Utils.EuclideanDistanceSquared(_v.X, _v.Y, _x, _y);
         public static Vector2 Midpoint(this Vector2 a, IPosition b) => Basics.Utils.Midpoint(a.X, a.Y, b.X, b.Y).ToVector2();
         public static Vector2 Midpoint(this Vector2 a, Vector2 b) => Basics.Utils.Midpoint(a.X, a.Y, b.X, b.Y).ToVector2();
         public static Vector2 ToVector2(this (float X, float Y) _tuple) => new Vector2(_tuple.X, _tuple.Y);
@@ -31,6 +35,22 @@ namespace Engine
         public static bool IsNaN(this Vector2 _vector) => float.IsNaN(_vector.X) || float.IsNaN(_vector.Y);
 
         public static Vector2 Position(this IPosition _position) => new Vector2(_position.X, _position.Y);
+        
+        public static Vector2 Subtract(this IPosition _to, IPosition _from)
+            => new Vector2(_to.X - _from.X, _to.Y - _from.Y);
+        public static Vector2 Subtract(this IPosition _to, Vector2 _from)
+            => new Vector2(_to.X - _from.X, _to.Y - _from.Y);
+        public static Vector2 Subtract(this Vector2 _to, IPosition _from)
+            => new Vector2(_to.X - _from.X, _to.Y - _from.Y);
+
+        public static Vector2 Lerp(this IPosition _from, IPosition _to, float _value)
+            => new Vector2((_to.X - _from.X) * _value + _from.X, (_to.Y - _from.Y) * _value + _from.Y);
+        public static Vector2 Lerp(this IPosition _from, Vector2 _to, float _value)
+            => new Vector2((_to.X - _from.X) * _value + _from.X, (_to.Y - _from.Y) * _value + _from.Y);
+        public static Vector2 Lerp(this Vector2 _from, IPosition _to, float _value)
+            => new Vector2((_to.X - _from.X) * _value + _from.X, (_to.Y - _from.Y) * _value + _from.Y);
+        public static Vector2 Lerp(this Vector2 _from, Vector2 _to, float _value)
+            => new Vector2((_to.X - _from.X) * _value + _from.X, (_to.Y - _from.Y) * _value + _from.Y);
 
         /// <summary>
         /// Determines the angle of the given vector (in radians)

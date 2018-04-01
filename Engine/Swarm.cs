@@ -41,7 +41,7 @@ namespace Engine
 
         public SwarmInstinct(ISwarmer _swarmer,
             float _radiusOfRepulsion = 20,
-            float _radiusOfAlignment = 80,
+            float _radiusOfAlignment = 40,
             float _radiusOfAttraction = 80,
             float _repulsionMultiplier = 50,
             float _alignmentMultiplier = 1,
