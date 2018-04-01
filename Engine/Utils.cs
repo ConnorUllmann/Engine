@@ -383,11 +383,54 @@ namespace Engine
 
         #region Line intersection
 
-        private static bool OnSegment(Vector3 p, Vector3 q, Vector3 r)
-            => OnSegment(p.X, p.Y, q.X, q.Y, r.X, r.Y);
-        private static bool OnSegment(float px, float py, float qx, float qy, float rx, float ry)
-            => qx <= Math.Max(px, rx) && qx >= Math.Min(px, rx) &&
-               qy <= Math.Max(py, ry) && qy >= Math.Min(py, ry);
+        /// <summary>
+        /// Finds the x-coordinate for a given y which lies on the line segment a->b (if it is not on the segment, it will return null)
+        /// </summary>
+        /// <param name="y">position whose corresponding x is being found</param>
+        /// <param name="a">first point on segment</param>
+        /// <param name="b">second point on segment</param>
+        /// <returns>the x-position of the point on segment a->b at the given y-position, if it is on the segment</returns>
+        public static float? GetXAtYForSegment(float y, Vector2 a, Vector2 b)
+            => GetYAtXForSegment(y, new Vector2(a.Y, a.X), new Vector2(b.Y, b.X));
+
+        /// <summary>
+        /// Finds the y-coordinate for a given x which lies on the line segment a->b (if it is not on the segment, it will return null)
+        /// </summary>
+        /// <param name="x">position whose corresponding y is being found</param>
+        /// <param name="a">first point on segment</param>
+        /// <param name="b">second point on segment</param>
+        /// <returns>the y-position of the point on segment a->b at the given x-position, if it is on the segment</returns>
+        public static float? GetYAtXForSegment(float x, Vector2 a, Vector2 b)
+            => x < Math.Min(a.X, b.X) || x > Math.Max(a.X, b.X) ? null : GetYAtXForLine(x, a, b);
+        
+        /// <summary>
+        /// Finds the x-coordinate for a given y which lies on the line a->b.
+        /// </summary>
+        /// <param name="y">position whose corresponding x is being found</param>
+        /// <param name="a">first point on line</param>
+        /// <param name="b">second point on line</param>
+        /// <returns>the x-position of the point on line a->b at the given y-position</returns>
+        public static float? GetXAtYForLine(float y, Vector2 a, Vector2 b)
+            => GetYAtXForLine(y, new Vector2(a.Y, a.X), new Vector2(b.Y, b.X));
+
+        /// <summary>
+        /// Finds the y-coordinate for a given x which lies on the line a->b.
+        /// </summary>
+        /// <param name="x">position whose corresponding y is being found</param>
+        /// <param name="a">first point on line</param>
+        /// <param name="b">second point on line</param>
+        /// <returns>the y-position of the point on line a->b at the given x-position</returns>
+        public static float? GetYAtXForLine(float x, Vector2 a, Vector2 b)
+        {
+            var minX = Math.Min(a.X, b.X);
+            var maxX = Math.Max(a.X, b.X);
+            if (maxX == minX)
+                return null;
+
+            var minY = Math.Min(a.Y, b.Y);
+            var maxY = Math.Max(a.Y, b.Y);
+            return (x - minX) * 1f / (maxX - minX) * (maxY - minY) + minY;
+        }
 
         private enum TripletOrientation
         {
@@ -446,6 +489,9 @@ namespace Engine
                 return true;
             return false;
         }
+        private static bool OnSegment(float px, float py, float qx, float qy, float rx, float ry)
+            => qx <= Math.Max(px, rx) && qx >= Math.Min(px, rx) &&
+               qy <= Math.Max(py, ry) && qy >= Math.Min(py, ry);
 
         /// <summary>
         /// Finds where two given lines (or line segments if asSeg=true) intersect and returns the position

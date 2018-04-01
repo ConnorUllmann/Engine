@@ -9,6 +9,69 @@ namespace Engine.Test
     public class UtilsTests
     {
         [Theory]
+        [InlineData(12f / 7 - 2, 0, -2, -3, 2, 4)]
+        [InlineData(8f / 7 - 2, -1, -2, -3, 2, 4)]
+        [InlineData(null, -1, -4, -1, 3, -1)]
+        [InlineData(null, 0, -4, -1, 3, -1)]
+        [InlineData(null, -5, 4, -1, 3, -1)]
+        [InlineData(null, 5, -1, 4, -1, -3)]
+        [InlineData(null, -4, -1, 4, -1, -3)]
+        [InlineData(-1, -1, -1, 4, -1, -3)]
+        [InlineData(-1, 3, -1, 4, -1, -3)]
+        public void GetXAtYForSegment_ReturnSucceed(float? expectedX, float y, float ax, float ay, float bx, float by)
+        {
+            Assert.Equal(expectedX, Utils.GetXAtYForSegment(y, new Vector2(ax, ay), new Vector2(bx, by)));
+            Assert.Equal(expectedX, Utils.GetXAtYForSegment(y, new Vector2(bx, by), new Vector2(ax, ay)));
+        }
+
+        [Theory]
+        [InlineData(12f / 7 - 2, 0, -2, -3, 2, 4)]
+        [InlineData(8f / 7 - 2, -1, -2, -3, 2, 4)]
+        [InlineData(null, -1, -4, -1, 3, -1)]
+        [InlineData(null, 0, -4, -1, 3, -1)]
+        [InlineData(null, -5, 4, -1, 3, -1)]
+        [InlineData(-1, 5, -1, 4, -1, -3)]
+        [InlineData(-1, -4, -1, 4, -1, -3)]
+        [InlineData(-1, -1, -1, 4, -1, -3)]
+        [InlineData(-1, 3, -1, 4, -1, -3)]
+        public void GetXAtYForLine_ReturnSucceed(float? expectedX, float y, float ax, float ay, float bx, float by)
+        {
+            Assert.Equal(expectedX, Utils.GetXAtYForLine(y, new Vector2(ax, ay), new Vector2(bx, by)));
+            Assert.Equal(expectedX, Utils.GetXAtYForLine(y, new Vector2(bx, by), new Vector2(ax, ay)));
+        }
+
+        [Theory]
+        [InlineData(0.5f, 0, -2, -3, 2, 4)]
+        [InlineData(-5f / 4, -1, -2, -3, 2, 4)]
+        [InlineData(-1, 0, -4, -1, 3, -1)]
+        [InlineData(-1, -4, -4, -1, 3, -1)]
+        [InlineData(-1, 3, -4, -1, 3, -1)]
+        [InlineData(null, -5, -4, -1, 3, -1)]
+        [InlineData(null, -5, 4, -1, 3, -1)]
+        [InlineData(null, -1, -1, 4, -1, -3)]
+        [InlineData(null, 0, -1, 4, -1, -3)]
+        public void GetYAtXForSegment_ReturnSucceed(float? expectedY, float x, float ax, float ay, float bx, float by)
+        {
+            Assert.Equal(expectedY, Utils.GetYAtXForSegment(x, new Vector2(ax, ay), new Vector2(bx, by)));
+            Assert.Equal(expectedY, Utils.GetYAtXForSegment(x, new Vector2(bx, by), new Vector2(ax, ay)));
+        }
+
+        [Theory]
+        [InlineData(0.5f, 0, -2, -3, 2, 4)]
+        [InlineData(-5f / 4, -1, -2, -3, 2, 4)]
+        [InlineData(-1, 0, -4, -1, 3, -1)]
+        [InlineData(-1, -4, -4, -1, 3, -1)]
+        [InlineData(-1, 3, -4, -1, 3, -1)]
+        [InlineData(-1, -5, -4, -1, 3, -1)]
+        [InlineData(-1, -5, 4, -1, 3, -1)]
+        [InlineData(null, -1, -1, 4, -1, -3)]
+        public void GetYAtXForLine_ReturnSucceed(float? expectedY, float x, float ax, float ay, float bx, float by)
+        {
+            Assert.Equal(expectedY, Utils.GetYAtXForLine(x, new Vector2(ax, ay), new Vector2(bx, by)));
+            Assert.Equal(expectedY, Utils.GetYAtXForLine(x, new Vector2(bx, by), new Vector2(ax, ay)));
+        }
+
+        [Theory]
         [InlineData(true, 0,0, 2,0,  1,0, 3,0)] //Parallel & colinear
         [InlineData(true, -1,-1, 1,1,  -1,1, 1,-1)] //X-cross
         [InlineData(true, -1,0, 1,0,  0,-1, 0,1)] //+-cross
