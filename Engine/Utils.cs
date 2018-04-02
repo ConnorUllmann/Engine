@@ -460,14 +460,7 @@ namespace Engine
         /// <returns>points on the line _a->_b which intersect with _rectangle</returns>
         public static IEnumerable<Vector2> PointsRectangleCollidesLine(Rectangle _rectangle, Vector2 _a, Vector2 _b)
         {
-            var rectangleVertices = new[]
-            {
-                new Vector2(_rectangle.X, _rectangle.Y),
-                new Vector2(_rectangle.X + _rectangle.W, _rectangle.Y),
-                new Vector2(_rectangle.X + _rectangle.W, _rectangle.Y + _rectangle.H),
-                new Vector2(_rectangle.X, _rectangle.Y + _rectangle.H)
-            };
-
+            var rectangleVertices = _rectangle.ToVertices();
             for (var i = 0; i < 4; i++)
             {
                 var j = (i + 1) % 4;
@@ -491,6 +484,120 @@ namespace Engine
                 }
             }
         }
+
+        /// <summary>
+        /// Finds all points (as well as the rectangle segments they intersect with) on the line _a->_b which intersect with _rectangle
+        /// </summary>
+        /// <param name="_rectangle">rectangle to check intersections against</param>
+        /// <param name="_a">first point on the line</param>
+        /// <param name="_b">second point on the line</param>
+        /// <returns>points on the line _a->_b which intersect with _rectangle</returns>
+        public static IEnumerable<(Vector2 collisionPoint, Vector2 segmentStart, Vector2 segmentEnd)> PointsAndSidesWhereRectangleCollidesLine(Rectangle _rectangle, Vector2 _a, Vector2 _b)
+        {
+            var rectangleVertices = _rectangle.ToVertices();
+            for (var i = 0; i < 4; i++)
+            {
+                var j = (i + 1) % 4;
+                if (i % 2 == 0)
+                {
+                    var y = rectangleVertices[i].Y;
+                    var x = GetXAtYForLine(y, _a, _b);
+                    if (x.HasValue
+                        && x >= Math.Min(rectangleVertices[i].X, rectangleVertices[j].X)
+                        && x <= Math.Max(rectangleVertices[i].X, rectangleVertices[j].X))
+                        yield return (new Vector2(x.Value, y), rectangleVertices[i].ToVector2(), rectangleVertices[j].ToVector2());
+                }
+                else
+                {
+                    var x = rectangleVertices[i].X;
+                    var y = GetYAtXForLine(x, _a, _b);
+                    if (y.HasValue
+                        && y >= Math.Min(rectangleVertices[i].Y, rectangleVertices[j].Y)
+                        && y <= Math.Max(rectangleVertices[i].Y, rectangleVertices[j].Y))
+                        yield return (new Vector2(x, y.Value), rectangleVertices[i].ToVector2(), rectangleVertices[j].ToVector2());
+                }
+            }
+        }
+
+        /// <summary>
+        /// If a point were to travel from _source in the direction of _destination and slide along any walls it encounters,
+        /// stopping at any inside corners and continuing beyond any outside corners, then the return value is the position after traveling the distance
+        /// between _source and _destination in this way.
+        /// </summary>
+        /// <param name="_rectangles">rectangles to slide the segment against</param>
+        /// <param name="_source">beginning of segment</param>
+        /// <param name="_destination">intended end of segment</param>
+        /// <param name="ignoreRectangle">rectangle within _rectangles which should not be considered while sliding, if any (helper argument for recursion)</param>
+        /// <returns>_source, after sliding along rectangles in the direction of _destination
+        /// (it will always be the result of sliding a segment the length of the difference between _destination and _source along the walls)</returns>
+        public static Vector2 SlideAgainstRectangles(IEnumerable<Rectangle> _rectangles, Vector2 _source, Vector2 _destination, Rectangle? ignoreRectangle=null)
+        {
+            float? minPercent = null;
+            var minPointAndSides = ((Vector2 collisionPoint, Vector2 segmentStart, Vector2 segmentEnd)?)null;
+            var minRectangle = (Rectangle?)null;
+            foreach (var rectangle in _rectangles)
+            {
+                //Necessary to ensure that if a point is on an outside corner of a rectangle it is already traversing,
+                //that it should not re-hit that same rectangle again if a recursive call is made later
+                if (ignoreRectangle.HasValue && rectangle == ignoreRectangle.Value)
+                    continue;
+                foreach (var pointAndSides in PointsAndSidesWhereRectangleCollidesLine(rectangle, _source, _destination))
+                {
+                    //This line stops the algorithm from successfully transitioning from one rectangle to another while traveling along a flat edge
+                    //However, without it there will be an infinite loop when the algorithm hits the inside of a corner
+                    if (pointAndSides.collisionPoint == _source)
+                        return _source;
+                    
+                    var percent = PercentAlongLine(pointAndSides.collisionPoint, _source, _destination);
+                    if (percent < 0)
+                        continue;
+                    if (!minPercent.HasValue || percent < minPercent)
+                    {
+                        minPercent = percent;
+                        minPointAndSides = pointAndSides;
+                        minRectangle = rectangle;
+                    }
+                }
+            }
+
+            if (minPointAndSides == null)
+                return _destination;
+
+            var collisionPoint = minPointAndSides.Value.collisionPoint;
+
+            var destinationDistance = _source.Distance(_destination);
+            var collisionPointDistance = _source.Distance(collisionPoint);
+            var slideDistance = destinationDistance - collisionPointDistance;
+
+            if (slideDistance <= 0)
+                return _destination;
+
+            var segmentStart = minPointAndSides.Value.segmentStart;
+            var segmentEnd = minPointAndSides.Value.segmentEnd;
+
+            //Determine which direction to travel along the rectangle's edge which matches the direction our sgment is trying to travel in
+            if (OpenTK.Vector2.Dot(segmentEnd - segmentStart, _destination - _source) <
+                OpenTK.Vector2.Dot(segmentStart - segmentEnd, _destination - _source))
+            {
+                var segmentTemp = segmentStart;
+                segmentStart = segmentEnd;
+                segmentEnd = segmentTemp;
+            }
+
+            //If the algorithm must continue beyond the edge of the current rectangle, initiate a recursive call for that new vector for the remainder of the needed length.
+            var segmentEndDistance = segmentEnd.Distance(collisionPoint);
+            if(slideDistance > segmentEndDistance)
+                return SlideAgainstRectangles(_rectangles, segmentEnd, segmentEnd + (slideDistance - segmentEndDistance) * (_destination - _source).Normalized(), minRectangle);
+            return collisionPoint + (segmentEnd - segmentStart).Normalized() * slideDistance;
+        }
+
+        /// <summary>
+        /// Finds the projection of _a onto _b.
+        /// </summary>
+        /// <param name="_a">the vector being projected</param>
+        /// <param name="_b">the vector being projected onto</param>
+        /// <returns>the projection of _a onto _b</returns>
+        public static Vector2 Proj(this Vector2 _a, Vector2 _b) => OpenTK.Vector2.Dot(_a, _b) / _b.LengthSquared * _b;
 
         /// <summary>
         /// Finds all of the positions at which the given rectangles collide with the line a->b
@@ -539,7 +646,7 @@ namespace Engine
             }
             return minPoint;
         }
-
+        
         /// <summary>
         /// Finds all the points at which the two rectangles intersect
         /// </summary>
@@ -548,16 +655,9 @@ namespace Engine
         /// <returns>the points at which the two given rectangles intersect</returns>
         public static IEnumerable<Vector2> PointsRectangleCollidesRectangle(Rectangle _a, Rectangle _b)
         {
-            var a = new[]
-            {
-                new Vector2(_a.X, _a.Y),
-                new Vector2(_a.X + _a.W, _a.Y),
-                new Vector2(_a.X + _a.W, _a.Y + _a.H),
-                new Vector2(_a.X, _a.Y + _a.H)
-            };
-
+            var a = _a.ToVertices();
             for (var i = 0; i < 4; i++)
-                foreach (var point in PointsRectangleCollidesSegment(_b, a[i], a[(i + 1) % 4]))
+                foreach (var point in PointsRectangleCollidesSegment(_b, a[i].ToVector2(), a[(i + 1) % 4].ToVector2()))
                     yield return point;
         }
 
