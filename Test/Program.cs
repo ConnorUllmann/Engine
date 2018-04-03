@@ -19,7 +19,8 @@ namespace Test
 
             var game = new ShellGame(600, 600);
 
-            var position = new Vector2(-40, -80);
+            var first = new Vector2(-40, -80);
+            Vector2? second = new Vector2(110, 180);
 
             game.StartHandler += () =>
             {
@@ -27,8 +28,8 @@ namespace Test
 
             game.UpdateHandler += () =>
             {
-                if (Input.LeftMouseDown)
-                    position = Input.Mouse;
+                if (Input.RightMouseDown)
+                    first = Input.Mouse;
             };
 
             game.RenderHandler += () =>
@@ -41,15 +42,24 @@ namespace Test
                     new Rectangle(-120, -120, 60, 60)
                 };
 
-                var mouse = Input.Mouse;
+                if (Input.LeftMousePressed)
+                {
+                    if (second == null)
+                        second = Input.Mouse;
+                    else
+                        second = null;
+                }
 
-                var collisionPoint = Engine.Utils.SlideAgainstRectangles(rectangles, position, mouse);
+                var tempSecond = second ?? Input.Mouse;
+
+
+                var collisionPoint = Engine.Utils.SlideAgainstRectangles(rectangles, first, tempSecond);
                 Engine.Debug.Draw.Circle(collisionPoint, 2, Color4.Red);
 
                 foreach (var rectangle in rectangles)
                     Engine.Debug.Draw.Rectangle(rectangle, _color: Color4.Green, _filled: false);
 
-                Engine.Debug.Draw.Line(position, mouse, Color4.Blue);
+                Engine.Debug.Draw.Line(first, tempSecond, Color4.Blue);
             };
 
             game.Run();
