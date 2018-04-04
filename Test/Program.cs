@@ -19,7 +19,7 @@ namespace Test
 
             var game = new ShellGame(600, 600);
 
-            var first = new Vector2(-40, -80);
+            var first = new Vector2(0, 60);
             Vector2? second = new Vector2(110, 180);
 
             game.StartHandler += () =>
@@ -51,10 +51,13 @@ namespace Test
                 }
 
                 var tempSecond = second ?? Input.Mouse;
-
-
+                
                 var collisionPoint = Engine.Utils.SlideAgainstRectangles(rectangles, first, tempSecond);
                 Engine.Debug.Draw.Circle(collisionPoint, 2, Color4.Red);
+                
+                //Save line for test case to the log
+                if(Input.KeyReleased(OpenTK.Input.Key.T))
+                    Game.LogInfo($"[InlineData({first.X}, {first.Y}, {tempSecond.X}, {tempSecond.Y}, {collisionPoint.X}, {collisionPoint.Y})] //Automatically generated from working algorithm");
 
                 foreach (var rectangle in rectangles)
                     Engine.Debug.Draw.Rectangle(rectangle, _color: Color4.Green, _filled: false);

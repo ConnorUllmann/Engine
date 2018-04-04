@@ -52,7 +52,7 @@ namespace Engine
 
         private Window window;
 
-        public Game(int width, int height, string title = "", Log.Level _threshold=Log.Level.Error)
+        public Game(int width, int height, string title = "", Log.Level _threshold=Log.Level.Info)
         {
             game = this;
             Width = width;

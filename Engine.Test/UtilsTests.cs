@@ -3,11 +3,47 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using OpenTK;
+using Rectangle = Basics.Rectangle;
 
 namespace Engine.Test
 {
     public class UtilsTests
     {
+        [Theory]
+        //TODO: Horizontal/vertical tests
+        [InlineData(-57, -33, -40, 25, -21.27584, 0)] //Automatically generated from working algorithm
+        [InlineData(-106, 21, -40, 25, -60, 43.82458)] //Automatically generated from working algorithm
+        [InlineData(-197, -177, 30, 76, -26.30333, 97.5562)] //Automatically generated from working algorithm
+        [InlineData(-178, -153, 0, 24, -10.8501, 0)] //Automatically generated from working algorithm
+        [InlineData(175, 41, -47.00002, -16.99997, 21.65067, -70.01919)] //Automatically generated from working algorithm
+        [InlineData(175, 41, 8, 30, 60, -18.68753)] //Automatically generated from working algorithm
+        [InlineData(175, 41, -22, -84, 1.66798, -97.0127)] //Automatically generated from working algorithm
+        [InlineData(175, 41, -107, 71, -100.272, 77.05021)] //Automatically generated from working algorithm
+        [InlineData(-12, -187, 7, 21, 0, 0)] //Automatically generated from working algorithm
+        [InlineData(0, 0, -30, 0, -30, 0)] //From corner vertical
+        [InlineData(0, 0, 0, -30, 0, -30)] //From corner horizontal
+        [InlineData(0, -30, 0, 30, 0, 0)] //Into wall vertical
+        [InlineData(-30, 0, 30, 0, 0, 0)] //Into wall horizontal
+        [InlineData(0, 90, 0, 30, 0, 60)] //Into crease vertical
+        [InlineData(90, 0, 30, 0, 60, 0)] //Into crease horizontal
+        [InlineData(-30, -30, 30, -30, 30, -30)] //Open space
+        [InlineData(-30, -45, -30, -15, -30, -15)] //Open space vertical
+        [InlineData(-45, -30, -15, -30, -15, -30)] //Open space horizontal
+        [InlineData(0, 0, 0, 0, 0, 0)] //Length zero
+        public void SlideAgainstRectangles_ReturnSucceed(float ax, float ay, float bx, float by, float expectedX, float expectedY)
+        {
+            var rectangles = new[]
+            {
+                new Rectangle(0, 0, 60, 60),
+                new Rectangle(0, -60, 60, 60),
+                new Rectangle(-60, 0, 60, 60),
+                new Rectangle(-120, -120, 60, 60)
+            };
+            var expected = Utils.SlideAgainstRectangles(rectangles, new Vector2(ax, ay), new Vector2(bx, by));
+            Assert.Equal(expectedX.ToString("0.00"), expected.X.ToString("0.00"));
+            Assert.Equal(expectedY.ToString("0.00"), expected.Y.ToString("0.00"));
+        }
+
         [Theory]
         [InlineData(12f / 7 - 2, 0, -2, -3, 2, 4)]
         [InlineData(8f / 7 - 2, -1, -2, -3, 2, 4)]
