@@ -530,40 +530,93 @@ namespace Engine
         /// <param name="ignoreRectangle">rectangle within _rectangles which should not be considered while sliding, if any (helper argument for recursion)</param>
         /// <returns>_source, after sliding along rectangles in the direction of _destination
         /// (it will always be the result of sliding a segment the length of the difference between _destination and _source along the walls)</returns>
-        public static Vector2 SlideAgainstRectangles(IEnumerable<Rectangle> _rectangles, Vector2 _source, Vector2 _destination, Rectangle? ignoreRectangle=null)
+        public static Vector2 SlideAgainstRectangles(IEnumerable<Rectangle> _rectangles, Vector2 _source, Vector2 _destination, 
+            (Vector2 collisionPoint, Vector2 segmentStart, Vector2 segmentEnd, int rectangleHash)? _lastSegment=null)
         {
-            float? minPercent = null;
-            var minPointAndSides = ((Vector2 collisionPoint, Vector2 segmentStart, Vector2 segmentEnd)?)null;
-            var minRectangle = (Rectangle?)null;
+            /***********************************************************************************/
+            /***** TODO: does not work for vertical or horizontal (_destination - _source) *****/
+            /***********************************************************************************/
+
+            //Get all points and segments from external walls that we didn't just slide on
+            var allPointsAndSides = new List<(Vector2 collisionPoint, Vector2 segmentStart, Vector2 segmentEnd, int rectangleHash)>();
             foreach (var rectangle in _rectangles)
+                allPointsAndSides.AddRange(
+                    PointsAndSidesWhereRectangleCollidesLine(rectangle, _source, _destination)
+                    .Select(o => (o.collisionPoint, o.segmentStart, o.segmentEnd, rectangle.GetHashCode())));
+
+            //Look for all collision point sides which are duplicated because two rectangles share a side
+            var insideWalls = new HashSet<int>();
+            for (var i = 0; i < allPointsAndSides.Count; i++)
             {
-                //Necessary to ensure that if a point is on an outside corner of a rectangle it is already traversing,
-                //that it should not re-hit that same rectangle again if a recursive call is made later
-                if (ignoreRectangle.HasValue && rectangle == ignoreRectangle.Value)
-                    continue;
-                foreach (var pointAndSides in PointsAndSidesWhereRectangleCollidesLine(rectangle, _source, _destination))
+                var o = allPointsAndSides[i];
+                for(var j = 0; j < allPointsAndSides.Count; j++)
                 {
-                    //This line stops the algorithm from successfully transitioning from one rectangle to another while traveling along a flat edge
-                    //However, without it there will be an infinite loop when the algorithm hits the inside of a corner
-                    if (pointAndSides.collisionPoint == _source)
-                        return _source;
-                    
-                    var percent = PercentAlongLine(pointAndSides.collisionPoint, _source, _destination);
-                    if (percent < 0)
+                    if (i == j)
                         continue;
-                    if (!minPercent.HasValue || percent < minPercent)
+                    var n = allPointsAndSides[j];
+                    if (o.segmentEnd == n.segmentStart && n.segmentEnd == o.segmentStart)
                     {
-                        minPercent = percent;
-                        minPointAndSides = pointAndSides;
-                        minRectangle = rectangle;
+                        insideWalls.Add(o.GetHashCode());
+                        insideWalls.Add(n.GetHashCode());
                     }
                 }
             }
+            if (_lastSegment.HasValue)
+            {
+                //Remove the last segment (at the new source point) from the set of pointsides
+                insideWalls.Add((_source, _lastSegment.Value.segmentStart, _lastSegment.Value.segmentEnd, _lastSegment.Value.rectangleHash).GetHashCode());
 
-            if (minPointAndSides == null)
+                //Remove our current rectangle so that, if it's the only collision, the point will be able to move freely towards the (_destination - _source) direction
+                allPointsAndSides.RemoveAll(o => o.rectangleHash == _lastSegment.Value.rectangleHash);
+            }
+            allPointsAndSides.RemoveAll(o => insideWalls.Contains(o.GetHashCode()));
+
+            //Get the closest point to _source
+            float? minPercent = null;
+            (Vector2 collisionPoint, Vector2 segmentStart, Vector2 segmentEnd, int rectangleHash) minPointAndSide = (OpenTK.Vector2.Zero, OpenTK.Vector2.Zero, OpenTK.Vector2.Zero, 0);
+            foreach (var pointAndSides in allPointsAndSides)
+            {
+                if(pointAndSides.collisionPoint == _source)
+                {
+                    var a = pointAndSides.segmentStart;
+                    var b = pointAndSides.segmentEnd;
+                    
+                    //Ensure b is always farther away than a
+                    if (b.DistanceSquared(_source) < a.DistanceSquared(_source))
+                    {
+                        var c = a;
+                        a = b;
+                        b = c;
+                    }
+
+                    //If sliding along the wall would make us go backwards, then stay put instead
+                    var dot = OpenTK.Vector2.Dot(b - a, _destination - _source);
+                    if (dot < 0)
+                        return _source;
+
+                    var tempSlideDistance = _source.Distance(_destination);
+
+                    //If the algorithm must continue beyond the edge of the current rectangle, initiate a recursive call for that new vector for the remainder of the needed length.
+                    var bDistance = b.Distance(_source);
+                    if (tempSlideDistance > bDistance)
+                        return SlideAgainstRectangles(_rectangles, b, b + (tempSlideDistance - bDistance) * (_destination - _source).Normalized(), pointAndSides);
+                    return _source + (b - a).Normalized() * tempSlideDistance;
+                }
+
+                var percent = PercentAlongLine(pointAndSides.collisionPoint, _source, _destination);
+                if (percent < 0)
+                    continue;
+                if (!minPercent.HasValue || percent < minPercent)
+                {
+                    minPercent = percent;
+                    minPointAndSide = pointAndSides;
+                }
+            }
+
+            if (minPercent == null)
                 return _destination;
 
-            var collisionPoint = minPointAndSides.Value.collisionPoint;
+            var collisionPoint = minPointAndSide.collisionPoint;
 
             var destinationDistance = _source.Distance(_destination);
             var collisionPointDistance = _source.Distance(collisionPoint);
@@ -572,8 +625,8 @@ namespace Engine
             if (slideDistance <= 0)
                 return _destination;
 
-            var segmentStart = minPointAndSides.Value.segmentStart;
-            var segmentEnd = minPointAndSides.Value.segmentEnd;
+            var segmentStart = minPointAndSide.segmentStart;
+            var segmentEnd = minPointAndSide.segmentEnd;
 
             //Determine which direction to travel along the rectangle's edge which matches the direction our sgment is trying to travel in
             if (OpenTK.Vector2.Dot(segmentEnd - segmentStart, _destination - _source) <
@@ -587,7 +640,7 @@ namespace Engine
             //If the algorithm must continue beyond the edge of the current rectangle, initiate a recursive call for that new vector for the remainder of the needed length.
             var segmentEndDistance = segmentEnd.Distance(collisionPoint);
             if(slideDistance > segmentEndDistance)
-                return SlideAgainstRectangles(_rectangles, segmentEnd, segmentEnd + (slideDistance - segmentEndDistance) * (_destination - _source).Normalized(), minRectangle);
+                return SlideAgainstRectangles(_rectangles, segmentEnd, segmentEnd + (slideDistance - segmentEndDistance) * (_destination - _source).Normalized(), minPointAndSide);
             return collisionPoint + (segmentEnd - segmentStart).Normalized() * slideDistance;
         }
 
