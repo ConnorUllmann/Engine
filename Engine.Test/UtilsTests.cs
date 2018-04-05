@@ -24,8 +24,8 @@ namespace Engine.Test
         [InlineData(0, 0, 0, -30, 0, -30)] //From corner horizontal
         [InlineData(0, -30, 0, 30, 0, 0)] //Into wall vertical
         [InlineData(-30, 0, 30, 0, 0, 0)] //Into wall horizontal
-        [InlineData(0, 90, 0, 30, 0, 60)] //Into crease vertical
-        [InlineData(90, 0, 30, 0, 60, 0)] //Into crease horizontal
+        [InlineData(0, 90, 0, 30, -30, 60)] //Into crease vertical
+        [InlineData(90, 0, 30, 0, 60, 30)] //Into crease horizontal
         [InlineData(-30, -30, 30, -30, 30, -30)] //Open space
         [InlineData(-30, -45, -30, -15, -30, -15)] //Open space vertical
         [InlineData(-45, -30, -15, -30, -15, -30)] //Open space horizontal
