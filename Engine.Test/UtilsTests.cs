@@ -26,10 +26,14 @@ namespace Engine.Test
         [InlineData(-30, 0, 30, 0, 0, 0)] //Into wall horizontal
         [InlineData(0, 90, 0, 30, -30, 60)] //Into crease vertical
         [InlineData(90, 0, 30, 0, 60, 30)] //Into crease horizontal
-        [InlineData(-30, -30, 30, -30, 30, -30)] //Open space
+        [InlineData(-90, -30, -30, -30, -30, -30)] //Open space
         [InlineData(-30, -45, -30, -15, -30, -15)] //Open space vertical
         [InlineData(-45, -30, -15, -30, -15, -30)] //Open space horizontal
         [InlineData(0, 0, 0, 0, 0, 0)] //Length zero
+        [InlineData(0, -60, 20, 200, 0, 0)] //Corner into wall
+        [InlineData(0, -60, -30, -90, -30, -90)] //Corner away from wall
+        [InlineData(0, -30, 20, 200, 0, 0)] //On wall into wall upward
+        [InlineData(-30, 0, 200, 20, 0, 0)] //On wall into right wall
         public void SlideAgainstRectangles_ReturnSucceed(float ax, float ay, float bx, float by, float expectedX, float expectedY)
         {
             var rectangles = new[]

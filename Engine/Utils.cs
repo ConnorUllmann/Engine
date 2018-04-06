@@ -571,6 +571,12 @@ namespace Engine
             }
             allPointsAndSides.RemoveAll(o => insideWalls.Contains(o.GetHashCode()));
 
+            //Check each edge to see if the source->destination
+            //foreach(var pointAndSides in allPointsAndSides)
+            //{
+
+            //}
+
             //Get the closest point to _source
             float? minPercent = null;
             (Vector2 collisionPoint, Vector2 segmentStart, Vector2 segmentEnd, int rectangleHash) minPointAndSide = (OpenTK.Vector2.Zero, OpenTK.Vector2.Zero, OpenTK.Vector2.Zero, 0);
@@ -593,7 +599,7 @@ namespace Engine
                     var dot = OpenTK.Vector2.Dot(b - a, _destination - _source);
                     if (dot < 0)
                         return _source;
-
+                    
                     var tempSlideDistance = _source.Distance(_destination);
 
                     //If the algorithm must continue beyond the edge of the current rectangle, initiate a recursive call for that new vector for the remainder of the needed length.

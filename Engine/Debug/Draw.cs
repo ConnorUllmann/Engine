@@ -63,6 +63,16 @@ namespace Engine.Debug
             array.Destroy();
         }
 
+        public static void Arrow(Vector2 _a, Vector2 _b, Color4? _color = null, float _arrowAngle = (float)Math.PI / 4, float _arrowHeadLength = 8)
+        {
+            Lines(new (Vector2, Vector2)[] 
+            {
+                (_a, _b),
+                (_b, _b + Utils.Vector2(((_a - _b).Radians() ?? 0) - _arrowAngle, _arrowHeadLength)),
+                (_b, _b + Utils.Vector2(((_a - _b).Radians() ?? 0) + _arrowAngle, _arrowHeadLength))
+            }, _color ?? Color4.White);
+        }
+
         public static void Lines(IEnumerable<(Vector2 a, Vector2 b)> _positions, Color4? _color = null)
         {
             //Create
