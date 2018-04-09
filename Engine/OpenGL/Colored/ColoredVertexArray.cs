@@ -66,21 +66,16 @@ namespace Engine.OpenGL.Colored
             //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             //GL.UseProgram(0);
         }
-
-        private static BasicShaderProgram basicShaderProgram;
-        public static ColoredVertexArray FromBuffer(ColoredVertexBuffer buffer, ShaderProgram _shaderProgram = null)
-        {
-            if (_shaderProgram == null)
-                basicShaderProgram = basicShaderProgram ?? new BasicShaderProgram();
-            return new ColoredVertexArray(buffer, _shaderProgram ?? basicShaderProgram);
-        }
+        
+        public static ColoredVertexArray FromBuffer(ColoredVertexBuffer buffer, ShaderProgram _shaderProgram = null) => new ColoredVertexArray(buffer, _shaderProgram ?? BasicShaderProgram.Instance);
 
         public static void Start()
         {
-            basicShaderProgram = basicShaderProgram ?? new BasicShaderProgram();
             // activate shader program and set uniforms
-            basicShaderProgram.Use();
-            Game.Camera.ProjectionMatrix.Set(basicShaderProgram);
+            BasicShaderProgram.Instance.Use();
+
+            // This setter sets the projection matrix to use BasicShaderProgram.Instance
+            Game.Camera.Zoom = 1;
         }
     }
 }

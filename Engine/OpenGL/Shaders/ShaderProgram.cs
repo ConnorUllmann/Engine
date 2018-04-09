@@ -10,6 +10,7 @@ namespace Engine.OpenGL.Shaders
 
     public class BasicShaderProgram : ShaderProgram
     {
+        public static BasicShaderProgram Instance = new BasicShaderProgram();
         public BasicShaderProgram() : base(new BasicVertexShader(), new BasicFragmentShader()) { }
     }
 
