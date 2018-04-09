@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics;
+﻿using System;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
@@ -31,6 +32,20 @@ namespace Engine.OpenGL.Colored
         {
             for (var i = 0; i < count; i++)
                 vertices[i].color = _color;
+        }
+
+        public void SetColor(Color4 _color, int _i)
+        {
+            if (_i < 0 || _i >= count)
+                throw new ArgumentException($"Index ({_i}) is out of bounds [0, {count})");
+            vertices[_i].color = _color;
+        }
+
+        public Color4 GetColor(int _i)
+        {
+            if (_i < 0 || _i >= count)
+                throw new ArgumentException($"Index ({_i}) is out of bounds [0, {count})");
+            return vertices[_i].color;
         }
 
         public void RandomizeColor()
