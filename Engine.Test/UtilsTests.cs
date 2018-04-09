@@ -10,7 +10,6 @@ namespace Engine.Test
     public class UtilsTests
     {
         [Theory]
-        //TODO: Horizontal/vertical tests
         [InlineData(-57, -33, -40, 25, -21.27584, 0)] //Automatically generated from working algorithm
         [InlineData(-106, 21, -40, 25, -60, 43.82458)] //Automatically generated from working algorithm
         [InlineData(-197, -177, 30, 76, -26.30333, 97.5562)] //Automatically generated from working algorithm
