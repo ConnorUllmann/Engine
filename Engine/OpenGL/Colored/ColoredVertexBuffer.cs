@@ -22,6 +22,12 @@ namespace Engine.OpenGL.Colored
                 vertices[i].position += _position;
         }
 
+        public void Scale(float _scalar)
+        {
+            for (var i = 0; i < count; i++)
+                vertices[i].position *= _scalar;
+        }
+
         public void Rotate(float _angleRad, Vector3 _center)
         {
             for (var i = 0; i < count; i++)

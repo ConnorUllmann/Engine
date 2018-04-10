@@ -46,6 +46,19 @@ namespace Engine
             Initialize(buffer);
         }
 
+        private float scale = 1;
+        public float Scale
+        {
+            get => scale;
+            set
+            {
+                if (value == scale)
+                    return;
+                buffer.Scale(scale == 0 ? value : value / scale);
+                scale = value;
+            }
+        }
+
         private int bufferIndex(int _i, int _j) => (_i * grid.Height + _j) * 4;
 
         public void SetPixel(Color4 _color, int _i, int _j)
