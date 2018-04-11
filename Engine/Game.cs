@@ -71,7 +71,8 @@ namespace Engine
             window.Start += Start;
             window.Update += PreUpdate;
             window.Update += Update;
-            window.Render += Render;
+            window.PreRender += PreRender;
+            window.PostRender += PostRender;
             window.Closing += Closing;
         }
 
@@ -92,7 +93,8 @@ namespace Engine
         public virtual void Start() { }
         public virtual void PreUpdate() { }
         public virtual void Update() { }
-        public virtual void Render() { }
+        public virtual void PreRender() { }
+        public virtual void PostRender() { }
 
         /// <summary>
         /// Returns a random position on the screen
@@ -152,6 +154,6 @@ namespace Engine
 
         public override void Start() => StartHandler?.Invoke();
         public override void Update() => UpdateHandler?.Invoke();
-        public override void Render() => RenderHandler?.Invoke();
+        public override void PostRender() => RenderHandler?.Invoke();
     }
 }

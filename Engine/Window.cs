@@ -23,8 +23,9 @@ namespace Engine
 
         public Action Start;
         public Action Update;
-        public Action Render;
-        
+        public Action PreRender;
+        public Action PostRender;
+
         private Stopwatch updateStopwatch;
         private Stopwatch renderStopwatch;
         public long LastUpdateDurationMilliseconds { get; private set; }
@@ -81,8 +82,11 @@ namespace Engine
 
             renderStopwatch.Reset();
             renderStopwatch.Start();
+
+            PreRender();
             Game.Group.Render();
-            Render();
+            PostRender();
+
             renderStopwatch.Stop();
             LastRenderDurationMilliseconds = renderStopwatch.ElapsedMilliseconds;
 
