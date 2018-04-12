@@ -40,7 +40,7 @@ namespace Engine.Actors
             SpeedMax = _speedMax;
             Speed = 0; // To make sure speed ends up within the bounds
         }
-
-        public Vector2 DeltaPosition() => Speed * Engine.Utils.Vector2(Angle) * Game.Delta;
+        
+        public Vector2 DeltaPosition() => Speed * Utils.Vector2(Angle) * Game.Delta;
     }
 }

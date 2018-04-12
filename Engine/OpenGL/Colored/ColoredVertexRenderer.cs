@@ -53,7 +53,7 @@ namespace Engine
         public void MoveAbsolute(float _x, float _y) => MoveAbsolute(new Vector3(_x, _y, 0));
         public void MoveAbsolute(Vector3 _position) => array?.MoveAbsolute(_position);
 
-        public void Render()
+        public virtual void Render()
         {
             if (Visible)
                 array?.Render();
