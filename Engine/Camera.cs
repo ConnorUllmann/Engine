@@ -5,6 +5,7 @@ using System.Text;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using Basics;
 using Engine;
 using Engine.OpenGL;
 using Engine.OpenGL.Colored;
@@ -12,7 +13,7 @@ using Engine.OpenGL.Shaders;
 
 namespace Engine
 {
-    public class Camera
+    public class Camera : IPosition
     {
         private readonly int width;
         private readonly int height;
@@ -25,17 +26,53 @@ namespace Engine
             width = _width;
             height = _height;
             projectionMatrix = new Matrix4Uniform("projectionMatrix");
+            RefreshProjectionMatrix();
         }
 
-        private float zoom = 1;
-        public float Zoom
+        public void RefreshProjectionMatrix()
         {
-            get => zoom;
+            projectionMatrix.Matrix = Matrix4.CreateTranslation(new Vector3(-x, -y, 0)) * Matrix4.CreateOrthographic(width, height, float.MinValue, float.MaxValue) * Matrix4.CreateScale(Scale);
+            projectionMatrix.Set(BasicShaderProgram.Instance);
+        }
+
+        //x-position of center of camera view
+        private float x = 0;
+        public float X
+        {
+            get => x;
             set
             {
-                zoom = value;
-                projectionMatrix.Matrix = Matrix4.CreateOrthographic(width / zoom, height / zoom, float.MinValue, float.MaxValue);
-                ProjectionMatrix.Set(BasicShaderProgram.Instance);
+                if (x == value)
+                    return;
+                x = value;
+                RefreshProjectionMatrix();
+            }
+        }
+
+        //y-position of center of camera view
+        private float y = 0;
+        public float Y
+        {
+            get => y;
+            set
+            {
+                if (y == value)
+                    return;
+                y = value;
+                RefreshProjectionMatrix();
+            }
+        }
+
+        private float scale = 1;
+        public float Scale
+        {
+            get => scale;
+            set
+            {
+                if (scale == value)
+                    return;
+                scale = value;
+                RefreshProjectionMatrix();
             }
         }
     }

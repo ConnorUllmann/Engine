@@ -75,7 +75,7 @@ namespace Engine.OpenGL.Colored
             BasicShaderProgram.Instance.Use();
 
             // This setter sets the projection matrix to use BasicShaderProgram.Instance
-            Game.Camera.Zoom = 1;
+            Game.Camera.Scale = 1;
         }
     }
 }

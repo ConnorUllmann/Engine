@@ -53,6 +53,9 @@ namespace Engine
             camera = new Camera(Width, Height);
             ColoredVertexArray.Start();
             Start();
+
+            //Refresh projection matrix after loading
+            camera.RefreshProjectionMatrix();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)

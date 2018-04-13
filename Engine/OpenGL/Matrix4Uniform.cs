@@ -9,20 +9,20 @@ namespace Engine.OpenGL
         private readonly string name;
         private Matrix4 matrix;
 
-        public Matrix4 Matrix { get { return this.matrix; } set { this.matrix = value; } }
+        public Matrix4 Matrix { get => matrix; set => matrix = value; }
 
-        public Matrix4Uniform(string name)
+        public Matrix4Uniform(string _name)
         {
-            this.name = name;
+            name = _name;
         }
 
         public void Set(ShaderProgram program)
         {
             // get uniform location
-            var i = program.GetUniformLocation(this.name);
+            var i = program.GetUniformLocation(name);
 
             // set uniform value
-            GL.UniformMatrix4(i, false, ref this.matrix);
+            GL.UniformMatrix4(i, false, ref matrix);
         }
     }
 }
