@@ -52,6 +52,12 @@ namespace Engine
         public static Vector2 Lerp(this Vector2 _from, Vector2 _to, float _value)
             => new Vector2((_to.X - _from.X) * _value + _from.X, (_to.Y - _from.Y) * _value + _from.Y);
 
+        public static T Get<T>(this Grid<T> _grid, Vector2 _position) => _grid.Get(_position.X, _position.Y);
+        public static List<T> GetNeighborsCardinal<T>(this Grid<T> _grid, Vector2 _position) => _grid.GetNeighborsCardinal(_position.X, _position.Y);
+        public static List<T> GetNeighborsSquare<T>(this Grid<T> _grid, Vector2 _position) => _grid.GetNeighborsSquare(_position.X, _position.Y);
+        public static bool Inside<T>(this Grid<T> _grid, Vector2 _position) => _grid.Inside(_position.X, _position.Y);
+        public static void Set<T>(this Grid<T> _grid, T o, Vector2 _position) => _grid.Set(o, _position.X, _position.Y);
+
         /// <summary>
         /// Determines the angle of the given vector (in radians)
         /// </summary>
