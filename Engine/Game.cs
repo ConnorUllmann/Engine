@@ -26,11 +26,11 @@ namespace Engine
         public static float LastUpdateDurationMilliseconds => game.window.LastUpdateDurationMilliseconds;
         public static float LastRenderDurationMilliseconds => game.window.LastRenderDurationMilliseconds;
 
-        public static float FramesSinceStart => FPSHandler.FramesSinceStart;
-        public static float MillisecondsSinceStart => FPSHandler.MillisecondsSinceStart;
-        public static float FPS => FPSHandler.FPS;
-        public static float Delta => FPSHandler.Delta;
-        public static float DeltaMs => FPSHandler.Delta * 1000;
+        public static float FramesSinceStart => FPSTracker.FramesSinceStart;
+        public static float MillisecondsSinceStart => FPSTracker.MillisecondsSinceStart;
+        public static float FPS => FPSTracker.FPS;
+        public static float Delta => FPSTracker.Delta;
+        public static float DeltaMs => FPSTracker.Delta * 1000;
         public static bool GarbageCollected => Window.GarbageCollected;
 
         public static string Title { set => game.window.SetTitle(value); }

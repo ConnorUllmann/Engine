@@ -14,13 +14,13 @@ namespace Engine
 {
     internal class Window : GameWindow
     {
-        private FPSHandler fpsHandler;
+        private FPSTracker fpsTracker;
         private GarbageCollectionTracker gcTracker;
         public Camera camera;
 
-        public static float TimeSinceStart => FPSHandler.MillisecondsSinceStart;
-        public static float FPS => FPSHandler.FPS;
-        public static float Delta => FPSHandler.Delta;
+        public static float TimeSinceStart => FPSTracker.MillisecondsSinceStart;
+        public static float FPS => FPSTracker.FPS;
+        public static float Delta => FPSTracker.Delta;
         public static bool GarbageCollected { get; private set; }
 
         public Action Start;
@@ -51,7 +51,7 @@ namespace Engine
         protected override void OnLoad(EventArgs e)
         {
             Input.Start(this);
-            fpsHandler = new FPSHandler();
+            fpsTracker = new FPSTracker();
             gcTracker = new GarbageCollectionTracker();
             camera = new Camera(Width, Height);
             ColoredVertexArray.Start();
@@ -78,8 +78,8 @@ namespace Engine
             gcTracker.Update();
             GarbageCollected = gcTracker.GarbageCollectionsByGeneration(2); //2nd generation polling gives best indication of lag
 
-            fpsHandler.Update();
-            Title = title ?? $"{titlePrefix} ({(int)Input.Mouse.X}, {(int)Input.Mouse.Y}) FPS: {fpsHandler.fps.ToString("0")} Total: {(Game.Delta * 1000).ToString("0")}ms Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
+            fpsTracker.Update();
+            Title = title ?? $"{titlePrefix} ({(int)Input.Mouse.X}, {(int)Input.Mouse.Y}) FPS: {fpsTracker.fps.ToString("0")} Total: {(Game.Delta * 1000).ToString("0")}ms Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
         }
 
         private string title = null;

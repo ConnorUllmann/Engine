@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace Engine
 {
-    //TODO rename to FPSTracker
-    internal class FPSHandler
+    internal class FPSTracker
     {
-        public static FPSHandler Singleton { get; private set; }
+        public static FPSTracker Singleton { get; private set; }
 
         private long millisecondsSinceStartPrevious;
         private Stopwatch stopwatch;
@@ -25,7 +24,7 @@ namespace Engine
         public static float FPS => Singleton.FPSSamples?.Count > 0 ? Singleton.FPSSamples.Average() : 0;
         public static float Delta => Singleton.deltaMillis / 1000f;
 
-        internal FPSHandler()
+        internal FPSTracker()
         {
             Singleton = this;
             millisecondsSinceStartPrevious = 0;
