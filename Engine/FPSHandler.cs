@@ -4,9 +4,11 @@ using System.Text;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Engine
 {
+    //TODO rename to FPSTracker
     internal class FPSHandler
     {
         public static FPSHandler Singleton { get; private set; }
@@ -23,12 +25,9 @@ namespace Engine
         public static float FPS => Singleton.FPSSamples?.Count > 0 ? Singleton.FPSSamples.Average() : 0;
         public static float Delta => Singleton.deltaMillis / 1000f;
 
-        private Window window;
-
-        internal FPSHandler(Window _window)
+        internal FPSHandler()
         {
             Singleton = this;
-            window = _window;
             millisecondsSinceStartPrevious = 0;
             stopwatch = new Stopwatch();
             stopwatch.Start();

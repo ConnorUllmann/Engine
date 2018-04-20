@@ -30,6 +30,8 @@ namespace Engine
         public static float MillisecondsSinceStart => FPSHandler.MillisecondsSinceStart;
         public static float FPS => FPSHandler.FPS;
         public static float Delta => FPSHandler.Delta;
+        public static float DeltaMs => FPSHandler.Delta * 1000;
+        public static bool GarbageCollected => Window.GarbageCollected;
 
         public static string Title { set => game.window.SetTitle(value); }
 
