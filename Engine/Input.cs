@@ -47,6 +47,9 @@ namespace Engine
 
         #region Mouse
         private Func<Vector2> MouseHandler;
+        /// <summary>
+        /// Position of the mouse with respect to the screen ((0, 0) is the center)
+        /// </summary>
         public static Vector2 Mouse { get => Singleton.MouseHandler(); }
         public static float AngleToMouse(float _x, float _y)
         {

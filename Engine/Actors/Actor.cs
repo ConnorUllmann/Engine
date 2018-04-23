@@ -44,8 +44,8 @@ namespace Engine.Actors
 
         //Coordinates relative to the Actor's position
         //(e.g. 40x60 box centered around the player = new BoundingBox(-20, -30, 40, 60))
-        public BoundingBox BoundingBox;
-        public Rectangle CollisionBox => new Rectangle(X + BoundingBox.X, Y + BoundingBox.Y, BoundingBox.W, BoundingBox.H);
+        public virtual BoundingBox BoundingBox { get; set; }
+        public virtual Rectangle CollisionBox => new Rectangle(X + BoundingBox.X, Y + BoundingBox.Y, BoundingBox.W, BoundingBox.H);
         public bool Collides(Actor _actor) => _actor == null ? false : CollisionBox.Collides(_actor.CollisionBox);
 
         private bool destroyed;

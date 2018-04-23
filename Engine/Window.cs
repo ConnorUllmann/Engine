@@ -69,8 +69,10 @@ namespace Engine
             {
                 updateStopwatch.Reset();
                 updateStopwatch.Start();
+
                 Update();
                 Game.Group.Update();
+
                 updateStopwatch.Stop();
                 LastUpdateDurationMilliseconds = updateStopwatch.ElapsedMilliseconds;
             }
@@ -79,11 +81,12 @@ namespace Engine
             GarbageCollected = gcTracker.GarbageCollectionsByGeneration(2); //2nd generation polling gives best indication of lag
 
             fpsTracker.Update();
-            Title = title ?? $"{titlePrefix} ({(int)Input.Mouse.X}, {(int)Input.Mouse.Y}) FPS: {fpsTracker.fps.ToString("0")} Total: {(Game.Delta * 1000).ToString("0")}ms Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
+            Title = title ?? DefaultTitle;
         }
 
         private string title = null;
         public void SetTitle(string _title) => title = _title;
+        public string DefaultTitle => $"{titlePrefix} ({(int)Game.MouseX}, {(int)Game.MouseY}) FPS: {fpsTracker.fps.ToString("0")} Total: {(Game.Delta * 1000).ToString("0")}ms Update: {LastUpdateDurationMilliseconds}ms Render: {LastRenderDurationMilliseconds}ms";
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {

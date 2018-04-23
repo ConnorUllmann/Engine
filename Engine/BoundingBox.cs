@@ -14,6 +14,7 @@ namespace Engine
         public float W;
         public float H;
 
+        public BoundingBox(Rectangle _rectangle) : this(_rectangle.X, _rectangle.Y, _rectangle.W, _rectangle.H) { }
         public BoundingBox(float _x, float _y, float _w, float _h)
         {
             X = _x;
@@ -66,6 +67,12 @@ namespace Engine
                 default: throw new Exception($"Unexpected VerticalAlign type {_align}");
             }
         }
+
+        //Collide against a point/position
+        public bool Collides(Vector2 _position) 
+            => Collides(_position.X, _position.Y);
+        public bool Collides(float _x, float _y)
+            => Rectangle.Collide(_x, _y, X, Y, W, H);
 
         //Collide against _r if we were offset by (_xoff, _yoff)
         public bool Collides(Rectangle _r, float _xoff, float _yoff) 

@@ -58,6 +58,9 @@ namespace Engine
         public static bool Inside<T>(this Grid<T> _grid, Vector2 _position) => _grid.Inside(_position.X, _position.Y);
         public static void Set<T>(this Grid<T> _grid, T o, Vector2 _position) => _grid.Set(o, _position.X, _position.Y);
 
+        public static bool Collides(this Rectangle _rectangle, IPosition _position) => _rectangle.Collides(_position.X, _position.Y);
+        public static bool Collides(this Rectangle _rectangle, Vector2 _position) => _rectangle.Collides(_position.X, _position.Y);
+
         /// <summary>
         /// Determines the angle of the given vector (in radians)
         /// </summary>

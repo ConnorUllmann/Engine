@@ -33,6 +33,13 @@ namespace Engine
         public static float DeltaMs => FPSTracker.Delta * 1000;
         public static bool GarbageCollected => Window.GarbageCollected;
 
+        /// <summary>
+        /// Mouse position with respect to the camera
+        /// </summary>
+        public static Vector2 Mouse => new Vector2(MouseX, MouseY);
+        public static float MouseX => Input.Mouse.X + Camera.X;
+        public static float MouseY => Input.Mouse.Y + Camera.Y;
+
         public static string Title { set => game.window.SetTitle(value); }
 
         //TODO: make this a configurable option instead of a const string
