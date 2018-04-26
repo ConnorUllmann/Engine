@@ -27,13 +27,15 @@ namespace Engine.Debug
             return debugPolygon;
         }
 
-        public static void Rectangle(Rectangle _r, float _x=0, float _y=0, Color4? _color=null, bool _filled = true)
-            => Rectangle(_x + _r.X, _y + _r.Y, _r.W, _r.H, _color, _filled);
-        public static void Rectangle(float _x, float _y, float _w, float _h, Color4? _color=null, bool _filled = true)
+        public static void Rectangle(Rectangle _r, float _x=0, float _y=0, Color4? _color=null, bool _filled = true, float _radians=0)
+            => Rectangle(_x + _r.X, _y + _r.Y, _r.W, _r.H, _color, _filled, _radians);
+        public static void Rectangle(float _x, float _y, float _w, float _h, Color4? _color=null, bool _filled = true, float _radians=0)
         {
             setRectangleDebugPolygon(_w, _h);
             var renderer = debugPolygonRenderer(_filled, _color ?? Color4.White);
             renderer.MoveAbsolute(_x, _y);
+            if (_radians != 0)
+                renderer.RotateRelative(_radians, new Vector3(_w, _h, 0) / 2);
             renderer.Render();
             renderer.Destroy();
         }

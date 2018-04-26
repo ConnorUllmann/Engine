@@ -90,6 +90,8 @@ namespace Engine
         public static Log.Level LogThreshold { get => game.log.Threshold; set => game.log.Threshold = value; }
         public static bool LogShouldPrintToFile { get => game.log.ShouldPrintToFile; set => game.log.ShouldPrintToFile = value; }
         public static bool LogShouldPrintToConsole { get => game.log.ShouldPrintToConsole; set => game.log.ShouldPrintToConsole = value; }
+        public static bool LogShouldPrintTime { get => game.log.ShouldPrintTime; set => game.log.ShouldPrintTime = value; }
+        public static bool LogShouldPrintLevel { get => game.log.ShouldPrintLevel; set => game.log.ShouldPrintLevel = value; }
         public static void LogDebug(string line, ConsoleColor color = ConsoleColor.Gray) => game.log.Debug(line, color);
         public static void LogInfo(string line, ConsoleColor color = ConsoleColor.White) => game.log.Info(line, color);
         public static void LogWarning(string line, ConsoleColor color = ConsoleColor.Yellow) => game.log.Warning(line, color);
