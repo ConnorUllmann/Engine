@@ -8,7 +8,7 @@ using Basics;
 
 namespace Engine
 {
-    public abstract class ColoredVertexRenderer : IPosition
+    public class ColoredVertexRenderer : IPosition
     {
         private ColoredVertexBuffer buffer => array.vertexBuffer;
         private ColoredVertexArray array;

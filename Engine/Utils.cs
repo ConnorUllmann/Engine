@@ -24,6 +24,7 @@ namespace Engine
         public static Vector2 Midpoint(this Vector2 a, IPosition b) => Basics.Utils.Midpoint(a.X, a.Y, b.X, b.Y).ToVector2();
         public static Vector2 Midpoint(this Vector2 a, Vector2 b) => Basics.Utils.Midpoint(a.X, a.Y, b.X, b.Y).ToVector2();
         public static Vector2 ToVector2(this (float X, float Y) _tuple) => new Vector2(_tuple.X, _tuple.Y);
+        public static Vector3 ToVector3(this (float X, float Y) _tuple) => new Vector3(_tuple.X, _tuple.Y, 0);
 
         public static Vector2 Vector2(float _radians, float _length=1) => _length * new Vector2((float)Math.Cos(_radians), (float)Math.Sin(_radians));
         public static Vector2 RandomUnitVector2() => Vector2((float)(Basics.Utils.RandomDouble() * Math.PI * 2));
@@ -79,22 +80,13 @@ namespace Engine
             for (var i = 0; i < _vertices.Count; i++)
                 _vertices[i] = _vertices[i].Rotate(_radians, _center);
         }
-        public static Vector3 Rotate(this Vector3 _vertex, float _radians, Vector3 _center) => Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y).To3D();
-        public static Vector2 Rotate(this IPosition _vertex, float _radians, IPosition _center=null) => Rotate(_vertex.X, _vertex.Y, _radians, _center?.X ?? 0, _center?.Y ?? 0);
-        public static Vector2 Rotate(this Vector2 _vertex, float _radians, IPosition _center=null) => Rotate(_vertex.X, _vertex.Y, _radians, _center?.X ?? 0, _center?.Y ?? 0);
-        public static Vector2 Rotate(this IPosition _vertex, float _radians, Vector2 _center) => Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y);
-        public static Vector2 Rotate(this Vector2 _vertex, float _radians, Vector2 _center) => Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y);
-        public static Vector2 Rotate(this IPosition _vertex, float _radians) => Rotate(_vertex.X, _vertex.Y, _radians);
-        public static Vector2 Rotate(this Vector2 _vertex, float _radians) => Rotate(_vertex.X, _vertex.Y, _radians);
-        public static Vector2 Rotate(float _vertexX, float _vertexY, float _radians, float _centerX=0, float _centerY=0)
-        {
-            var diffX = _vertexX - _centerX;
-            var diffY = _vertexY - _centerY;
-            var cos = Math.Cos(_radians);
-            var sin = Math.Sin(_radians);
-            return new Vector2((float)(diffX * cos - diffY * sin) + _centerX,
-                               (float)(diffY * cos + diffX * sin) + _centerY);
-        }
+        public static Vector3 Rotate(this Vector3 _vertex, float _radians, Vector3 _center) => Basics.Utils.Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y).ToVector3();
+        public static Vector2 Rotate(this IPosition _vertex, float _radians, IPosition _center=null) => Basics.Utils.Rotate(_vertex.X, _vertex.Y, _radians, _center?.X ?? 0, _center?.Y ?? 0).ToVector2();
+        public static Vector2 Rotate(this Vector2 _vertex, float _radians, IPosition _center=null) => Basics.Utils.Rotate(_vertex.X, _vertex.Y, _radians, _center?.X ?? 0, _center?.Y ?? 0).ToVector2();
+        public static Vector2 Rotate(this IPosition _vertex, float _radians, Vector2 _center) => Basics.Utils.Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y).ToVector2();
+        public static Vector2 Rotate(this Vector2 _vertex, float _radians, Vector2 _center) => Basics.Utils.Rotate(_vertex.X, _vertex.Y, _radians, _center.X, _center.Y).ToVector2();
+        public static Vector2 Rotate(this IPosition _vertex, float _radians) => Basics.Utils.Rotate(_vertex.X, _vertex.Y, _radians).ToVector2();
+        public static Vector2 Rotate(this Vector2 _vertex, float _radians) => Basics.Utils.Rotate(_vertex.X, _vertex.Y, _radians).ToVector2();
         
         public static Vector3 Avg(this IEnumerable<Vector3> _vectors)
         {
@@ -834,5 +826,9 @@ namespace Engine
         }
 
         #endregion
+
+
+        public static IEnumerable<Vector2> CircleVertices(Vector2 _position, float _radius) 
+            => Basics.Utils.CircleVertices(_position.X, _position.Y, _radius).Select(o => new OpenTK.Vector2(o.X, o.Y));
     }
 }

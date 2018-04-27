@@ -4,8 +4,10 @@ using System.Linq;
 using Basics;
 using Engine;
 using Engine.Actors;
+using Engine.OpenGL.Colored;
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 using Rectangle = Basics.Rectangle;
 
 namespace Engine
@@ -24,9 +26,18 @@ namespace Engine
         float StartAngle { get; }
         
         void Update(Particle _particle);
-        void Render(Particle _particle);
+        IEnumerable<(ParticlePrimitive PrimitiveType, IEnumerable<(float X, float Y)> Vertices)> Vertices(Particle _particle);
         bool ShouldDestroy(Particle _particle);
     }
+
+    public enum ParticlePrimitive
+    {
+        Points = PrimitiveType.Points,
+        Lines = PrimitiveType.Lines,
+        Triangles = PrimitiveType.Triangles,
+        Quads = PrimitiveType.Quads
+    }
+
 
     public interface IRegion
     {
@@ -89,10 +100,34 @@ namespace Engine
                 toDestroy.ForEach(destroyParticle);
             }
 
+            private ColoredVertexRenderer particleRenderer = new ColoredVertexRenderer();
+
             public override void Render()
             {
+                var verticesByType = new Dictionary<ParticlePrimitive, List<ColoredVertex>>();
                 foreach (var particle in particles)
-                    system.Render(particle);
+                {
+                    var renders = system.Vertices(particle);
+                    var renderVerticesByType = renders.GroupBy(kv => kv.PrimitiveType).ToDictionary(kv => kv.Key, kv => kv.ToList());
+                    foreach(var kv in renderVerticesByType)
+                    {
+                        if(!verticesByType.TryGetValue(kv.Key, out var list))
+                        {
+                            list = new List<ColoredVertex>();
+                            verticesByType[kv.Key] = list;
+                        }
+                        list.AddRange(kv.Value.SelectMany(o => o.Vertices).Select(o => new ColoredVertex(new Vector3(o.X, o.Y, 0), particle.Color)));
+                    }
+                }
+
+                foreach((ParticlePrimitive primitiveType, List<ColoredVertex> vertices) in verticesByType)
+                {
+                    var buffer = new ColoredVertexBuffer((PrimitiveType)primitiveType);
+                    buffer.AddVertices(vertices);
+                    particleRenderer.Initialize(buffer);
+                    particleRenderer.Render();
+                    buffer.Destroy();
+                }
             }
 
             private void destroyParticle(Particle _particle)

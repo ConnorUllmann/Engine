@@ -123,24 +123,9 @@ namespace Engine.Debug
             var color = _color ?? Color4.White;
             var buffer = new ColoredVertexBuffer(PrimitiveType.LineLoop);
 
-            var segments = 10 * Math.Sqrt(_radius);
-            var theta = (float)(2 * Math.PI / segments);
-            var cos = (float)Math.Cos(theta);
-            var sin = (float)Math.Sin(theta);
-
-            var x = _radius;
-            var xt = 0f;
-            var y = 0f;
-
-            for (var i = 0; i < segments; i++)
-            {
-                var vertex = new Vector3(x + _centerX, y + _centerY, 0);
-                buffer.AddVertex(new ColoredVertex(vertex, color));
-
-                xt = x;
-                x = cos * x - sin * y;
-                y = sin * xt + cos * y;
-            }
+            var vertices = Basics.Utils.CircleVertices(_centerX, _centerY, _radius).Select(o => new ColoredVertex(new Vector3(o.X, o.Y, 0), color));
+            foreach (var vertex in vertices)
+                buffer.AddVertex(vertex);
             var array = ColoredVertexArray.FromBuffer(buffer);
 
             //Use

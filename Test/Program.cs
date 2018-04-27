@@ -5,8 +5,11 @@ using Basics;
 using Basics.QuadTree;
 using Engine;
 using Engine.Actors;
+using Engine.OpenGL;
+using Engine.OpenGL.Colored;
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 using Rectangle = Basics.Rectangle;
 
 namespace Test
@@ -41,9 +44,15 @@ namespace Test
 
             public bool ShouldDestroy(Particle _particle) => _particle.Size <= 0;
 
-            public void Render(Particle _particle)
+            private static readonly IEnumerable<(float X, float Y)> unitCircleSegments = Basics.Utils.CircleSegments(0, 0, 1).SelectMany(o => new[] { o.a, o.b });
+
+            public IEnumerable<(ParticlePrimitive PrimitiveType, IEnumerable<(float X, float Y)> Vertices)> Vertices(Particle _particle)
             {
-                Engine.Debug.Draw.Circle(_particle.X, _particle.Y, _particle.Size, _particle.Color);
+                //Engine.Debug.Draw.Circle(_particle.X, _particle.Y, _particle.Size, _particle.Color);
+                return new List<(ParticlePrimitive, IEnumerable<(float X, float Y)>)>()
+                {
+                    (ParticlePrimitive.Lines, unitCircleSegments.Select(o => (_particle.X + o.X * _particle.Size, _particle.Y + o.Y * _particle.Size)))
+                };
             }
         }
 
@@ -71,9 +80,14 @@ namespace Test
 
             public bool ShouldDestroy(Particle _particle) => _particle.Size <= 0;
 
-            public void Render(Particle _particle)
+            public IEnumerable<(ParticlePrimitive PrimitiveType, IEnumerable<(float X, float Y)> Vertices)> Vertices(Particle _particle)
             {
-                Engine.Debug.Draw.Rectangle(new Rectangle(_particle.X - _particle.Size / 2, _particle.Y - _particle.Size / 2, _particle.Size, _particle.Size), 0, 0, _particle.Color, true, _particle.Rocket.Angle);
+                var rectangle = new Rectangle(_particle.X - _particle.Size / 2, _particle.Y - _particle.Size / 2, _particle.Size, _particle.Size);
+                return new List<(ParticlePrimitive, IEnumerable<(float X, float Y)>)>()
+                {
+                    (ParticlePrimitive.Quads, rectangle.ToVertices().Rotated(_particle.Rocket.Angle, _particle.X, _particle.Y))
+                    //(ParticlePrimitive.Points, new List<(float X, float Y)> () { (_particle.X, _particle.Y) })
+                };
             }
         }
 
@@ -102,7 +116,7 @@ namespace Test
                 if(Input.LeftMouseDown)
                     mouseEmitter.Emit(5);
 
-                regionEmitter.Emit(3);
+                regionEmitter.Emit(15);
             };
 
             game.RenderHandler += () =>
