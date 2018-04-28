@@ -4,7 +4,6 @@
 ~ Test Quadtree functionality
 ~ Use interface for objects with start/update/render functions in World rather than assuming Actors
 ~ Make Log Flush write to file asynchronously so there's no lag for large log files (tests showed ~1.8sec to save a 1,000,000 line file)
-~ Simple particle system
 ~ Find out how to draw text to the screen
 ~ Make a simple debug console
 ~ Look into Alea to speed up collision detection/quadtree: http://www.quantalea.com/features/gpu-parallel-for
@@ -12,3 +11,6 @@
 ~ Remove LinesIntersectionPoint and make sure SplitAlongLine still works
 ~ Central repository in Basics.Utils which all MillisecondsDuration can subscribe to with a string that is polled and cleared every frame so different functions can report their performance
 ~ Move all line intersection-like functions into Basics.Utils using tuples which Engine extension functions call
+
+COMPLETED
+~ Simple particle system
