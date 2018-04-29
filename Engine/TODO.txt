@@ -11,6 +11,7 @@
 ~ Remove LinesIntersectionPoint and make sure SplitAlongLine still works
 ~ Central repository in Basics.Utils which all MillisecondsDuration can subscribe to with a string that is polled and cleared every frame so different functions can report their performance
 ~ Move all line intersection-like functions into Basics.Utils using tuples which Engine extension functions call
+~ Parallelize updates and rendering for Particles
 
 COMPLETED
 ~ Simple particle system
