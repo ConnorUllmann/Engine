@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using Basics;
 using Engine;
@@ -9,6 +10,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using Rectangle = Basics.Rectangle;
+using System.Threading.Tasks;
 
 namespace Engine
 {
@@ -102,28 +104,62 @@ namespace Engine
 
             private ColoredVertexRenderer particleRenderer = new ColoredVertexRenderer();
 
-            public override void Render()
+            private async Task<ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>> RenderSetupAsync()
             {
-                var verticesByType = new Dictionary<ParticlePrimitive, List<ColoredVertex>>();
-                foreach (var particle in particles)
+                //Batching by 10, 100, 1000 didn't improve performance beyond sync version
+                //Not sure why this is slower
+
+                var results = new ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>();
+                foreach (var value in Basics.Utils.GetValues<ParticlePrimitive>())
+                    results[value] = new ConcurrentQueue<IEnumerable<ColoredVertex>>();
+
+                var tasks = new Task[particles.Count];
+                for (var i = 0; i < particles.Count; i++)
                 {
-                    var renders = system.Vertices(particle);
-                    var renderVerticesByType = renders.GroupBy(kv => kv.PrimitiveType).ToDictionary(kv => kv.Key, kv => kv.ToList());
-                    foreach(var kv in renderVerticesByType)
+                    var particle = particles[i];
+                    var task = Task.Factory.StartNew(() =>
                     {
-                        if(!verticesByType.TryGetValue(kv.Key, out var list))
-                        {
-                            list = new List<ColoredVertex>();
-                            verticesByType[kv.Key] = list;
-                        }
-                        list.AddRange(kv.Value.SelectMany(o => o.Vertices).Select(o => new ColoredVertex(new Vector3(o.X, o.Y, 0), particle.Color)));
-                    }
+                        var renders = system.Vertices(particle).Select(o => ((ParticlePrimitive PrimitiveType, IEnumerable<ColoredVertex> Vertices))(o.PrimitiveType, o.Vertices.Select(v => new ColoredVertex(new Vector3(v.X, v.Y, 0), particle.Color))));
+                        foreach (var render in renders)
+                            results[render.PrimitiveType].Enqueue(render.Vertices);
+                    });
+                    tasks[i] = task;
                 }
 
-                foreach((ParticlePrimitive primitiveType, List<ColoredVertex> vertices) in verticesByType)
+                await Task.WhenAll(tasks.ToArray());
+                return results;
+            }
+
+            private async Task<ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>> RenderSetupSync()
+            {
+                var results = new ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>();
+                foreach (var value in Basics.Utils.GetValues<ParticlePrimitive>())
+                    results[value] = new ConcurrentQueue<IEnumerable<ColoredVertex>>();
+                
+                for (var i = 0; i < particles.Count; i++)
+                {
+                    var particle = particles[i];
+                    var renders = system.Vertices(particle).Select(o => ((ParticlePrimitive PrimitiveType, IEnumerable<ColoredVertex> Vertices))(o.PrimitiveType, o.Vertices.Select(v => new ColoredVertex(new Vector3(v.X, v.Y, 0), particle.Color))));
+                    foreach (var render in renders)
+                        results[render.PrimitiveType].Enqueue(render.Vertices);
+                }
+                return await Task.FromResult(results);
+            }
+
+            public override void Render()
+            {
+                ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>> verticesByType = null;
+
+                var ms = Basics.Utils.MillisecondsDuration(() =>
+                {
+                    verticesByType = RenderSetupSync().Result;
+                });
+                Game.LogWarning(ms.ToString());
+
+                foreach ((ParticlePrimitive primitiveType, ConcurrentQueue<IEnumerable<ColoredVertex>> vertexLists) in verticesByType)
                 {
                     var buffer = new ColoredVertexBuffer((PrimitiveType)primitiveType);
-                    buffer.AddVertices(vertices);
+                    buffer.AddVertices(vertexLists.SelectMany(o => o));
                     particleRenderer.Initialize(buffer);
                     particleRenderer.Render();
                     buffer.Destroy();
