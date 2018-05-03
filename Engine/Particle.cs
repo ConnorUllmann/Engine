@@ -107,7 +107,7 @@ namespace Engine
             private async Task<ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>> RenderSetupAsync()
             {
                 //Batching by 10, 100, 1000 didn't improve performance beyond sync version
-                //Not sure why this is slower
+                //Not yet sure why this is slower
 
                 var results = new ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>();
                 foreach (var value in Basics.Utils.GetValues<ParticlePrimitive>())
