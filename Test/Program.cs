@@ -93,22 +93,6 @@ namespace Test
 
         static void Main(string[] args)
         {
-            Console.WriteLine(new[] { 104, 31, 53, 84, 7, 30, 89, 93, 17, 207, 9, 39, 83, 4, 31, 121 }.Sum());
-            while (true)
-            {
-                var list = new List<int>();
-                for (var i = 0; i < 17; i++)
-                {
-                    var k = Basics.Utils.RandomInt(0, 142);
-                    list.Add(k);
-                }
-                Console.WriteLine(string.Join(", ", list));
-                Console.WriteLine($"Sum: {list.Sum()}");
-
-                Console.ReadLine();
-            }
-
-
             var game = new ShellGame(600, 600);
             Game.LogShouldPrintTime = true;
             Game.LogShouldPrintLevel = false;
