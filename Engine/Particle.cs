@@ -68,6 +68,8 @@ namespace Engine
             private readonly IRegion region;            
             private readonly List<Particle> particles;
 
+            private ColoredVertexRenderer particleRenderer = new ColoredVertexRenderer();
+
             public Emitter(float _x, float _y, IParticleSystem _system, IRegion _region)
                 : base(_x, _y)
             {
@@ -102,40 +104,31 @@ namespace Engine
                 toDestroy.ForEach(destroyParticle);
             }
 
-            private ColoredVertexRenderer particleRenderer = new ColoredVertexRenderer();
 
-            private async Task<ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>> RenderSetupAsync()
-            {
-                //Batching by 10, 100, 1000 didn't improve performance beyond sync version
-                //Not yet sure why this is slower
+            //private ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>> RenderSetupAsync()
+            //{
+            //    //Batching by 10, 100, 1000 didn't improve performance beyond sync version
+            //    //Not yet sure why this is slower
 
-                var results = new ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>();
-                foreach (var value in Basics.Utils.GetValues<ParticlePrimitive>())
-                    results[value] = new ConcurrentQueue<IEnumerable<ColoredVertex>>();
+            //    var results = new ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>();
+            //    foreach (var value in Basics.Utils.GetValues<ParticlePrimitive>())
+            //        results[value] = new ConcurrentQueue<IEnumerable<ColoredVertex>>();
 
-                var tasks = new Task[particles.Count];
-                for (var i = 0; i < particles.Count; i++)
-                {
-                    var particle = particles[i];
-                    var task = Task.Factory.StartNew(() =>
-                    {
-                        var renders = system.Vertices(particle).Select(o => ((ParticlePrimitive PrimitiveType, IEnumerable<ColoredVertex> Vertices))(o.PrimitiveType, o.Vertices.Select(v => new ColoredVertex(new Vector3(v.X, v.Y, 0), particle.Color))));
-                        foreach (var render in renders)
-                            results[render.PrimitiveType].Enqueue(render.Vertices);
-                    });
-                    tasks[i] = task;
-                }
+            //    Parallel.ForEach(particles, particle =>
+            //    {
+            //        var renders = system.Vertices(particle).Select(o => ((ParticlePrimitive PrimitiveType, IEnumerable<ColoredVertex> Vertices))(o.PrimitiveType, o.Vertices.Select(v => new ColoredVertex(new Vector3(v.X, v.Y, 0), particle.Color))));
+            //        foreach (var render in renders)
+            //            results[render.PrimitiveType].Enqueue(render.Vertices);
+            //    });
+            //    return results;
+            //}
 
-                await Task.WhenAll(tasks.ToArray());
-                return results;
-            }
-
-            private async Task<ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>> RenderSetupSync()
+            private ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>> RenderSetupSync()
             {
                 var results = new ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>>();
                 foreach (var value in Basics.Utils.GetValues<ParticlePrimitive>())
                     results[value] = new ConcurrentQueue<IEnumerable<ColoredVertex>>();
-                
+
                 for (var i = 0; i < particles.Count; i++)
                 {
                     var particle = particles[i];
@@ -143,27 +136,31 @@ namespace Engine
                     foreach (var render in renders)
                         results[render.PrimitiveType].Enqueue(render.Vertices);
                 }
-                return await Task.FromResult(results);
+                return results;
             }
 
             public override void Render()
             {
                 ConcurrentDictionary<ParticlePrimitive, ConcurrentQueue<IEnumerable<ColoredVertex>>> verticesByType = null;
 
-                var ms = Basics.Utils.MillisecondsDuration(() =>
-                {
-                    verticesByType = RenderSetupSync().Result;
-                });
-                Game.LogWarning(ms.ToString());
+                //var ms = Basics.Utils.MillisecondsDuration(() =>
+                //{
+                    verticesByType = RenderSetupSync();
+                //});
+                //Game.LogWarning(ms.ToString());
 
-                foreach ((ParticlePrimitive primitiveType, ConcurrentQueue<IEnumerable<ColoredVertex>> vertexLists) in verticesByType)
-                {
-                    var buffer = new ColoredVertexBuffer((PrimitiveType)primitiveType);
-                    buffer.AddVertices(vertexLists.SelectMany(o => o));
-                    particleRenderer.Initialize(buffer);
-                    particleRenderer.Render();
-                    buffer.Destroy();
-                }
+                //ms = Basics.Utils.MillisecondsDuration(() =>
+                //{
+                    foreach ((ParticlePrimitive primitiveType, ConcurrentQueue<IEnumerable<ColoredVertex>> vertexLists) in verticesByType)
+                    {
+                        var buffer = new ColoredVertexBuffer((PrimitiveType)primitiveType);
+                        buffer.AddVertices(vertexLists.SelectMany(o => o));
+                        particleRenderer.Initialize(buffer);
+                        particleRenderer.Render();
+                        buffer.Destroy();
+                    }
+                //});
+                //Game.LogWarning(ms.ToString());
             }
 
             private void destroyParticle(Particle _particle)
